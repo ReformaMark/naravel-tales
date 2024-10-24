@@ -1,7 +1,9 @@
+import OnboardingFlow from "@/features/auth/components/onboarding-flow";
+
 const RegisterPage = () => {
     return (
-        <main className="flex-1 pt-14 text-primary overflow-x-hidden">
-            test
+        <main className="text-primary overflow-hidden h-screen">
+            <OnboardingFlow />
         </main>
     )
 }

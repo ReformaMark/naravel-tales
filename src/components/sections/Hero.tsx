@@ -1,7 +1,6 @@
 "use client"
 import { Button, buttonVariants } from "@/components/ui/button";
 import { loginModalURLSyncAtom } from "@/features/auth/loginModal";
-import { cn } from "@/lib/utils";
 import { useSetAtom } from "jotai";
 import Image from "next/image";
 import Link from "next/link";

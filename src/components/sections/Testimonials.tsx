@@ -1,6 +1,6 @@
-// components/sections/Testimonials.tsx
 import { Card, CardContent } from "@/components/ui/card";
 import type { TestimonialProps } from "@/types";
+import Image from "next/image";
 
 const testimonials: TestimonialProps[] = [
   {
@@ -34,7 +34,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="bg-white border-[#CDC1FF] hover-lift">
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <img src={testimonial.avatarSrc} alt="User Avatar" className="rounded-full h-16 w-16" />
+                <Image src={testimonial.avatarSrc} alt="User Avatar" className="rounded-full h-16 w-16" />
                 <p className="text-center italic">{testimonial.quote}</p>
                 <p className="text-sm">- {testimonial.author}, {testimonial.role}</p>
               </CardContent>

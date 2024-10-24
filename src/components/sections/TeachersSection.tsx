@@ -1,8 +1,8 @@
 "use client"
 
-import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { motion } from 'framer-motion';
 import Image from "next/image";
 
 export default function TeachersSection() {

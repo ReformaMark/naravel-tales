@@ -102,7 +102,7 @@ export function LoginModal() {
             </Button>
           </form>
           <div className="text-center">
-            <p className="text-sm text-gray-400">Don't have an account?</p>
+            <p className="text-sm text-gray-400">Don&apos;t have an account?</p>
             <Button variant="link" className="text-blue-400" onClick={handleCreateAccount}>
               Create Account
             </Button>
