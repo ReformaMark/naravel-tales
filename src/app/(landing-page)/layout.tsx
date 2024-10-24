@@ -1,5 +1,6 @@
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import { LoginModal } from '@/features/auth/components/login-modal';
 import "@/lib/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
@@ -24,6 +25,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen bg-white">
           <Header />
           {children}
+          <LoginModal />
           <Footer />
         </div>
       </body>

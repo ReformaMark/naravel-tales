@@ -18,7 +18,7 @@ export default function Features() {
             <Image
               src="/power-up.svg"
               alt="Reading App Mascot"
-              className="object-contain"
+              className="object-contain pointer-events-none"
               height="320"
               width="320"
             />

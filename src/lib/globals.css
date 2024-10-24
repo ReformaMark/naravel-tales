@@ -34,16 +34,6 @@
 
 .parallax-container {
   overflow-x: hidden;
-  perspective: 2px;
-}
-
-.parallax-section {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
 }
 
 @layer base {
@@ -56,7 +46,7 @@
     --popover-foreground: 0 0% 3.9%;
     --primary: 250, 91%, 69%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
+    --secondary: 263, 100%, 97%;
     --secondary-foreground: 0, 0%, 29%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;

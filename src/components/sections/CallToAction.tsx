@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function CallToAction() {
   return (
@@ -12,9 +13,12 @@ export default function CallToAction() {
             <p className="max-w-[600px] text-zinc-500 md:text-xl dark:text-zinc-400">
               Join thousands of teachers, parents, and students who are already using our platform to make reading fun and effective.
             </p>
-            <Button>
+            <Link
+              href="/auth"
+              className={buttonVariants({ variant: "default" })}
+            >
               Start Now
-            </Button>
+            </Link>
           </div>
         </div>
 
