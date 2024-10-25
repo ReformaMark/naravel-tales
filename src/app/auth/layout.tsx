@@ -1,7 +1,9 @@
+import { ConvexClientProvider } from '@/components/convex-client-provider';
 import Header from '@/components/layout/Header';
 import "@/lib/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -18,13 +20,17 @@ export default function RegisterLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={nunito.className}>
-                <div className="flex flex-col min-h-screen bg-white">
-                    <Header />
-                    {children}
-                </div>
-            </body>
-        </html>
+        <ConvexAuthNextjsServerProvider>
+            <html lang="en">
+                <body className={nunito.className}>
+                    <ConvexClientProvider>
+                        <div className="flex flex-col min-h-screen bg-white">
+                            <Header />
+                            {children}
+                        </div>
+                    </ConvexClientProvider>
+                </body>
+            </html>
+        </ConvexAuthNextjsServerProvider>
     );
 }

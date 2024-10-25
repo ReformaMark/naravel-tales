@@ -49,6 +49,10 @@ export default function OnboardingFlow() {
         setCurrentStep(2)
     }
 
+    const handleGoogleLogin = () => {
+        console.log("Google login clicked")
+    }
+
     const handleRegistration = (e: React.FormEvent) => {
         e.preventDefault()
         console.log('Registration data:', formData)
@@ -74,6 +78,7 @@ export default function OnboardingFlow() {
                         formData={formData}
                         onSubmit={handleRegistration}
                         onChange={handleInputChange}
+                        onGoogleSignIn={handleGoogleLogin}
                     />
                 )
             case 'verification':

@@ -1,9 +1,11 @@
+import { ConvexClientProvider } from '@/components/convex-client-provider';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import { LoginModal } from '@/features/auth/components/login-modal';
 import "@/lib/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -20,15 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={nunito.className}>
-        <div className="flex flex-col min-h-screen bg-white">
-          <Header />
-          {children}
-          <LoginModal />
-          <Footer />
-        </div>
-      </body>
-    </html>
+    <ConvexAuthNextjsServerProvider>
+      <html lang="en">
+        <body className={nunito.className}>
+          <ConvexClientProvider>
+            <div className="flex flex-col min-h-screen bg-white">
+              <Header />
+              {children}
+              <LoginModal />
+              <Footer />
+            </div>
+          </ConvexClientProvider>
+        </body>
+      </html>
+    </ConvexAuthNextjsServerProvider>
   );
 }

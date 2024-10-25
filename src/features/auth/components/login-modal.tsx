@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { FcGoogle } from 'react-icons/fc'
 
 // Mock user data
 const mockUser = {
@@ -48,6 +49,10 @@ export function LoginModal() {
     }
 
     setIsLoading(false)
+  }
+
+  const handleGoogleLogin = () => {
+    console.log("Google login clicked")
   }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -101,6 +106,18 @@ export function LoginModal() {
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[#2a2a2a] px-2 text-gray-400">Or continue with</span>
+            </div>
+          </div>
+          <Button onClick={handleGoogleLogin} variant="outline" className="w-full bg-white text-black hover:bg-gray-100">
+            <FcGoogle className="mr-2 h-4 w-4" />
+            Sign in with Google
+          </Button>
           <div className="text-center">
             <p className="text-sm text-gray-400">Don&apos;t have an account?</p>
             <Button variant="link" className="text-blue-400" onClick={handleCreateAccount}>
