@@ -9,21 +9,35 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FcGoogle } from 'react-icons/fc'
-
-// Mock user data
-const mockUser = {
-  email: "user@example.com",
-  password: "password123"
-}
+import { useAuthActions } from "@convex-dev/auth/react"
+import { useConvexAuth } from 'convex/react'
+import { useRoleCheck } from '../api/use-role-check'
 
 export function LoginModal() {
   const [isOpen, setIsOpen] = useAtom(loginModalURLSyncAtom)
   const [isRendered, setIsRendered] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { isAuthenticated } = useConvexAuth()
+  const { data: roleCheck } = useRoleCheck()
+  const { signIn } = useAuthActions()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+
   const router = useRouter()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (roleCheck === "teacher") {
+        router.push('/teachers')
+      } else if (roleCheck === "parent") {
+        router.push('/parent')
+      } else if (roleCheck === "admin") {
+        router.push('/admin')
+      }
+    }
+  }, [signIn, router, isAuthenticated, roleCheck])
 
   useEffect(() => {
     if (isOpen) {
@@ -39,20 +53,31 @@ export function LoginModal() {
     setError("")
     setIsLoading(true)
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    if (email === mockUser.email && password === mockUser.password) {
-      console.log("Login successful")
-      setIsOpen(false)
-    } else {
-      setError("Invalid email or password")
-    }
-
-    setIsLoading(false)
+    await signIn("password", {
+      email,
+      password,
+      flow: "signIn"
+    })
+      .then(() => {
+        setIsOpen(false)
+      })
+      .catch(() => {
+        setError("Invalid email or password")
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked")
+    signIn("google").then(() => {
+      setIsOpen(false)
+    }).catch((error) => {
+      setError("Failed to sign in with Google")
+      console.error(error)
+    }).finally(() => {
+      setIsLoading(false)
+    })
   }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -111,15 +136,15 @@ export function LoginModal() {
               <span className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#2a2a2a] px-2 text-gray-400">Or continue with</span>
+              <span className="bg-[#2a2a2a] px-2 text-gray-400">No account?</span>
             </div>
           </div>
-          <Button onClick={handleGoogleLogin} variant="outline" className="w-full bg-white text-black hover:bg-gray-100">
+          {/* <Button onClick={handleGoogleLogin} variant="outline" className="w-full bg-white text-black hover:bg-gray-100">
             <FcGoogle className="mr-2 h-4 w-4" />
             Sign in with Google
-          </Button>
+          </Button> */}
           <div className="text-center">
-            <p className="text-sm text-gray-400">Don&apos;t have an account?</p>
+            {/* <p className="text-sm text-gray-400">Don&apos;t have an account?</p> */}
             <Button variant="link" className="text-blue-400" onClick={handleCreateAccount}>
               Create Account
             </Button>
