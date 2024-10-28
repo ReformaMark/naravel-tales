@@ -142,6 +142,7 @@ export default function OnboardingFlow() {
                 lname: formData.lname,
                 password: formData.password,
                 role,
+                onboarding: false,
                 flow: "signUp"
             })
         } catch (error) {

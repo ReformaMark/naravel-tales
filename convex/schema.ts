@@ -15,6 +15,7 @@ const schema = defineSchema({
         lname: v.optional(v.string()),
         role: v.optional(v.union(v.literal("teacher"), v.literal("admin"), v.literal("parent"))),
         address: v.optional(v.string()),
+        onboarding: v.optional(v.boolean()),
     })
 });
 
