@@ -4,9 +4,8 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
+  Sparkles
 } from "lucide-react"
 
 import {

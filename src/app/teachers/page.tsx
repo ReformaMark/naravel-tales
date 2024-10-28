@@ -21,7 +21,7 @@ const TeachersPage = () => {
     if (classId) {
       router.replace(`/teachers/${classId}`)
     }
-  }, [classes, isLoading])
+  }, [classId, router, isLoading])
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] space-y-4">

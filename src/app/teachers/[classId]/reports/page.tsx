@@ -1,10 +1,9 @@
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
-    BreadcrumbSeparator,
+    BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -21,7 +20,7 @@ const ReportsPage = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbPage className="text-muted-foreground">Dashboard</BreadcrumbPage>
+                                <BreadcrumbPage className="text-mut">Dashboard</BreadcrumbPage>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
@@ -43,4 +42,4 @@ const ReportsPage = () => {
     )
 }
 
-export default ReportsPage
+export default ReportsPage;

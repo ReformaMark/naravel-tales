@@ -1,17 +1,16 @@
 import {
     Breadcrumb,
     BreadcrumbItem,
-    BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
-    BreadcrumbSeparator,
+    BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
     SidebarTrigger
 } from "@/components/ui/sidebar"
 
-const MonitoringPage = () => {
+const DashboardPage = () => {
     return (
         <>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
@@ -21,7 +20,7 @@ const MonitoringPage = () => {
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
-                                <BreadcrumbPage className="text-muted-foreground">Dashboard</BreadcrumbPage>
+                                <BreadcrumbPage className="text-mut">Dashboard</BreadcrumbPage>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
@@ -43,4 +42,4 @@ const MonitoringPage = () => {
     )
 }
 
-export default MonitoringPage;
+export default DashboardPage;

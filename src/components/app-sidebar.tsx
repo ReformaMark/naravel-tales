@@ -2,16 +2,13 @@
 
 
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  SquareTerminal
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -27,9 +24,9 @@ import {
 } from "@/components/ui/sidebar"
 import { useCurrentUser } from "@/features/auth/api/use-current-user"
 import { useAllClass } from "@/features/class/api/use-all-class"
-import { Id } from "../../convex/_generated/dataModel"
 import { useCurrentClass } from "@/features/class/api/use-current-class"
 import { usePathname } from "next/navigation"
+import { Id } from "../../convex/_generated/dataModel"
 
 interface UserSidebarType {
   fname: string;
@@ -38,112 +35,115 @@ interface UserSidebarType {
   avatar: string;
 }
 
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/teachers",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/teachers",
-        },
-        {
-          title: "Monitoring",
-          url: "/teachers/monitoring",
-        },
-        {
-          title: "Reports",
-          url: "/teachers/reports",
-        },
-      ],
-    },
-    {
-      title: "Class",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "My Students",
-          url: "#",
-        },
-        {
-          title: "Performance",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Stories",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Start Reading",
-          url: "#",
-        },
-        {
-          title: "List of Stories",
-          url: "#",
-        },
-        {
-          title: "Archived Stories",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "User Profile",
-          url: "#",
-        },
-        {
-          title: "Classes",
-          url: "#",
-        },
-        {
-          title: "Students",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const classId = pathname?.replace("/teachers/", "")
+  // Extract classId from pathname using split and get first segment after /teachers/
+  const classId = pathname?.split('/').filter(segment => segment)[1]
+
+  const data = {
+    navMain: [
+      {
+        title: "Dashboard",
+        url: `/teachers/${classId}/dashboard`,
+        icon: SquareTerminal,
+        isActive: true,
+        items: [
+          {
+            title: "Overview",
+            url: `/teachers/${classId}`,
+          },
+          {
+            title: "Monitoring",
+            url: `/teachers/${classId}/monitoring`,
+          },
+          {
+            title: "Reports",
+            url: `/teachers/${classId}/reports`,
+          },
+        ],
+      },
+      {
+        title: "Class",
+        url: "#",
+        icon: Bot,
+        items: [
+          {
+            title: "My Students",
+            url: "#",
+          },
+          {
+            title: "Performance",
+            url: "#",
+          },
+          {
+            title: "Settings",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Stories",
+        url: "#",
+        icon: BookOpen,
+        items: [
+          {
+            title: "Start Reading",
+            url: "#",
+          },
+          {
+            title: "List of Stories",
+            url: "#",
+          },
+          {
+            title: "Archived Stories",
+            url: "#",
+          },
+          {
+            title: "Settings",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Settings",
+        url: "#",
+        icon: Settings2,
+        items: [
+          {
+            title: "User Profile",
+            url: "#",
+          },
+          {
+            title: "Classes",
+            url: "#",
+          },
+          {
+            title: "Students",
+            url: "#",
+          },
+        ],
+      },
+    ],
+    projects: [
+      {
+        name: "Design Engineering",
+        url: "#",
+        icon: Frame,
+      },
+      {
+        name: "Sales & Marketing",
+        url: "#",
+        icon: PieChart,
+      },
+      {
+        name: "Travel",
+        url: "#",
+        icon: Map,
+      },
+    ],
+  }
+
+
 
   const { data: user } = useCurrentUser()
   const { data: classes } = useAllClass()

@@ -26,17 +26,15 @@ export const current = query({
 export const role = query({
     args: {},
     handler: async (ctx) => {
-        const userId = await getAuthUserId(ctx)
+        const userId = await getAuthUserId(ctx);
+        if (!userId) return null;
 
-        if (!userId) return null
+        const user = await ctx.db.get(userId);
+        if (!user) return null;
 
-        const user = await ctx.db.get(userId)
-
-        if (!user) return null
-
-        return user.role
-    }
-})
+        return user.role;
+    },
+});
 
 export const checkEmailExists = query({
     args: { email: v.string() },

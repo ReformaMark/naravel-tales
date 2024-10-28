@@ -14,19 +14,25 @@ export function ClassModal() {
     const [isOpen, setIsOpen] = useAtom(isClassModalOpenAtom);
     const [className, setClassName] = useState("");
     const [error, setError] = useState("");
+    const [pending, setPending] = useState(false);
+
     const createClass = useMutation(api.classes.create);
     const router = useRouter();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setPending(true);
+
         if (className.length < 3) {
             setError("Class name must be at least 3 characters long");
+            setPending(false);
             return;
         }
 
         if (className.length > 25) {
             setError("Class name must be less than 25 characters long");
+            setPending(false);
             return;
         }
 
@@ -55,7 +61,9 @@ export function ClassModal() {
                         />
                         {error && <p className="text-sm text-red-500">{error}</p>}
                     </div>
-                    <Button type="submit" className="w-full">Create Class</Button>
+                    <Button type="submit" className="w-full" disabled={pending}>
+                        {pending ? "Creating..." : "Create Class"}
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>

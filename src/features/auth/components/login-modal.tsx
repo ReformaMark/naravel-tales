@@ -1,17 +1,16 @@
 "use client"
-import { useAtom } from 'jotai'
-import { loginModalURLSyncAtom } from '../loginModal'
-import { useEffect, useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { FcGoogle } from 'react-icons/fc'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useConvexAuth } from 'convex/react'
+import { useAtom } from 'jotai'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { useRoleCheck } from '../api/use-role-check'
+import { loginModalURLSyncAtom } from '../loginModal'
 
 export function LoginModal() {
   const [isOpen, setIsOpen] = useAtom(loginModalURLSyncAtom)
@@ -69,16 +68,16 @@ export function LoginModal() {
       })
   }
 
-  const handleGoogleLogin = () => {
-    signIn("google").then(() => {
-      setIsOpen(false)
-    }).catch((error) => {
-      setError("Failed to sign in with Google")
-      console.error(error)
-    }).finally(() => {
-      setIsLoading(false)
-    })
-  }
+  // const handleGoogleLogin = () => {
+  //   signIn("google").then(() => {
+  //     setIsOpen(false)
+  //   }).catch((error) => {
+  //     setError("Failed to sign in with Google")
+  //     console.error(error)
+  //   }).finally(() => {
+  //     setIsLoading(false)
+  //   })
+  // }
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
