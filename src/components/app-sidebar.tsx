@@ -25,14 +25,16 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useCurrentUser } from "@/features/auth/api/use-current-user"
 
+interface UserSidebarType {
+  fname: string;
+  lname: string;
+  email: string;
+  avatar: string;
+}
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "201-A Class",
@@ -153,7 +155,9 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: user } = useCurrentUser()
 
+  if (!user) return null
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -165,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavParents projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user as UserSidebarType} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

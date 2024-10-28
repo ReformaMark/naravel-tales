@@ -45,11 +45,11 @@ export default function TeachersSection() {
                 </motion.li>
               ))}
             </ul>
-            <div>
+            {/* <div>
               <Button>
                 Get Your Class Started
               </Button>
-            </div>
+            </div> */}
           </motion.div>
           <motion.div
             className="flex justify-center"

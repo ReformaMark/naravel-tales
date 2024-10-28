@@ -6,6 +6,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
 import { RoleCheck } from '@/features/auth/components/role-check';
+import { ClassContainer } from '@/features/class/components/class-container';
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -27,16 +28,18 @@ export default function TeachersLayout({
                 <body className={nunito.className}>
                     <ConvexClientProvider>
                         <RoleCheck allowedRoles={['teacher']}>
-                            <SidebarProvider>
-                                <AppSidebar />
-                                <div className="flex flex-col min-h-screen bg-white container mx-auto">
-                                    {children}
-                                </div>
-                            </SidebarProvider>
+                            <ClassContainer>
+                                <SidebarProvider>
+                                    <AppSidebar />
+                                    <div className="flex flex-col min-h-screen bg-white container mx-auto">
+                                        {children}
+                                    </div>
+                                </SidebarProvider>
+                            </ClassContainer>
                         </RoleCheck>
                     </ConvexClientProvider>
                 </body>
             </html>
-        </ConvexAuthNextjsServerProvider >
+        </ConvexAuthNextjsServerProvider>
     );
 }

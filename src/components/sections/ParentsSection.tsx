@@ -54,11 +54,11 @@ export default function ParentsSection() {
                 </motion.li>
               ))}
             </ul>
-            <div>
+            {/* <div>
               <Button>
                 Join as a Parent
               </Button>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>

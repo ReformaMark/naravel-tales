@@ -9,7 +9,17 @@ export const current = query({
 
         if (!userId) return null
 
-        return await ctx.db.get(userId)
+        const user = await ctx.db.get(userId)
+
+        if (!user) return null
+
+        return {
+            fname: user.fname,
+            lname: user.lname,
+            email: user.email,
+            avatar: user.image,
+            onboarding: user.onboarding,
+        }
     }
 })
 
@@ -35,7 +45,7 @@ export const checkEmailExists = query({
             .query("users")
             .filter((q) => q.eq(q.field("email"), email))
             .first();
-        
+
         return !!existingUser;
     }
 });
