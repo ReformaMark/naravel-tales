@@ -6,6 +6,7 @@ import "@/lib/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { JotaiProvider } from '@/components/jotai-provider';
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -26,12 +27,14 @@ export default function RootLayout({
       <html lang="en">
         <body className={nunito.className}>
           <ConvexClientProvider>
-            <div className="flex flex-col min-h-screen bg-white">
-              <Header />
-              {children}
-              <LoginModal />
-              <Footer />
-            </div>
+            <JotaiProvider>
+              <div className="flex flex-col min-h-screen bg-white">
+                <Header />
+                {children}
+                <LoginModal />
+                <Footer />
+              </div>
+            </JotaiProvider>
           </ConvexClientProvider>
         </body>
       </html>

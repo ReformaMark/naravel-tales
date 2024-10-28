@@ -1,12 +1,11 @@
-import { AppSidebar } from '@/components/app-sidebar';
 import { ConvexClientProvider } from '@/components/convex-client-provider';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { JotaiProvider } from '@/components/jotai-provider';
+import { Modals } from '@/components/modals';
+import { RoleCheck } from '@/features/auth/components/role-check';
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
 import { Nunito } from 'next/font/google';
-import { RoleCheck } from '@/features/auth/components/role-check';
-import { ClassContainer } from '@/features/class/components/class-container';
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -27,16 +26,14 @@ export default function TeachersLayout({
             <html lang="en">
                 <body className={nunito.className}>
                     <ConvexClientProvider>
-                        <RoleCheck allowedRoles={['teacher']}>
-                            <ClassContainer>
-                                <SidebarProvider>
-                                    <AppSidebar />
-                                    <div className="flex flex-col min-h-screen bg-white container mx-auto">
-                                        {children}
-                                    </div>
-                                </SidebarProvider>
-                            </ClassContainer>
-                        </RoleCheck>
+                        <JotaiProvider>
+                            <RoleCheck allowedRoles={['teacher']}>
+                                <Modals />
+                                <div className="flex flex-col min-h-screen bg-white container mx-auto">
+                                    {children}
+                                </div>
+                            </RoleCheck>
+                        </JotaiProvider>
                     </ConvexClientProvider>
                 </body>
             </html>

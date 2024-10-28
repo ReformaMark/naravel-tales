@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { useSetAtom } from "jotai";
-import { isClassModalOpenAtom } from "../class";
 import { PlusCircle } from "lucide-react";
+import { isClassModalOpenAtom } from "../class";
 
 export function EmptyClassState() {
     const setIsClassModalOpen = useSetAtom(isClassModalOpenAtom);

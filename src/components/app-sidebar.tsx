@@ -26,6 +26,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useCurrentUser } from "@/features/auth/api/use-current-user"
+import { useAllClass } from "@/features/class/api/use-all-class"
+import { Id } from "../../convex/_generated/dataModel"
+import { useCurrentClass } from "@/features/class/api/use-current-class"
+import { usePathname } from "next/navigation"
 
 interface UserSidebarType {
   fname: string;
@@ -35,23 +39,6 @@ interface UserSidebarType {
 }
 
 const data = {
-  teams: [
-    {
-      name: "201-A Class",
-      logo: GalleryVerticalEnd,
-      plan: "Mabuhay",
-    },
-    {
-      name: "201-B Class",
-      logo: AudioWaveform,
-      plan: "Matapat",
-    },
-    {
-      name: "201-C Class",
-      logo: Command,
-      plan: "Masigla",
-    },
-  ],
   navMain: [
     {
       title: "Dashboard",
@@ -155,14 +142,25 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+  const classId = pathname?.replace("/teachers/", "")
+
   const { data: user } = useCurrentUser()
+  const { data: classes } = useAllClass()
+  const { data: currentClass, isLoading: sectionSwitcherLoading } = useCurrentClass(classId as Id<"classes">)
+
 
   if (!user) return null
+  if (!classes) return null
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SectionSwitcher teams={data.teams} />
+        <SectionSwitcher
+          classes={classes.map(c => ({ name: c.name, _id: c._id }))}
+          currentClass={currentClass ? { name: currentClass.name, _id: currentClass._id } : undefined}
+          isLoading={sectionSwitcherLoading}
+        />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

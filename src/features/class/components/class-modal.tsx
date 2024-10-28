@@ -1,19 +1,21 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAtom } from "jotai";
-import { isClassModalOpenAtom } from "../class";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { useMutation } from "convex/react";
+import { useAtom } from "jotai";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
+import { isClassModalOpenAtom } from "../class";
 
 export function ClassModal() {
     const [isOpen, setIsOpen] = useAtom(isClassModalOpenAtom);
     const [className, setClassName] = useState("");
     const [error, setError] = useState("");
     const createClass = useMutation(api.classes.create);
+    const router = useRouter();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,10 +30,11 @@ export function ClassModal() {
             return;
         }
 
-        await createClass({ name: className });
+        const classId = await createClass({ name: className });
         setIsOpen(false);
         setClassName("");
         setError("");
+        router.push(`/teachers/${classId}`);
     };
 
     return (

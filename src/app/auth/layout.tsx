@@ -1,4 +1,5 @@
 import { ConvexClientProvider } from '@/components/convex-client-provider';
+import { JotaiProvider } from '@/components/jotai-provider';
 import Header from '@/components/layout/Header';
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
@@ -24,10 +25,12 @@ export default function RegisterLayout({
             <html lang="en">
                 <body className={nunito.className}>
                     <ConvexClientProvider>
-                        <div className="flex flex-col min-h-screen bg-white">
-                            <Header />
-                            {children}
-                        </div>
+                        <JotaiProvider>
+                            <div className="flex flex-col min-h-screen bg-white">
+                                <Header />
+                                {children}
+                            </div>
+                        </JotaiProvider>
                     </ConvexClientProvider>
                 </body>
             </html>
