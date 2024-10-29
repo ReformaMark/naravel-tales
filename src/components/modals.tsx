@@ -1,6 +1,7 @@
 "use client"
 
 import { ClassModal } from "@/features/class/components/class-modal"
+import { AddStudentDialog } from "@/features/students/components/add-student-dialog"
 import { useEffect, useState } from "react"
 
 export const Modals = () => {
@@ -14,7 +15,8 @@ export const Modals = () => {
 
     return (
         <>
-            <ClassModal />  
+            <ClassModal />
+            <AddStudentDialog />
         </>
     )
 }

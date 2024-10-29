@@ -25,7 +25,7 @@ import {
 import { useCurrentUser } from "@/features/auth/api/use-current-user"
 import { useAllClass } from "@/features/class/api/use-all-class"
 import { useCurrentClass } from "@/features/class/api/use-current-class"
-import { usePathname } from "next/navigation"
+import { useClassId } from "@/features/class/hooks/use-class-id"
 import { Id } from "../../convex/_generated/dataModel"
 
 interface UserSidebarType {
@@ -36,9 +36,7 @@ interface UserSidebarType {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-  // Extract classId from pathname using split and get first segment after /teachers/
-  const classId = pathname?.split('/').filter(segment => segment)[1]
+  const classId = useClassId()
 
   const data = {
     navMain: [
@@ -69,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "My Students",
-            url: "#",
+            url: `/teachers/${classId}/my-students`,
           },
           {
             title: "Performance",

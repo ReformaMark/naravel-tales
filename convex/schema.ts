@@ -25,13 +25,24 @@ const schema = defineSchema({
         students: v.optional(v.array(v.id("students"))),
     }).index("by_teacher", ["teacherId"]),
 
+    studentCodes: defineTable({
+        studentId: v.id("students"),
+        code: v.string(), // 6-digit code (e.g., "A0A0A0")
+        isActive: v.boolean(),
+        createdAt: v.number(),
+        expiresAt: v.optional(v.number()),
+        claimedBy: v.optional(v.id("users")),
+        claimedAt: v.optional(v.number()),
+    }).index("by_code", ["code"]).index("by_student", ["studentId"]),
+
     students: defineTable({
         classId: v.id("classes"),
-        parentId: v.id("users"),
+        parentId: v.optional(v.id("users")),
         fname: v.string(),
         lname: v.string(),
         createdAt: v.number(),
-    }).index("by_class", ["classId"]),
+        studentCode: v.optional(v.string()), // Reference to the current active code
+    }).index("by_class", ["classId"]).index("by_student_code", ["studentCode"]),
 
     inquiries: defineTable({
         parentId: v.id("users"),
@@ -56,6 +67,18 @@ const schema = defineSchema({
             description: v.string(),
             order: v.number(),
         })),
+        minAge: v.number(),
+        maxAge: v.number(),
+        readingTime: v.number(), // in minutes
+        points: v.number(), // points earned for completion
+        tags: v.array(v.string()), // for cultural themes/values
+        quizQuestions: v.array(v.object({
+            question: v.string(),
+            options: v.array(v.string()),
+            correctAnswer: v.number(),
+            points: v.number()
+        })),
+        culturalNotes: v.string(),
         isActive: v.boolean(),
         createdAt: v.number(),
     }),
@@ -115,6 +138,31 @@ const schema = defineSchema({
             timestamp: v.number()
         }))
     }).index("by_student", ["studentId"]).index("by_type", ["type"]),
+
+    gamificationStats: defineTable({
+        studentId: v.id("students"),
+        // Core Stats for Leaderboard
+        totalPoints: v.number(),
+        level: v.number(),
+        currentExp: v.number(),
+        nextLevelExp: v.number(),
+
+        // Quick Dashboard Stats
+        storiesCompleted: v.number(),
+        totalStarsEarned: v.number(),
+        averageAccuracy: v.number(), // 0-100%
+
+        // Weekly/Monthly Stats for Rankings
+        weeklyPoints: v.number(),
+        monthlyPoints: v.number(),
+        weekStartDate: v.number(), // timestamp
+        monthStartDate: v.number(), // timestamp
+
+        lastUpdated: v.number(),
+    }).index("by_student", ["studentId"])
+        .index("by_total_points", ["totalPoints"])
+        .index("by_weekly_points", ["weeklyPoints"])
+        .index("by_monthly_points", ["monthlyPoints"]),
 
 });
 

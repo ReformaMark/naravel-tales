@@ -1,49 +1,42 @@
 "use client"
-import { LoaderComponent } from '@/components/loader';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useRoleCheck } from '../api/use-role-check';
+import { useCachedRole } from '../api/use-cached-role';
+import { LoaderComponent } from '@/components/loader';
 
 interface RoleCheckProps {
-    children: React.ReactNode;
     allowedRoles: string[];
 }
 
-export function RoleCheck({ children, allowedRoles }: RoleCheckProps) {
-    const { data: role, isLoading } = useRoleCheck();
+export function RoleCheck({ allowedRoles }: RoleCheckProps) {
+    const { role, isLoading } = useCachedRole();
     const router = useRouter();
 
     useEffect(() => {
         if (!isLoading) {
             if (!role) {
-                // Redirect to home if not logged in
-                router.push('/');
+                router.replace('/');
             } else if (!allowedRoles.includes(role)) {
-                // Redirect to the respective page based on role
                 switch (role) {
                     case 'teacher':
-                        router.push('/teachers');
+                        router.replace('/teachers');
                         break;
                     case 'parent':
-                        router.push('/parent');
+                        router.replace('/parent');
                         break;
                     case 'admin':
-                        router.push('/admin');
+                        router.replace('/admin');
                         break;
                     default:
-                        router.push('/');
+                        router.replace('/');
                 }
             }
         }
     }, [role, isLoading, allowedRoles, router]);
 
-    if (isLoading) {
-        return <LoaderComponent />;
-    }
+    // if (isLoading) {
+    //     return <LoaderComponent />;
+    // }
 
-    if (!role || !allowedRoles.includes(role)) {
-        return null;
-    }
-
-    return <>{children}</>;
+    return null;
 }
