@@ -1,5 +1,5 @@
 export type UserType = 'new' | 'existing' | null
-export type UserRole = 'teacher' | 'parent' | null
+export type UserRole = 'teacher' | 'parent' | 'admin' | null
 
 export interface FormData {
     fname: string;

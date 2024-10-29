@@ -27,13 +27,9 @@ import { useAllClass } from "@/features/class/api/use-all-class"
 import { useCurrentClass } from "@/features/class/api/use-current-class"
 import { useClassId } from "@/features/class/hooks/use-class-id"
 import { Id } from "../../convex/_generated/dataModel"
+import { UserSidebarType } from "@/types"
 
-interface UserSidebarType {
-  fname: string;
-  lname: string;
-  email: string;
-  avatar: string;
-}
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const classId = useClassId()

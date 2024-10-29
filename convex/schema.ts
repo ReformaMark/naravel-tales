@@ -90,7 +90,7 @@ const schema = defineSchema({
             question: v.string(),
             options: v.array(v.string()),
             correctAnswer: v.number(),
-            points: v.number()
+            points: v.number() 
         })),
         culturalNotes: v.string(),
         isActive: v.boolean(),

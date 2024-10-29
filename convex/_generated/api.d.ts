@@ -20,6 +20,7 @@ import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
 import type * as stories from "../stories.js";
 import type * as students from "../students.js";
+import type * as upload from "../upload.js";
 import type * as users from "../users.js";
 
 /**
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   seed: typeof seed;
   stories: typeof stories;
   students: typeof students;
+  upload: typeof upload;
   users: typeof users;
 }>;
 export declare const api: FilterApi<
