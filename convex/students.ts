@@ -105,18 +105,75 @@ export const claimStudentCode = mutation({
 export const getMyStudents = query({
     args: {
         classId: v.id("classes"),
+        searchQuery: v.optional(v.string()),
+        page: v.number(),
+        limit: v.number(),
     },
     handler: async (ctx, args) => {
         const userId = await getAuthUserId(ctx)
-
         if (!userId) return null
 
-        const students = await ctx.db
-            .query("students")
-            .withIndex("by_class", (q) => q.eq("classId", args.classId))
+        let studentsQuery = ctx.db.query("students")
+
+        if (args.searchQuery && args.searchQuery.trim()) {
+            const searchTerm = args.searchQuery.trim()
+            
+            // Search in fname
+            const byFname = await ctx.db
+                .query("students")
+                .withSearchIndex("search_name", q => 
+                    q.search("fname", searchTerm)
+                     .eq("classId", args.classId)
+                )
+                .collect()
+
+            // Search in lname
+            const byLname = await ctx.db
+                .query("students")
+                .withSearchIndex("search_lname", q => 
+                    q.search("lname", searchTerm)
+                     .eq("classId", args.classId)
+                )
+                .collect()
+
+            // Search in studentCode
+            const byCode = await ctx.db
+                .query("students")
+                .withSearchIndex("search_code", q => 
+                    q.search("studentCode", searchTerm)
+                     .eq("classId", args.classId)
+                )
+                .collect()
+
+            // Combine and deduplicate results
+            const searchResults = [...byFname, ...byLname, ...byCode]
+            const uniqueResults = Array.from(
+                new Map(searchResults.map(s => [s._id.toString(), s])).values()
+            )
+
+            // Apply pagination to search results
+            const startIndex = (args.page - 1) * args.limit
+            const paginatedResults = uniqueResults.slice(startIndex, startIndex + args.limit)
+
+            return {
+                students: paginatedResults,
+                totalCount: uniqueResults.length,
+                totalPages: Math.ceil(uniqueResults.length / args.limit)
+            }
+        }
+
+        // If no search query, return all students with pagination
+        const allStudents = await studentsQuery
+            .withIndex("by_class", q => q.eq("classId", args.classId))
             .collect()
 
-        return students
+        const startIndex = (args.page - 1) * args.limit
+        const paginatedStudents = allStudents.slice(startIndex, startIndex + args.limit)
 
+        return {
+            students: paginatedStudents,
+            totalCount: allStudents.length,
+            totalPages: Math.ceil(allStudents.length / args.limit)
+        }
     }
 })

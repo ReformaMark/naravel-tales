@@ -41,8 +41,21 @@ const schema = defineSchema({
         fname: v.string(),
         lname: v.string(),
         createdAt: v.number(),
-        studentCode: v.optional(v.string()), // Reference to the current active code
-    }).index("by_class", ["classId"]).index("by_student_code", ["studentCode"]),
+        studentCode: v.optional(v.string()),
+    })
+        .searchIndex("search_name", {
+            searchField: "fname",
+            filterFields: ["classId"]
+        })
+        .searchIndex("search_lname", {
+            searchField: "lname",
+            filterFields: ["classId"]
+        })
+        .searchIndex("search_code", {
+            searchField: "studentCode",
+            filterFields: ["classId"]
+        })
+        .index("by_class", ["classId"]),
 
     inquiries: defineTable({
         parentId: v.id("users"),

@@ -1,13 +1,19 @@
-import { useQuery } from "convex/react"
-import { api } from "../../../../convex/_generated/api"
-import { Id } from "../../../../convex/_generated/dataModel"
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 
-export const useMyStudents = ({ classId }: { classId: Id<"classes"> }) => {
-    const data = useQuery(api.students.getMyStudents, { classId })
-    const isLoading = data === undefined
+interface UseMyStudentsProps {
+    classId: Id<"classes">;
+    searchQuery?: string;
+    page: number;
+    limit: number;
+}
 
-    return {
-        data,
-        isLoading,
-    }
+export function useMyStudents({ classId, searchQuery = "", page, limit }: UseMyStudentsProps) {
+    return useQuery(api.students.getMyStudents, {
+        classId,
+        searchQuery,
+        page,
+        limit
+    });
 }
