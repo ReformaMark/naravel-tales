@@ -27,12 +27,12 @@ export default function ParentsLayout({
                 <body className={nunito.className}>
                     <ConvexClientProvider>
                         <JotaiProvider>
-                            <RoleCheck allowedRoles={['parent']}>
+                            <RoleCheck allowedRoles={['parent']}/>
                                 <Modals />
                                 <div className="flex flex-col min-h-screen bg-white container mx-auto">
                                     {children}
                                 </div>
-                            </RoleCheck>
+                       
                         </JotaiProvider>
                     </ConvexClientProvider>
                 </body>

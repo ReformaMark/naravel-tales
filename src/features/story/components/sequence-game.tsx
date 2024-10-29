@@ -42,6 +42,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
   const { width, height } = useWindowSize()
 
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     playSuccess,
     playError,
     playLevelUp,
