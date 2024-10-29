@@ -1,6 +1,5 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Nunito } from 'next/font/google';
 
 export default function ClassLayout({
     children,

@@ -48,37 +48,36 @@ function StoryPageSkeleton() {
     );
 }
 
-// Add this new component for student selection
-function StudentSelect({
-    classId,
-    onSelect
-}: {
-    classId: Id<"classes">;
-    onSelect: (studentId: Id<"students">) => void;
-}) {
-    const students = useQuery(api.students.getMyStudents, {
-        classId,
-        page: 1,
-        limit: 100,
-        searchQuery: ""
-    });
+// function StudentSelect({
+//     classId,
+//     onSelect
+// }: {
+//     classId: Id<"classes">;
+//     onSelect: (studentId: Id<"students">) => void;
+// }) {
+//     const students = useQuery(api.students.getMyStudents, {
+//         classId,
+//         page: 1,
+//         limit: 100,
+//         searchQuery: ""
+//     });
 
-    if (!students?.students.length) {
-        return <div>No students found</div>;
-    }
+//     if (!students?.students.length) {
+//         return <div>No students found</div>;
+//     }
 
-    return (
-        <select
-            className="form-select"
-            onChange={(e) => onSelect(e.target.value as Id<"students">)}
-            defaultValue=""
-        >
-            <option value="" disabled>Select a student</option>
-            {students.students.map((student) => (
-                <option key={student._id} value={student._id}>
-                    {student.fname} {student.lname}
-                </option>
-            ))}
-        </select>
-    );
-}
+//     return (
+//         <select
+//             className="form-select"
+//             onChange={(e) => onSelect(e.target.value as Id<"students">)}
+//             defaultValue=""
+//         >
+//             <option value="" disabled>Select a student</option>
+//             {students.students.map((student) => (
+//                 <option key={student._id} value={student._id}>
+//                     {student.fname} {student.lname}
+//                 </option>
+//             ))}
+//         </select>
+//     );
+// }

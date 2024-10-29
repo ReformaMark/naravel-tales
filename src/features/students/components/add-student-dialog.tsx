@@ -1,17 +1,16 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from 'react'
-import { Student } from '../student-types'
 import { useClassId } from "@/features/class/hooks/use-class-id"
-import { useMutation } from "convex/react"
-import { api } from "../../../../convex/_generated/api"
-import { toast } from "sonner"
 import { cn, isValidName } from "@/lib/utils"
+import { useMutation } from "convex/react"
 import { useAtom } from "jotai"
+import { useState } from 'react'
+import { toast } from "sonner"
+import { api } from "../../../../convex/_generated/api"
 import { isAddStudentModalOpenAtom } from "../add-student-jotai"
 
 export function AddStudentDialog() {
@@ -67,6 +66,7 @@ export function AddStudentDialog() {
             setIsOpen(false)
         } catch (error) {
             toast.error("Failed to add student")
+            console.error(error)
         } finally {
             setIsPending(false)
         }

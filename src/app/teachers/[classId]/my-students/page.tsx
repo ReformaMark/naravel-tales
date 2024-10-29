@@ -59,7 +59,7 @@ export default function StudentsPage() {
     }
 
     const handleArchive = (id: string) => {
-        // Archive logic
+        console.log(id)
     }
 
     if (!result) {
@@ -72,7 +72,7 @@ export default function StudentsPage() {
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage className="text-mut">Dashboard</BreadcrumbPage>
+                                    <BreadcrumbPage className="text-mut">Class</BreadcrumbPage>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>

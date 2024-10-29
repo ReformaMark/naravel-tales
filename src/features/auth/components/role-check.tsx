@@ -2,7 +2,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useCachedRole } from '../api/use-cached-role';
-import { LoaderComponent } from '@/components/loader';
 
 interface RoleCheckProps {
     allowedRoles: string[];

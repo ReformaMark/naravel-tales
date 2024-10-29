@@ -1,5 +1,6 @@
 'use client'
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import {
@@ -9,16 +10,14 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
+import { getAvatarColor } from '@/lib/utils'
 import { useQuery } from 'convex/react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import useSound from 'use-sound'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { getAvatarColor } from '@/lib/utils'
-import useSound from 'use-sound'
-import { useEffect } from 'react'
 
 interface StudentSelectDialogProps {
     open: boolean

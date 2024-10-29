@@ -1,6 +1,15 @@
 "use client"
 
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator
+} from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllStory } from "@/features/story/api/use-all-story";
 import Image from "next/image";
@@ -13,14 +22,33 @@ export default function StoriesListPage({
     params: { classId: string }
 }) {
     return (
-        <div className="flex-1 space-y-4 p-4 pt-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Stories</h2>
+        <>
+            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <div className="flex items-center gap-2 px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbPage className="text-mut">Stories</BreadcrumbPage>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>List of Stories</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+            </header>
+            <div className="flex-1 space-y-4 p-4 pt-6">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-3xl font-bold tracking-tight">Stories</h2>
+                </div>
+                <Suspense fallback={<StoriesGridSkeleton />}>
+                    <StoriesGrid classId={classId} />
+                </Suspense>
             </div>
-            <Suspense fallback={<StoriesGridSkeleton />}>
-                <StoriesGrid classId={classId} />
-            </Suspense>
-        </div>
+        </>
     );
 }
 
@@ -40,33 +68,35 @@ function StoriesGrid({ classId }: { classId: string }) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stories.map((story) => (
-                <Link
-                    key={story._id}
-                    href={`/teachers/${classId}/list/${story._id}`}
-                >
-                    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                        <div className="aspect-video relative">
-                            <Image
-                                src={story.imageUrl ?? ""}
-                                alt={story.title}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-                        <div className="p-4">
-                            <h3 className="font-semibold text-lg mb-2">{story.title}</h3>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>Age: {story.ageGroup}</span>
-                                <span>•</span>
-                                <span>Difficulty: {story.difficulty}</span>
+        <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {stories.map((story) => (
+                    <Link
+                        key={story._id}
+                        href={`/teachers/${classId}/list/${story._id}`}
+                    >
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                            <div className="aspect-video relative">
+                                <Image
+                                    src={story.imageUrl ?? ""}
+                                    alt={story.title}
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
-                        </div>
-                    </Card>
-                </Link>
-            ))}
-        </div>
+                            <div className="p-4">
+                                <h3 className="font-semibold text-lg mb-2">{story.title}</h3>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <span>Age: {story.ageGroup}</span>
+                                    <span>•</span>
+                                    <span>Difficulty: {story.difficulty}</span>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
+        </>
     );
 }
 
