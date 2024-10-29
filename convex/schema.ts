@@ -95,6 +95,9 @@ const schema = defineSchema({
         culturalNotes: v.string(),
         isActive: v.boolean(),
         createdAt: v.number(),
+    }).searchIndex("search_title", {
+        searchField: "title",
+        filterFields: ["isActive"]
     }),
 
     progress: defineTable({

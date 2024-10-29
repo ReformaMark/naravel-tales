@@ -165,6 +165,7 @@ export const getMyStudents = query({
         // If no search query, return all students with pagination
         const allStudents = await studentsQuery
             .withIndex("by_class", q => q.eq("classId", args.classId))
+            .order("desc")
             .collect()
 
         const startIndex = (args.page - 1) * args.limit
