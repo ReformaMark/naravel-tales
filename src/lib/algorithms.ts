@@ -1,6 +1,6 @@
 import { SequenceCard } from "@/features/story/components/sequence-game";
 
-// Fisher-Yates Shuffle Algorithm
+// Fisher-Yates Shuffle Algorithm - Only for initial display
 export function fisherYatesShuffle<T>(array: T[]): T[] {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -10,8 +10,8 @@ export function fisherYatesShuffle<T>(array: T[]): T[] {
     return shuffled;
 }
 
-// Greedy Algorithm for Sequence Validation
-export function validateSequenceGreedy(
+// Sequence Validation - Check if cards are in correct order
+export function validateSequence(
     currentSequence: SequenceCard[],
     correctSequence: SequenceCard[]
 ): {
@@ -22,21 +22,22 @@ export function validateSequenceGreedy(
     const mistakes: { index: number; expected: number; received: number }[] = [];
     let correctCount = 0;
 
-    // Compare each position
+    // Compare each position with the expected order
     currentSequence.forEach((card, index) => {
-        const expectedOrder = correctSequence[index].order;
-        if (card.order === expectedOrder) {
+        // Find the correct card that should be at this position
+        const correctCard = correctSequence.find(c => c.order === index + 1);
+        
+        if (correctCard && card.id === correctCard.id) {
             correctCount++;
         } else {
             mistakes.push({
                 index,
-                expected: expectedOrder,
+                expected: index + 1,
                 received: card.order
             });
         }
     });
 
-    // Calculate score based on correct positions
     const score = Math.round((correctCount / currentSequence.length) * 100);
 
     return {

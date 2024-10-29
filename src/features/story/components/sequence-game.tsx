@@ -10,7 +10,7 @@ import Image from 'next/image'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useGameSounds } from '@/lib/sounds'
-import { fisherYatesShuffle, validateSequenceGreedy } from '@/lib/algorithms'
+import { fisherYatesShuffle, validateSequence } from '@/lib/algorithms'
 
 export interface SequenceCard {
   id: string;
@@ -42,13 +42,13 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
   const updateProgress = useMutation(api.progress.updateProgress)
 
   useEffect(() => {
-    // Filter cards for current level and shuffle them
+    // Filter cards for current level and shuffle only for initial display
     const levelCards = sequenceCards
-      .filter(card => card.level === currentLevel);
+      .filter(card => card.level === currentLevel)
+      .sort((a, b) => a.order - b.order); // Sort by correct order first
 
-    // Apply Fisher-Yates shuffle
-    const shuffledCards = fisherYatesShuffle(levelCards);
-    setCards(shuffledCards);
+    // Only shuffle for initial display
+    setCards(fisherYatesShuffle(levelCards));
     setMistakes([]);
   }, [currentLevel, sequenceCards])
 
@@ -59,47 +59,42 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
     setCards(items);
-
     setMistakes([]);
   }
 
   const checkSequence = () => {
+    // Get correct sequence for current level
     const correctSequence = sequenceCards
       .filter(card => card.level === currentLevel)
       .sort((a, b) => a.order - b.order);
 
-    // Use greedy algorithm to validate sequence
-    const result = validateSequenceGreedy(cards, correctSequence);
+    // Validate the current sequence
+    const result = validateSequence(cards, correctSequence);
     setMistakes(result.mistakes);
 
     if (result.isCorrect) {
       if (currentLevel === 3) {
-        playComplete()
-        const finalScore = Math.round(result.score);
-        
+        playComplete();
         updateProgress({
           studentId,
           storyId,
           completed: true,
           sequenceAttempts: attempts,
-          sequenceScore: finalScore,
+          sequenceScore: result.score,
           timeSpent: 0,
           stars: calculateStars(attempts),
-        })
-        toast.success('Congratulations! You completed all levels!')
+        });
+        toast.success('Congratulations! You completed all levels!');
       } else {
-        playLevelUp()
-        toast.success('Level completed! Moving to next level')
-        setCurrentLevel(prev => prev + 1)
-        setAttempts(0)
+        playLevelUp();
+        toast.success('Level completed! Moving to next level');
+        setCurrentLevel(prev => prev + 1);
+        setAttempts(0);
       }
     } else {
-      playError()
-      toast.error('Try again!')
-      setAttempts(prev => prev + 1)
-
-      // Reshuffle cards
-      setCards(fisherYatesShuffle(cards));
+      playError();
+      setAttempts(prev => prev + 1);
+      toast.error('Try again! The sequence is not correct.');
     }
   }
 
