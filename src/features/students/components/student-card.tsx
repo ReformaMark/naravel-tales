@@ -8,26 +8,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, Copy, Check, UserPlus2, UserCheck2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { Student } from '../student-types'
+import { getAvatarColor } from '@/lib/utils'
 
 function getInitials(fname: string, lname: string): string {
     return `${fname.charAt(0)}${lname.charAt(0)}`.toUpperCase()
 }
 
-const avatarColors = [
-    'bg-red-500',
-    'bg-blue-500',
-    'bg-green-500',
-    'bg-yellow-500',
-    'bg-purple-500',
-    'bg-pink-500',
-    'bg-indigo-500',
-    'bg-orange-500',
-]
 
-function getAvatarColor(name: string): string {
-    const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return avatarColors[index % avatarColors.length]
-}
 
 interface StudentCardProps {
     student: Student

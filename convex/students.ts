@@ -117,31 +117,31 @@ export const getMyStudents = query({
 
         if (args.searchQuery && args.searchQuery.trim()) {
             const searchTerm = args.searchQuery.trim()
-            
+
             // Search in fname
             const byFname = await ctx.db
                 .query("students")
-                .withSearchIndex("search_name", q => 
+                .withSearchIndex("search_name", q =>
                     q.search("fname", searchTerm)
-                     .eq("classId", args.classId)
+                        .eq("classId", args.classId)
                 )
                 .collect()
 
             // Search in lname
             const byLname = await ctx.db
                 .query("students")
-                .withSearchIndex("search_lname", q => 
+                .withSearchIndex("search_lname", q =>
                     q.search("lname", searchTerm)
-                     .eq("classId", args.classId)
+                        .eq("classId", args.classId)
                 )
                 .collect()
 
             // Search in studentCode
             const byCode = await ctx.db
                 .query("students")
-                .withSearchIndex("search_code", q => 
+                .withSearchIndex("search_code", q =>
                     q.search("studentCode", searchTerm)
-                     .eq("classId", args.classId)
+                        .eq("classId", args.classId)
                 )
                 .collect()
 
@@ -175,5 +175,14 @@ export const getMyStudents = query({
             totalCount: allStudents.length,
             totalPages: Math.ceil(allStudents.length / args.limit)
         }
+    }
+})
+
+export const getById = query({
+    args: {
+        id: v.id("students"),
+    },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.id)
     }
 })

@@ -90,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "List of Stories",
-            url: "#",
+            url: `/teachers/${classId}/list`,
           },
           {
             title: "Archived Stories",

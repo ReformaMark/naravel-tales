@@ -79,6 +79,7 @@ const schema = defineSchema({
             imageUrl: v.string(),
             description: v.string(),
             order: v.number(),
+            level: v.number(),
         })),
         minAge: v.number(),
         maxAge: v.number(),
