@@ -18,6 +18,7 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { SoundToggle } from "@/components/sound-toggle";
 
 const STORIES_PER_PAGE = 12;
 
@@ -74,6 +75,7 @@ export default function StoriesListPage({
                     <CardHeader className="flex flex-col space-y-4">
                         <div className="flex flex-row items-center justify-between">
                             <CardTitle>Stories</CardTitle>
+                            <SoundToggle />
                         </div>
                         <div className="relative">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -121,6 +123,7 @@ export default function StoriesListPage({
                 <CardHeader className="flex flex-col space-y-4">
                     <div className="flex flex-row items-center justify-between">
                         <CardTitle>Stories</CardTitle>
+                        <SoundToggle />
                     </div>
                     <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

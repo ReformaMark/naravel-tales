@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { SoundToggle } from "@/components/sound-toggle";
 
 export default function StoryPage({
     params: { classId, storyId }
@@ -42,6 +43,7 @@ function StoryContent({ classId, storyId }: { classId: Id<"classes">; storyId: I
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+                <SoundToggle />
             </div>
             <StoryReader story={story as StoryReaderProps["story"]} classId={classId} />
         </div>
