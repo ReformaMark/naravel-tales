@@ -9,7 +9,7 @@ export const list = query({
     limit: v.number(),
   },
   handler: async (ctx, args) => {
-    let stories = ctx.db.query("stories")
+    const stories = ctx.db.query("stories")
       .filter((q) => q.eq(q.field("isActive"), true));
 
     if (args.searchQuery && args.searchQuery.trim()) {
@@ -20,12 +20,18 @@ export const list = query({
         .withSearchIndex("search_title", q => q.search("title", search))
         .collect()
 
+       const storiesWithUrl = await Promise.all(
+          (byTitle || []).map(async (story) => ({
+            ...story,
+            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+          }))
+        );
       const startIndex = (args.page - 1) * args.limit
-      const paginatedResults = byTitle.slice(startIndex, startIndex + args.limit)
+      const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
 
       return {
         stories: paginatedResults,
-        totalPages: Math.ceil(byTitle.length / args.limit),
+        totalPages: Math.ceil(storiesWithUrl.length / args.limit),
       }
     }
 
@@ -34,12 +40,18 @@ export const list = query({
       .order("desc")
       .collect()
 
+    const storiesWithUrl = await Promise.all(
+      (allStories || []).map(async (story) => ({
+        ...story,
+        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+      }))
+    );
     const startIndex = (args.page - 1) * args.limit
-    const paginatedResults = allStories.slice(startIndex, startIndex + args.limit)
+    const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
 
     return {
       stories: paginatedResults,
-      totalPages: Math.ceil(allStories.length / args.limit),
+      totalPages: Math.ceil(storiesWithUrl.length / args.limit),
     }
   },
 });
