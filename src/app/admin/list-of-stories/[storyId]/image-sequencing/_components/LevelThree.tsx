@@ -4,6 +4,7 @@ import SequencCardForm from './SequencCardForm'
 import SequenceCard from './SequenceCard'
 import { Id } from '../../../../../../../convex/_generated/dataModel';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface CardType {
     url: string | null;
@@ -33,12 +34,14 @@ export default function LevelThree({storyId ,levelThree, onSelect }:LevelTypStep
                 <h1 className='text-lg text-center font-extrabold font-serif text-pretty text-primary'>Level 3</h1>
                 <p className='text-sm'>{levelThree?.length} out of 5</p>
             </div>
-            <div className="">
-
+            <div className="flex justify-end text-center">
+                <Link href={`/admin/list-of-stories/${storyId}`} className="w-fit bg-primary px-2 py-2 text-white rounded-md " onClick={() => onSelect(1)}>
+                    Back to Story
+                </Link>
             </div>
         </div>
         
-        <div className="grid grid-cols-3 gap-x-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 justify-center gap-10">
             {levelThree && levelThree?.length === 5 ? levelThree?.map((card)=>(
                 <SequenceCard 
                     key={card.id}

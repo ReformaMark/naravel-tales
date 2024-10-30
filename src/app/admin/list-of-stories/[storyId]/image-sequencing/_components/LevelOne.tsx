@@ -20,6 +20,7 @@ interface LevelTypStepsProps {
     onSelect: (level: number) => void
 }
 export default function LevelOne({storyId ,levelOne, onSelect }:LevelTypStepsProps) {
+    const levelOneLength = levelOne?.length
   return (
     <div className='space-y-10 w-full'>
          <div className="grid grid-cols-3 justify-end items-center w-full">
@@ -37,7 +38,7 @@ export default function LevelOne({storyId ,levelOne, onSelect }:LevelTypStepsPro
             </div>
            
         </div>
-        <div className="grid grid-cols-3 gap-x-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 justify-center gap-10">
             {levelOne && levelOne?.length === 3 ? levelOne?.map((card)=>(
                 <SequenceCard 
                     key={card.id}
@@ -62,8 +63,8 @@ export default function LevelOne({storyId ,levelOne, onSelect }:LevelTypStepsPro
                         orderNumber={card.order}
                     />
                 ))}
-                {levelOne && (
-                    <SequencCardForm storyId={storyId} level={1} order={levelOne.length + 1}/>
+                {levelOneLength !== undefined && levelOneLength < 3 && (
+                    <SequencCardForm storyId={storyId} level={1} order={levelOneLength + 1}/>
                 )}
                 </div>
             }

@@ -120,25 +120,28 @@ export const createStory = mutation({
 export const addSequenceCards = mutation({
   args: {
     storyId: v.id('stories'),
-    id: v.string(),
+  
     description: v.string(),
     imageId: v.string(),
-    order: v.number(),
+    
     level: v.number(),
   },
   handler: async (ctx, args) => {
     // Fetch the existing story document to get current sequence cards
     const story = await ctx.db.get(args.storyId);
 
+    const storySequenceCardlegth = story?.sequenceCards.filter(card => card.level === args.level).length
+
+    const cardId = `card${storySequenceCardlegth! + 1}-l${args.level}`
     // Ensure that the sequenceCards array is initialized
     const sequenceCards = story?.sequenceCards || [];
 
     // Add the new card to the sequenceCards array
     const newCard = {
-      id: args.id,
+      id: cardId,
       description: args.description,
       imageId: args.imageId,
-      order: args.order,
+      order: storySequenceCardlegth! + 1,
       level: args.level,
     };
 

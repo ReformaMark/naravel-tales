@@ -39,7 +39,7 @@ export default function LevelTwo({storyId ,levelTwo, onSelect }:LevelTypStepsPro
             </Button>
             </div>
         </div>
-        <div className="grid grid-cols-3 gap-x-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 justify-center gap-10">
             {levelTwo && levelTwo?.length === 4 ? levelTwo?.map((card)=>(
                 <SequenceCard 
                     key={card.id}

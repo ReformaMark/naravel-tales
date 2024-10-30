@@ -18,10 +18,9 @@ import {
   } from "@/components/ui/card"
 
 interface SequenceCardTypes {
-    id: string,
+
     image: File | null
     description: string
-    order: number
     level: number
 }
 
@@ -30,7 +29,7 @@ interface SequenceCardTypes {
 
 function SequencCardForm({
     level,
-    order,
+   
     storyId
 }:{
     level:number,
@@ -39,13 +38,11 @@ function SequencCardForm({
 }) {
 
 
-    const generateCardId = (order: number, level: number): string => `card${order}-l${level}`;
+    
 
     const initialSequanceCardValue: SequenceCardTypes = {
-        id: generateCardId(order, level),
         image: null,
         description: '',
-        order: order,
         level
     }
 
@@ -139,9 +136,7 @@ function SequencCardForm({
 
             mutate({
                 storyId: storyId,
-                id: sequenceCard.id,
                 description: sequenceCard.description,
-                order: sequenceCard.order,
                 level: sequenceCard.level,
                 imageId: storageId!
                 

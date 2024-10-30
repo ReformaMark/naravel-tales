@@ -5,7 +5,7 @@ import {
     CardDescription,
     CardFooter,
     CardHeader,
-    CardTitle,
+
   } from "@/components/ui/card"
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -57,19 +57,22 @@ export default function SequenceCard({
   return (
 
     <Card>
-      <div className="flex justify-end">
+      <div className="flex justify-between p-4 pb-0">
+        <h1 className='text-primary font-bold uppercase'>{id}</h1>
         <Button variant={'ghost'} disabled={isPending} onClick={handleRemove}>X</Button>
       </div>
         <CardHeader>
-            
-            <CardTitle>{id}</CardTitle>
-            <CardDescription>{description}</CardDescription>
+            <CardDescription>
+             <p className=" text-sm truncate">
+                {description}
+              </p>
+            </CardDescription>
         </CardHeader>
         <CardContent>
-            <Image src={imageUrl || ""} alt='' width={500} height={500} className='object-contain' />
+            <Image src={imageUrl || ""} alt='' width={500} height={500} className='object-cover h-60 w-full shadow-md' />
         </CardContent>
-        <CardFooter>
-            <h1>Order {orderNumber}</h1>
+        <CardFooter className='flex justify-center items-center'>
+            <h1 className='text-primary text-2xl font-extrabold tracking-wider text-center uppercase'> {orderNumber}</h1>
         </CardFooter>
     </Card>
   )

@@ -5,8 +5,10 @@ import Header from '../../_components/header'
 import { useeStory } from '@/features/story/api/use-story'
 import Image from 'next/image'
 import { Separator } from "@/components/ui/separator"
-import { Clock, Feather, List, Shuffle, Star, UserCheck } from 'lucide-react'
+import { ArrowLeft, Clock, Feather, List, Shuffle, Star, UserCheck } from 'lucide-react'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 export default function Story({
     params
 }:{
@@ -14,7 +16,7 @@ export default function Story({
 }) {
     const {data: story, isLoading} = useeStory({storyId: params.storyId})
     const pages = ["Stories", "list of stories", `${story?.title}`]
-
+    const router = useRouter()
   return (
     <div className="px-4 space-y-6">
     <Header breadcrumbPages={pages} />
@@ -22,8 +24,17 @@ export default function Story({
     {!isLoading ? (
         <div className="space-y-6">
             {/* Story Title and Content */}
-            <h1 className="text-center font-bold text-2xl text-primary">{story?.title}</h1>
-            <p className="text-gray-600 text-justify leading-relaxed">{story?.content}</p>
+            <div className="flex items-center justify-center gap-4 max-w-4xl mx-auto">
+                <Button
+                    size="icon"
+                    onClick={() => router.back()}
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <h2 className="text-3xl font-bold tracking-tight">{story?.title}</h2>
+                
+            </div>
+            <p className="text-xl leading-relaxed font-serif text-justify mb-6 last:mb-0">{story?.content}</p>
 
             {/* Story Image */}
             {story?.url && (
