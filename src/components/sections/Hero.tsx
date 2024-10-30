@@ -49,9 +49,9 @@ export default function Hero() {
           <div className="flex justify-center">
             <Image
               alt="Hero Image"
-              className="aspect-[4/3] overflow-hidden rounded-xl object-cover object-center pointer-events-none"
+              className="aspect-[4/3] overflow-hidden rounded-xl object-cover object-center"
               height={400}
-              src="/starter.svg"
+              src="/starter.png"
               width={600}
             />
           </div>

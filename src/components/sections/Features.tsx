@@ -15,11 +15,11 @@ export default function Features() {
           </div>
           <div className="flex flex-col items-center space-y-4">
             <Image
-              src="/power-up.svg"
+              src="/power-up.png"
               alt="Reading App Mascot"
               className="object-contain pointer-events-none"
-              height="320"
-              width="320"
+              height={320}
+              width={320}
             />
           </div>
         </div>
