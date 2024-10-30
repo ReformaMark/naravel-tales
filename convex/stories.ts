@@ -3,19 +3,44 @@ import { mutation, query } from "./_generated/server";
 
 
 export const list = query({
-  handler: async (ctx) => {
-    const stories =  await ctx.db.query("stories")
-      .filter((q) => q.eq(q.field("isActive"), true))
-      .collect();
+  args: {
+    searchQuery: v.optional(v.string()),
+    page: v.number(),
+    limit: v.number(),
+  },
+  handler: async (ctx, args) => {
+    let stories = ctx.db.query("stories")
+      .filter((q) => q.eq(q.field("isActive"), true));
 
-      return Promise.all(stories.map(async(story)=>{
-        return {
-          ...story,
-          ...(story.imageId === undefined)
-          ? ""
-          : { url: await ctx.storage.getUrl(story.imageId) },
-        }
-      }))
+    if (args.searchQuery && args.searchQuery.trim()) {
+      const search = args.searchQuery.trim()
+
+      const byTitle = await ctx.db
+        .query("stories")
+        .withSearchIndex("search_title", q => q.search("title", search))
+        .collect()
+
+      const startIndex = (args.page - 1) * args.limit
+      const paginatedResults = byTitle.slice(startIndex, startIndex + args.limit)
+
+      return {
+        stories: paginatedResults,
+        totalPages: Math.ceil(byTitle.length / args.limit),
+      }
+    }
+
+    // if no search query, return all stories with just pagination.
+    const allStories = await stories
+      .order("desc")
+      .collect()
+
+    const startIndex = (args.page - 1) * args.limit
+    const paginatedResults = allStories.slice(startIndex, startIndex + args.limit)
+
+    return {
+      stories: paginatedResults,
+      totalPages: Math.ceil(allStories.length / args.limit),
+    }
   },
 });
 

@@ -1,9 +1,22 @@
 import { useQuery } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 
-export const useAllStory = () => {
-    const data = useQuery(api.stories.list)
-    const isLoading = data === undefined
+interface UseAllStoryParams {
+    searchQuery?: string;
+    page: number;
+    limit: number;
+}
 
-    return { data, isLoading }
+export const useAllStory = ({ searchQuery, page, limit }: UseAllStoryParams) => {
+    const result = useQuery(api.stories.list, {
+        searchQuery,
+        page,
+        limit
+    });
+
+    return {
+        data: result?.stories ?? [],
+        totalPages: result?.totalPages ?? 0,
+        isLoading: result === undefined
+    }
 }

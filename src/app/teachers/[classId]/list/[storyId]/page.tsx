@@ -1,11 +1,15 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StoryReader, StoryReaderProps } from "@/features/story/components/story-reader";
+import { ArrowLeft } from "lucide-react";
 import { useQuery } from "convex/react";
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { SoundToggle } from "@/components/sound-toggle";
 
 export default function StoryPage({
     params: { classId, storyId }
@@ -22,6 +26,7 @@ export default function StoryPage({
 }
 
 function StoryContent({ classId, storyId }: { classId: Id<"classes">; storyId: Id<"stories"> }) {
+    const router = useRouter();
     const story = useQuery(api.stories.getById, { id: storyId });
 
     if (!story) {
@@ -29,8 +34,17 @@ function StoryContent({ classId, storyId }: { classId: Id<"classes">; storyId: I
     }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+        <div className="space-y-6 text-primary">
+            <div className="flex items-center justify-center gap-4 max-w-4xl mx-auto">
+                <Button
+                    size="icon"
+                    onClick={() => router.back()}
+                >
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+                <SoundToggle />
+            </div>
             <StoryReader story={story as StoryReaderProps["story"]} classId={classId} />
         </div>
     );
@@ -39,45 +53,11 @@ function StoryContent({ classId, storyId }: { classId: Id<"classes">; storyId: I
 function StoryPageSkeleton() {
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
                 <Skeleton className="h-10 w-1/3" />
-                <Skeleton className="h-10 w-48" />
             </div>
-            <Skeleton className="h-[600px] w-full" />
+            <Skeleton className="h-[600px] w-full rounded-lg" />
         </div>
     );
 }
-
-// function StudentSelect({
-//     classId,
-//     onSelect
-// }: {
-//     classId: Id<"classes">;
-//     onSelect: (studentId: Id<"students">) => void;
-// }) {
-//     const students = useQuery(api.students.getMyStudents, {
-//         classId,
-//         page: 1,
-//         limit: 100,
-//         searchQuery: ""
-//     });
-
-//     if (!students?.students.length) {
-//         return <div>No students found</div>;
-//     }
-
-//     return (
-//         <select
-//             className="form-select"
-//             onChange={(e) => onSelect(e.target.value as Id<"students">)}
-//             defaultValue=""
-//         >
-//             <option value="" disabled>Select a student</option>
-//             {students.students.map((student) => (
-//                 <option key={student._id} value={student._id}>
-//                     {student.fname} {student.lname}
-//                 </option>
-//             ))}
-//         </select>
-//     );
-// }

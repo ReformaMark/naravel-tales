@@ -1,20 +1,32 @@
-'use client'
+"use client"
 
-import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX } from 'lucide-react';
-import useLocalStorage from "use-local-storage";
+import { useAtom } from 'jotai'
+import { Volume2, VolumeX } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { isSoundEnabledAtom } from '@/features/settings/sound-settings'
 
 export function SoundToggle() {
-    const [isMuted, setIsMuted] = useLocalStorage('sound-muted', false)
+    const [isSoundEnabled, setIsSoundEnabled] = useAtom(isSoundEnabledAtom)
 
     return (
         <Button
-            variant="ghost"
             size="icon"
-            onClick={() => setIsMuted(!isMuted)}
+            onClick={() => setIsSoundEnabled(!isSoundEnabled)}
             className="fixed top-4 right-4"
+            title={isSoundEnabled ? 'Mute sounds' : 'Unmute sounds'}
         >
-            {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+            {isSoundEnabled ? (
+                <>
+                    <Volume2 className="h-5 w-5" />
+                    <span className="sr-only">Unmute sounds</span>
+                </>
+
+            ) : (
+                <>
+                    <VolumeX className="h-5 w-5" />
+                    <span className="sr-only">Mute sounds</span>
+                </>
+            )}
         </Button>
     )
 }

@@ -10,12 +10,11 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
+import { useGameSounds } from '@/lib/sounds'
 import { getAvatarColor } from '@/lib/utils'
 import { useQuery } from 'convex/react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import useSound from 'use-sound'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 
@@ -32,6 +31,7 @@ export function StudentSelectDialog({
     classId,
     storyId
 }: StudentSelectDialogProps) {
+    const { playHover, playSelect } = useGameSounds()
     const router = useRouter()
 
     const students = useQuery(api.students.getMyStudents, {
@@ -46,16 +46,6 @@ export function StudentSelectDialog({
         storyId,
         studentIds: students?.students.map(s => s._id) ?? []
     })
-
-    const [playHover] = useSound('/sounds/hover.mp3', { volume: 0.5 })
-    const [playSelect] = useSound('/sounds/select.mp3', { volume: 0.7 })
-    const [playOpen] = useSound('/sounds/open.mp3', { volume: 0.6 })
-
-    useEffect(() => {
-        if (open) {
-            playOpen()
-        }
-    }, [open, playOpen])
 
     const handleStudentSelect = (studentId: Id<"students">) => {
         playSelect()

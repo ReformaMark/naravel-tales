@@ -43,9 +43,9 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
   const { width, height } = useWindowSize()
 
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    playSuccess,
+    playSelect,
     playError,
+    playSuccess,
     playLevelUp,
     playComplete
   } = useGameSounds()
@@ -60,6 +60,10 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
     setMistakes([]);
   }, [currentLevel, sequenceCards])
 
+  const handleDragStart = () => {
+    playSelect()
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -67,6 +71,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
     const items = Array.from(cards);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
+    playSelect()
     setCards(items);
     setMistakes([]);
   }
@@ -80,6 +85,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
     setMistakes(result.mistakes);
 
     if (result.isCorrect) {
+      playSuccess()
       if (currentLevel === 3) {
         const earnedStars = calculateStars(attempts)
         setFinalStars(earnedStars)
@@ -171,7 +177,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
               </motion.div>
 
               <div className="w-full">
-                <DragDropContext onDragEnd={handleDragEnd}>
+                <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
                   <Droppable droppableId="cards" direction="horizontal">
                     {(provided) => (
                       <div
