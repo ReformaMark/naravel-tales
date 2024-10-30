@@ -21,7 +21,7 @@ export default function StoriesListPage({
 }: {
     params: { classId: string }
 }) {
-    return (
+    return ( 
         <>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                 <div className="flex items-center gap-2 px-4">
@@ -78,7 +78,7 @@ function StoriesGrid({ classId }: { classId: string }) {
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                             <div className="aspect-video relative">
                                 <Image
-                                    src={story.imageUrl ?? ""}
+                                    src={story.url ?? ""}
                                     alt={story.title}
                                     fill
                                     className="object-cover"

@@ -14,6 +14,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'api.dicebear.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'abundant-crocodile-641.convex.cloud',
+      },
     ],
   },
 };

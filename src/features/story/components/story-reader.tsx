@@ -12,7 +12,7 @@ export interface StoryReaderProps {
         _id: Id<"stories">;
         title: string;
         content: string;
-        imageUrl: string;
+        url: string;
     }
 }
 
@@ -24,7 +24,7 @@ export function StoryReader({ story, classId }: StoryReaderProps & { classId: Id
             <Card className="overflow-hidden">
                 <div className="aspect-video relative">
                     <Image
-                        src={story.imageUrl}
+                        src={story.url}
                         alt={story.title}
                         fill
                         className="object-cover"

@@ -17,11 +17,12 @@ import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 
 export interface SequenceCard {
+  url: string | null;
   id: string;
-  imageUrl: string;
   description: string;
   order: number;
   level: number;
+  imageId: string;
 }
 
 interface SequenceGameProps {
@@ -207,7 +208,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards }: SequenceGame
                                   className="w-full h-full"
                                 >
                                   <Image
-                                    src={card.imageUrl}
+                                    src={card.url || ""}
                                     alt={card.description}
                                     fill
                                     className="object-cover transition-opacity duration-200"

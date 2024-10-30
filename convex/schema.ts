@@ -73,10 +73,10 @@ const schema = defineSchema({
         content: v.string(),
         difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
         ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
-        imageUrl: v.optional(v.string()),
+        imageId: v.optional(v.string()),
         sequenceCards: v.array(v.object({
             id: v.string(),
-            imageUrl: v.string(),
+            imageId: v.string(),
             description: v.string(),
             order: v.number(),
             level: v.number(),

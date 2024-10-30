@@ -34,7 +34,7 @@ import { ImagePreview } from './ImagePreview'
 
 interface SequenceCard {
     id: string;
-    imageUrl: string;
+    imageId: string;
     description: string;
     order: number;
     level: number;
@@ -190,7 +190,7 @@ export default function AddStoriesCard() {
                 content: storiesData.content,
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
-                imageUrl: storageId!,
+                imageId: storageId!,
                 sequenceCards: storiesData.sequenceCards,
                 minAge: Number(storiesData.minAge),
                 maxAge:  Number(storiesData.maxAge),
