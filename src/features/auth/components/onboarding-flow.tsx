@@ -58,6 +58,8 @@ export default function OnboardingFlow() {
                 router.push('/teachers')
             } else if (role === "parent" && roleCheck === "parent") {
                 router.push('/parent')
+            } else if (role === "admin" && roleCheck === "admin") {
+                router.push('/dashboard')
             }
         }
     }, [isAuthenticated, role, roleCheck, router])
