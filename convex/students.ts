@@ -64,44 +64,6 @@ export const createStudent = mutation({
     }
 })
 
-export const claimStudentCode = mutation({
-    args: {
-        code: v.string(),
-        parentId: v.id("users"),
-    },
-    async handler(ctx, args) {
-        const userId = await getAuthUserId(ctx)
-
-        if (!userId) return null
-
-        const studentCode = await ctx.db
-            .query("studentCodes")
-            .withIndex("by_code", (q) => q.eq("code", args.code))
-            .first()
-
-        if (!studentCode || !studentCode.isActive) {
-            throw new ConvexError("Invalid or inactive student code")
-        }
-
-        if (studentCode.claimedBy) {
-            throw new ConvexError("Student code already claimed")
-        }
-
-        // if walang error then update the student code
-        await ctx.db.patch(studentCode._id, {
-            claimedBy: args.parentId,
-            claimedAt: Date.now(),
-            isActive: false,
-        })
-
-        await ctx.db.patch(studentCode.studentId, {
-            parentId: args.parentId,
-        })
-
-        return studentCode.studentId;
-    }
-})
-
 export const getMyStudents = query({
     args: {
         classId: v.id("classes"),
@@ -185,5 +147,85 @@ export const getById = query({
     },
     handler: async (ctx, args) => {
         return await ctx.db.get(args.id)
+    }
+})
+
+export const linkParentToStudent = mutation({
+    args: {
+        code: v.string()
+    },
+    handler: async (ctx, { code }) => {
+        // 1.) Authentication Check
+        const userId = await getAuthUserId(ctx)
+
+        if (!userId) {
+            throw new ConvexError("Unauthorized!")
+        }
+
+        const user = await ctx.db.get(userId)
+
+        if (!user || user?.role !== "parent") {
+            throw new ConvexError("Unauthorized")
+        }
+
+        // 2.) Validate Student Code
+        const currentCode = await ctx.db
+            .query("studentCodes")
+            .withIndex("by_code", q => q.eq("code", code))
+            .first()
+
+        if (!currentCode) {
+            throw new ConvexError("Code does not exist, please contact your child's teacher for clarification")
+        }
+
+        if (!currentCode.isActive) {
+            throw new ConvexError(
+                "This code is no longer active, please contact your child's teacher for a new code"
+            );
+        }
+
+        if (currentCode.claimedBy || currentCode.claimedAt) {
+            throw new ConvexError("Code already claimed, please contact your child's teacher for clarification")
+        }
+
+        // 3.) Get Student Record
+        const student = await ctx.db.get(currentCode.studentId)
+
+        if (!student) {
+            throw new ConvexError("Student record not found")
+        }
+
+        if (student.parentId) {
+            if (student.parentId === userId) {
+                throw new ConvexError("You are already linked to this student");
+            }
+
+            throw new ConvexError(
+                "This student is already linked to a parent. Please contact your teacher if you think this is a mistake."
+            );
+        }
+
+        // 4.) Transaction (Atomic Updates)
+
+        try {
+            // Update student code status
+            await ctx.db.patch(currentCode._id, {
+                claimedBy: userId,
+                claimedAt: Date.now(),
+                isActive: false,
+            });
+
+            // Link student to parent
+            await ctx.db.patch(student._id, {
+                parentId: userId,
+            });
+
+            return student._id // for routing and redirecting purposes
+
+        } catch (error) {
+            throw new ConvexError(
+                "Failed to link student. Please try again or contact support."
+            );
+        }
     }
 })

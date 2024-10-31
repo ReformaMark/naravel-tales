@@ -1,7 +1,7 @@
 import { ConvexClientProvider } from '@/components/convex-client-provider';
 import { JotaiProvider } from '@/components/jotai-provider';
-import { Modals } from '@/components/modals';
 import { RoleCheck } from '@/features/auth/components/role-check';
+import { EnterStudentCodeModal } from '@/features/parents/components/enter-student-code-modal';
 import "@/lib/globals.css";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
@@ -27,12 +27,11 @@ export default function ParentsLayout({
                 <body className={nunito.className}>
                     <ConvexClientProvider>
                         <JotaiProvider>
-                            <RoleCheck allowedRoles={['parent']}/>
-                                <Modals />
-                                <div className="flex flex-col min-h-screen bg-white container mx-auto">
-                                    {children}
-                                </div>
-                       
+                            <RoleCheck allowedRoles={['parent']} />
+                            <EnterStudentCodeModal />
+                            <div className="flex flex-col min-h-screen bg-white container mx-auto">
+                                {children}
+                            </div>
                         </JotaiProvider>
                     </ConvexClientProvider>
                 </body>

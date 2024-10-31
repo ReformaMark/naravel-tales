@@ -55,7 +55,8 @@ const schema = defineSchema({
             searchField: "studentCode",
             filterFields: ["classId"]
         })
-        .index("by_class", ["classId"]),
+        .index("by_class", ["classId"])
+        .index("by_parent", ["parentId"]),
 
     inquiries: defineTable({
         parentId: v.id("users"),
@@ -90,7 +91,7 @@ const schema = defineSchema({
             question: v.string(),
             options: v.array(v.string()),
             correctAnswer: v.number(),
-            points: v.number() 
+            points: v.number()
         })),
         culturalNotes: v.string(),
         isActive: v.boolean(),

@@ -24,9 +24,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useCurrentUser } from "@/features/auth/api/use-current-user"
 import { useAllClass } from "@/features/class/api/use-all-class"
-import { useCurrentClass } from "@/features/class/api/use-current-class"
 import { useClassId } from "@/features/class/hooks/use-class-id"
-import { Id } from "../../convex/_generated/dataModel"
 import { UserSidebarType } from "@/types"
 
 
@@ -140,8 +138,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 
   const { data: user } = useCurrentUser()
-  const { data: classes } = useAllClass()
-  const { data: currentClass, isLoading: sectionSwitcherLoading } = useCurrentClass(classId as Id<"classes">)
+  const { data: classes, isLoading: sectionSwitcherLoading } = useAllClass()
+  const currentClass = classes?.find(c => c._id === classId)
 
 
   if (!user) return null
