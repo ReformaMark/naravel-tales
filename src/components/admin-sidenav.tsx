@@ -57,8 +57,8 @@ export default function AdminSidebar() {
             url: `/admin/list-of-stories`,
             },
             {
-            title: "Archived Stories",
-            url: "/admin/archived-stories",
+            title: "Inactive Stories",
+            url: "/admin/inactive-stories",
             },
            
           

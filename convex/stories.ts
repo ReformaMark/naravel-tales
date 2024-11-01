@@ -187,3 +187,55 @@ export const removeSequenceCard = mutation({
     return { success: true, sequenceCards: updatedSequenceCards };
   },
 });
+
+export const getArchivedtories = query({
+  args: {
+    searchQuery: v.optional(v.string()),
+    page: v.number(),
+    limit: v.number(),
+  },
+  handler: async(ctx, args) =>{
+    const stories = await ctx.db.query('stories')
+    .filter(q => q.eq(q.field('isActive'),false));
+    
+    if (args.searchQuery && args.searchQuery.trim()) {
+      const search = args.searchQuery.trim()
+
+      const byTitle = await ctx.db
+        .query("stories")
+        .withSearchIndex("search_title", q => q.search("title", search))
+        .collect()
+        const storiesWithUrl = await Promise.all(
+          (byTitle || []).map(async (story) => ({
+            ...story,
+            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+          }))
+        );
+      const startIndex = (args.page - 1) * args.limit
+      const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+
+      return {
+        stories: paginatedResults,
+        totalPages: Math.ceil(storiesWithUrl.length / args.limit),
+      }
+    }
+
+    // if no search query, return all stories with just pagination.
+    const allStories = await stories.order('desc').collect();
+
+    const storiesWithUrl = await Promise.all(
+      (allStories || []).map(async (story) => ({
+        ...story,
+        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+      }))
+    );
+    const startIndex = (args.page - 1) * args.limit
+    const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+
+    return {
+      stories: paginatedResults,
+      totalPages: Math.ceil(storiesWithUrl.length / args.limit),
+    }
+
+  }
+});
