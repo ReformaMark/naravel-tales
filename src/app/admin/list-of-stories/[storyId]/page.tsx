@@ -5,7 +5,7 @@ import Header from '../../_components/header'
 import { useeStory } from '@/features/story/api/use-story'
 import Image from 'next/image'
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Clock, Feather, List, Shuffle, Star, UserCheck } from 'lucide-react'
+import { ArrowLeft, Clock, Feather, Shuffle, Star, UserCheck } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
@@ -94,13 +94,7 @@ export default function Story({
                         <Shuffle className="text-white" />
                         <span>Set up Image Sequencing Game</span>
                     </Link>
-                    <Link
-                        href={`/admin/list-of-stories/${params.storyId}/quiz`}
-                        className="w-full p-3 flex items-center justify-center space-x-2 border rounded-lg bg-primary text-white transition hover:bg-primary/80"
-                    >
-                        <List className="text-white" />
-                        <span>Add Quiz for Story</span>
-                    </Link>
+                 
                 </div>
             </div>
         </div>
