@@ -32,7 +32,7 @@ export const TagInput = ({
   };
 
   return (
-    <div className="border border-primary bg-primary/10 p-2 rounded space-y-2">
+    <div className="flex flex-wrap items-center border border-primary bg-primary/10 p-2 rounded space-y-2">
       <div className="flex flex-wrap gap-2">
         {tags.map((tag, index) => (
           <div

@@ -2,6 +2,7 @@
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 
+
 interface UseAllStoryParams {
     searchQuery?: string;
     page: number;

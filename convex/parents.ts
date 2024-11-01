@@ -64,3 +64,10 @@ export const getChildWithStats = query({
         };
     }
 });
+export const getAllParent = query({
+    handler: async(ctx)=>{
+        const parents = await ctx.db.query("users").filter(q=>q.eq(q.field('role'), "parent")).collect();
+
+        return parents
+    }
+})

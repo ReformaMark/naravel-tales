@@ -115,6 +115,45 @@ export const createStory = mutation({
     });
   },
 });
+export const editStory = mutation({
+  args: {
+    storyId: v.id('stories'),
+    title: v.string(),
+    content: v.string(),
+    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+    ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
+    imageId: v.optional(v.string()),
+   
+    minAge: v.number(),
+    maxAge: v.number(),
+    readingTime: v.number(), // in minutes
+    points: v.number(), // points earned for completion
+    tags: v.array(v.string()), // for cultural themes/values
+    
+    culturalNotes: v.string(),
+    isActive: v.boolean(),
+  
+      
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.patch(args.storyId, {
+      title: args.title,
+      content: args.content,
+      difficulty: args.difficulty,
+      ageGroup: args.ageGroup,
+    
+      minAge: args.minAge,
+      maxAge: args.maxAge,
+      readingTime: args.readingTime, // in minutes
+      points: args.points, // points earned for completion
+      tags: args.tags,
+      culturalNotes: args.culturalNotes,
+      isActive: true,
+      createdAt: Date.now(),
+      imageId: args.imageId
+    });
+  },
+});
 
 
 export const addSequenceCards = mutation({
@@ -187,6 +226,29 @@ export const removeSequenceCard = mutation({
     return { success: true, sequenceCards: updatedSequenceCards };
   },
 });
+
+export const archiveStories = mutation({
+  args:{
+    storyId:v.id('stories')
+  },
+  handler: async(ctx, args)=>{
+    
+    return await ctx.db.patch(args.storyId, {
+      isActive: false
+    })
+  }
+})
+export const restoreStory = mutation({
+  args:{
+    storyId:v.id('stories')
+  },
+  handler: async(ctx, args)=>{
+    
+    return await ctx.db.patch(args.storyId, {
+      isActive: true
+    })
+  }
+})
 
 export const getArchivedtories = query({
   args: {

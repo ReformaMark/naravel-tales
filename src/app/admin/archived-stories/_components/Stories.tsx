@@ -102,7 +102,7 @@ return (
                           {stories.map((story) => (
                               <Link
                                   key={story._id}
-                                  href={`/admin/list-of-stories/${story._id}`}
+                                  href={`/admin/archived-stories/${story._id}`}
                               >
                                   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                                       <div className="aspect-video relative">

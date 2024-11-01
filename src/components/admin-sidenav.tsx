@@ -31,7 +31,7 @@ export default function AdminSidebar() {
         items: [
             {
             title: "Overview",
-            url: `#`,
+            url: `/admin/overview`,
             },
             {
             title: "Monitoring",
@@ -58,7 +58,7 @@ export default function AdminSidebar() {
             },
             {
             title: "Inactive Stories",
-            url: "/admin/inactive-stories",
+            url: "/admin/archived-stories",
             },
            
           
