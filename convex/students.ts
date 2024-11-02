@@ -229,3 +229,26 @@ export const linkParentToStudent = mutation({
         }
     }
 })
+
+export const getChildAchievements = query({
+    args: {
+        studentId: v.id("students")
+    },
+    handler: async (ctx, { studentId }) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new ConvexError("Unauthorized");
+
+        const student = await ctx.db.get(studentId);
+        if (!student || student.parentId !== userId) {
+            throw new ConvexError("Unauthorized access");
+        }
+
+        const achievements = await ctx.db
+            .query("achievements")
+            .withIndex("by_student", q => q.eq("studentId", studentId))
+            .order("desc")
+            .collect();
+
+        return achievements;
+    }
+});

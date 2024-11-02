@@ -24,50 +24,140 @@ export const getAllMyChildren = query({
     }
 })
 
-export const getChildWithStats = query({
+export const getChildDashboardOverview = query({
     args: {
         studentId: v.id("students")
     },
     handler: async (ctx, { studentId }) => {
         const userId = await getAuthUserId(ctx);
-        if (!userId) {
-            throw new ConvexError("Unauthorized");
-        }
+        if (!userId) throw new ConvexError("Unauthorized");
 
-        // Get the student
         const student = await ctx.db.get(studentId);
-        if (!student) {
-            throw new ConvexError("Student not found");
+        if (!student || student.parentId !== userId) {
+            throw new ConvexError("Unauthorized access");
         }
 
-        // Verify this parent has access to this student
-        if (student.parentId !== userId) {
-            throw new ConvexError("Unauthorized access to student information");
-        }
-
-        // Get related data
         const stats = await ctx.db
             .query("gamificationStats")
             .withIndex("by_student", q => q.eq("studentId", studentId))
-            .first();
+            .first()
 
-        const achievements = await ctx.db
+        const recentProgress = await ctx.db
+            .query("progress")
+            .withIndex("by_student", q => q.eq("studentId", studentId))
+            .order("desc")
+            .take(5)
+
+        const recentAchievements = await ctx.db
             .query("achievements")
             .withIndex("by_student", q => q.eq("studentId", studentId))
-            .collect();
+            .order("desc")
+            .take(3);
 
-        // Return combined data
         return {
-            student,
             stats,
-            achievements,
+            recentProgress,
+            recentAchievements
         };
     }
-});
+})
+
 export const getAllParent = query({
-    handler: async(ctx)=>{
-        const parents = await ctx.db.query("users").filter(q=>q.eq(q.field('role'), "parent")).collect();
+    handler: async (ctx) => {
+        const parents = await ctx.db.query("users").filter(q => q.eq(q.field('role'), "parent")).collect();
 
         return parents
+    }
+})
+
+export const getChildRecentActivities = query({
+    args: {
+        studentId: v.id("students")
+    },
+    handler: async (ctx, { studentId }) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new ConvexError("Unauthorized");
+
+        const student = await ctx.db.get(studentId);
+        if (!student || student.parentId !== userId) {
+            throw new ConvexError("Unauthorized access");
+        }
+
+        const recentProgress = await ctx.db
+            .query("progress")
+            .withIndex("by_student", q => q.eq("studentId", studentId))
+            .order("desc")
+            .take(10)
+
+        const storyIds = Array.from(
+            new Set(recentProgress.map(p => p.storyId))
+        )
+
+        const stories = await Promise.all(
+            storyIds.map(id => ctx.db.get(id))
+        )
+
+        const progressWithStories = recentProgress.map((progress) => ({
+            ...progress,
+            story: stories.find(s => s?._id === progress.storyId)
+        }))
+
+        return {
+            recentProgress: progressWithStories
+        }
+    }
+})
+
+export const getChildLearningProgress = query({
+    args: {
+        studentId: v.id("students")
+    },
+    handler: async (ctx, { studentId }) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new ConvexError("Unauthorized");
+
+        const student = await ctx.db.get(studentId);
+        if (!student || student.parentId !== userId) {
+            throw new ConvexError("Unauthorized access");
+        }
+
+        const progressEntries = await ctx.db
+            .query("progress")
+            .withIndex("by_student", q => q.eq("studentId", studentId))
+            .collect()
+
+        const storyIds = Array.from(
+            new Set(progressEntries.map(p => p.storyId))
+        )
+
+        const stories = await Promise.all(
+            storyIds.map(id => ctx.db.get(id))
+        )
+
+        const stats = await ctx.db
+            .query("gamificationStats")
+            .withIndex("by_student", q => q.eq("studentId", studentId))
+            .first()
+
+        const difficultyProgress = {
+            easy: progressEntries.filter(p =>
+                stories.find(s => s?._id === p.storyId)?.difficulty === "easy"
+            ),
+            medium: progressEntries.filter(p =>
+                stories.find(s => s?._id === p.storyId)?.difficulty === "medium"
+            ),
+            hard: progressEntries.filter(p =>
+                stories.find(s => s?._id === p.storyId)?.difficulty === "hard"
+            )
+        }
+
+        return {
+            stats,
+            progressEntries: progressEntries.map(progress => ({
+                ...progress,
+                story: stories.find(s => s?._id === progress.storyId)
+            })),
+            difficultyProgress,
+        }
     }
 })

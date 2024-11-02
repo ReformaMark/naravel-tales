@@ -55,3 +55,56 @@ export const getCurrentClass = query({
         return currentClass
     }
 })
+
+export const getStudentsByClass = query({
+    args: {
+        classId: v.id("classes"),
+    },
+    handler: async (ctx, { classId }) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new Error("Not authenticated");
+
+        const currentClass = await ctx.db.get(classId);
+        if (!currentClass || currentClass.teacherId !== userId) {
+            throw new Error("Unauthorized");
+        }
+
+        const students = await ctx.db
+            .query("students")
+            .withIndex("by_class", q => q.eq("classId", classId))
+            .collect();
+
+        return students;
+    }
+});
+
+export const getClassAchievements = query({
+    args: {
+        classId: v.id("classes")
+    },
+    handler: async (ctx, { classId }) => {
+        const userId = await getAuthUserId(ctx);
+        if (!userId) throw new Error("Not authenticated");
+
+        const currentClass = await ctx.db.get(classId);
+        if (!currentClass || currentClass.teacherId !== userId) {
+            throw new Error("Unauthorized");
+        }
+
+        const students = await ctx.db
+            .query("students")
+            .withIndex("by_class", q => q.eq("classId", classId))
+            .collect();
+
+        const achievements = await Promise.all(
+            students.map(async (student) => {
+                return await ctx.db
+                    .query("achievements")
+                    .withIndex("by_student", q => q.eq("studentId", student._id))
+                    .collect();
+            })
+        );
+
+        return achievements.flat();
+    }
+});

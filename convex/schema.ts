@@ -132,7 +132,7 @@ const schema = defineSchema({
             requiredCompletions: v.optional(v.number()),
             requiredStars: v.optional(v.number())
         }),
-        imageUrl: v.string(), // Badge or trophy image
+        imageUrl: v.optional(v.string()), // Badge or trophy image
         earnedAt: v.number(),
         notificationSent: v.boolean(), // Track if parents/teachers were notified
     }).index("by_student", ["studentId"]).index("by_type", ["type"]),

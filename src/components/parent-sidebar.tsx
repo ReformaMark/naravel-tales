@@ -60,12 +60,8 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
             url: `/parent/${studentId}/progress`,
           },
           {
-            title: "Performance History",
-            url: `/parent/${studentId}/progress/history`,
-          },
-          {
             title: "Teacher Notes",
-            url: `/parent/${studentId}/progress/notes`,
+            url: `/parent/${studentId}/notes`,
           }
         ],
       },
@@ -78,10 +74,10 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
             title: "Badges & Trophies",
             url: `/parent/${studentId}/achievements`,
           },
-          {
-            title: "Rewards History",
-            url: `/parent/${studentId}/achievements/rewards`,
-          }
+          // {
+          //   title: "Rewards History",
+          //   url: `/parent/${studentId}/achievements/rewards`,
+          // }
         ],
       },
       {

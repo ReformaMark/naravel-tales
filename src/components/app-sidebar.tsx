@@ -64,6 +64,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/teachers/${classId}/my-students`,
           },
           {
+            title: "Achievements",
+            url: `/teachers/${classId}/achievements`,
+          },
+          {
             title: "Performance",
             url: "#",
           },

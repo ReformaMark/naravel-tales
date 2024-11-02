@@ -8,13 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, Copy, Check, UserPlus2, UserCheck2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { Student } from '../student-types'
-import { getAvatarColor } from '@/lib/utils'
-
-function getInitials(fname: string, lname: string): string {
-    return `${fname.charAt(0)}${lname.charAt(0)}`.toUpperCase()
-}
-
-
+import { getAvatarColor, getInitials } from '@/lib/utils'
 
 interface StudentCardProps {
     student: Student
@@ -76,12 +70,12 @@ export function StudentCard({ student, onArchive }: StudentCardProps) {
                         {student.parentId ? (
                             <div className="flex items-center justify-center gap-2 text-sm text-white bg-primary py-2 px-3 rounded-md">
                                 <UserCheck2Icon className="h-4 w-4" />
-                                <span>Parent connected</span>
+                                <span>Parent linked</span>
                             </div>
                         ) : (
-                            <div className="flex items-center justify-center gap-2 text-sm text-white bg-primary py-2 px-3 rounded-md">
+                            <div className="flex items-center justify-center gap-2 text-sm text-white bg-rose-500 py-2 px-3 rounded-md">
                                 <UserPlus2 className="h-4 w-4" />
-                                <span>No parent connected</span>
+                                <span>No parent linked</span>
                             </div>
                         )}
                     </div>

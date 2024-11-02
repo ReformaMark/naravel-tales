@@ -71,3 +71,7 @@ export function getConvexErrorMessage(error: Error): string {
     return "Something went wrong";
   }
 }
+
+export function getInitials(fname: string, lname: string): string {
+  return `${fname.charAt(0)}${lname.charAt(0)}`.toUpperCase()
+}

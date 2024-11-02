@@ -222,3 +222,20 @@ export const getStudentProgress = query({
         };
     },
 });
+
+export const addTeacherNote = mutation({
+    args: {
+        progressId: v.id("progress"),
+        note: v.string(),
+    },
+    handler: async (ctx, { progressId, note }) => {
+        const progress = await ctx.db.get(progressId);
+        if (!progress) {
+            throw new Error("Progress entry not found");
+        }
+
+        await ctx.db.patch(progressId, {
+            teacherNotes: note
+        });
+    }
+});

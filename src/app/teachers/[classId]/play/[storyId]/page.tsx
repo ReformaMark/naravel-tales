@@ -102,6 +102,7 @@ const PlayGamePage = ({
                                     storyId={storyId}
                                     studentId={studentId}
                                     sequenceCards={story.sequenceCards}
+                                    student={student}
                                 />
                             </div>
                         </CardContent>
