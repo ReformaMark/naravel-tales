@@ -62,11 +62,12 @@ const schema = defineSchema({
         parentId: v.id("users"),
         teacherId: v.id("users"),
         studentId: v.id("students"),
-        title: v.string(),
-        content: v.string(),
-        status: v.union(v.literal("pending"), v.literal("resolved")),
+        subject: v.string(),
+        message: v.string(),
+        status: v.union(v.literal("pending"), v.literal("responded")),
+        response: v.optional(v.string()),
         createdAt: v.number(),
-        resolvedAt: v.optional(v.number()),
+        respondedAt: v.optional(v.number()),
     }).index("by_teacher", ["teacherId"]).index("by_student", ["studentId"]),
 
     stories: defineTable({
@@ -182,6 +183,8 @@ const schema = defineSchema({
         .index("by_weekly_points", ["weeklyPoints"])
         .index("by_monthly_points", ["monthlyPoints"]),
 
+
 });
+
 
 export default schema;

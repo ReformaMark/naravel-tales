@@ -50,7 +50,7 @@ export const checkEmailExists = query({
 });
 
 export const getAllUsers = query({
-    handler: async(ctx) =>{
+    handler: async(ctx) => {
         return (await ctx.db.query('users').collect())
     }
 })
@@ -59,9 +59,8 @@ export const getActiveUsers = query({
     handler: async (ctx) => {
         const users = await ctx.db.query('users').collect();
 
-
-        const activeUsers = await asyncMap(users, async(user)=>{
-             // Get the current date
+        const activeUsers = await asyncMap(users, async(user) => {
+            // Get the current date
             const currentDate = new Date();
             
             // Calculate the date one month ago
@@ -78,21 +77,19 @@ export const getActiveUsers = query({
                 .collect(); // Ensure to call find() or similar method to execute the query
             const getUser = authSessions.find(session => session.userId === user._id && session._creationTime > lastMonthTimestamp)
             
-            if(getUser){
+            if(getUser) {
                 return getUser
             } else {
                 return null
             }
-
         })
 
         return activeUsers
-       
     }
 })
 
 export const getNumberOfRoles = query({
-    handler: async(ctx)=>{
+    handler: async(ctx) => {
         const users = await ctx.db.query('users').collect()
         const usersCounts = {
             admin: 0,
@@ -128,3 +125,37 @@ export const getNumberOfRoles = query({
         ]
     }
 })
+
+export const getTeacherByStudentId = query({
+    args: { studentId: v.string() },
+    handler: async (ctx, args) => {
+        // First get the student to find their class
+        const student = await ctx.db
+            .query("students")
+            .filter((q) => q.eq(q.field("_id"), args.studentId))
+            .first();
+
+        if (!student) return null;
+
+        // Get the class to find the teacher ID
+        const class_ = await ctx.db
+            .query("classes")
+            .filter((q) => q.eq(q.field("_id"), student.classId))
+            .first();
+
+        if (!class_) return null;
+
+        // Get the teacher from users table
+        const teacher = await ctx.db
+            .query("users")
+            .filter((q) => 
+                q.and(
+                    q.eq(q.field("_id"), class_.teacherId),
+                    q.eq(q.field("role"), "teacher")
+                )
+            )
+            .first();
+
+        return teacher;
+    },
+});

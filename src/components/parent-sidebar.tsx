@@ -89,10 +89,6 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
             title: "Inquiries",
             url: `/parent/${studentId}/inquiries`,
           },
-          {
-            title: "Teacher Profile",
-            url: `/parent/${studentId}/teacher`,
-          }
         ],
       },
       {

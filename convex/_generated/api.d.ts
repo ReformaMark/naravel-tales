@@ -16,6 +16,7 @@ import type {
 import type * as auth from "../auth.js";
 import type * as classes from "../classes.js";
 import type * as http from "../http.js";
+import type * as inquiries from "../inquiries.js";
 import type * as parents from "../parents.js";
 import type * as progress from "../progress.js";
 import type * as seed from "../seed.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   classes: typeof classes;
   http: typeof http;
+  inquiries: typeof inquiries;
   parents: typeof parents;
   progress: typeof progress;
   seed: typeof seed;
