@@ -141,7 +141,6 @@ export const editStory = mutation({
       content: args.content,
       difficulty: args.difficulty,
       ageGroup: args.ageGroup,
-    
       minAge: args.minAge,
       maxAge: args.maxAge,
       readingTime: args.readingTime, // in minutes
@@ -159,10 +158,8 @@ export const editStory = mutation({
 export const addSequenceCards = mutation({
   args: {
     storyId: v.id('stories'),
-  
     description: v.string(),
     imageId: v.string(),
-    
     level: v.number(),
   },
   handler: async (ctx, args) => {
