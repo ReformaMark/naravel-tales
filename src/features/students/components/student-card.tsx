@@ -41,7 +41,7 @@ export function StudentCard({ student, onArchive }: StudentCardProps) {
                         {copiedstudentCode === student.studentCode ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
                         {student.studentCode}
                     </Button>
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                 <span className="sr-only">Open menu</span>
@@ -56,7 +56,7 @@ export function StudentCard({ student, onArchive }: StudentCardProps) {
                                 Archive
                             </DropdownMenuItem>
                         </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                 </div>
                 <div className="flex flex-col items-center mt-6">
                     <Avatar className={`h-24 w-24 mb-6 rounded-lg `}>

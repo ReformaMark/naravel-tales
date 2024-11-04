@@ -45,7 +45,7 @@ export const AchievementsCard = () => {
                                 <Trophy className="h-12 w-12 text-muted-foreground mb-4" />
                                 <h3 className="font-semibold text-lg mb-2">No Achievements Yet</h3>
                                 <p className="text-sm text-muted-foreground max-w-[250px]">
-                                    Complete stories and challenges to earn achievements!
+                                    Complete stories to earn achievements!
                                 </p>
                             </div>
                         ) : (

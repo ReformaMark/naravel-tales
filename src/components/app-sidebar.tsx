@@ -37,16 +37,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/teachers/${classId}`,
           },
 
+          // {
+          //   title: "Monitoring",
+
+          //   url: `/teachers/${classId}/monitoring`,
+          // },
+
           {
-            title: "Monitoring",
+            title: "History",
 
-            url: `/teachers/${classId}/monitoring`,
-          },
-
-          {
-            title: "Reports",
-
-            url: `/teachers/${classId}/reports`,
+            url: `/teachers/${classId}/history`,
           },
         ],
       },
@@ -77,17 +77,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/teachers/${classId}/achievements`,
           },
 
-          {
-            title: "Performance",
+          // {
+          //   title: "Performance",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
 
-          {
-            title: "Settings",
+          // {
+          //   title: "Settings",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
         ],
       },
 
@@ -105,17 +105,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/teachers/${classId}/list`,
           },
 
-          {
-            title: "Archived Stories",
+          // {
+          //   title: "Archived Stories",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
 
-          {
-            title: "Settings",
+          // {
+          //   title: "Settings",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
         ],
       },
 
@@ -133,17 +133,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "#",
           },
 
-          {
-            title: "Classes",
+          // {
+          //   title: "Classes",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
 
-          {
-            title: "Students",
+          // {
+          //   title: "Students",
 
-            url: "#",
-          },
+          //   url: "#",
+          // },
         ],
       },
     ],
