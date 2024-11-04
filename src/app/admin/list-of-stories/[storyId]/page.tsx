@@ -305,10 +305,10 @@ export default function Story({
                 />
             </div>
             ):(
-                <p className="text-xl leading-relaxed font-serif text-justify mb-6 last:mb-0">{story?.content}</p>
+                <pre className="text-xl whitespace-pre-wrap leading-relaxed font-serif text-justify mb-6 last:mb-0">{story?.content}</pre>
             )}
             {/* Story Image */}
-            {story?.url && (
+          
                <>
                {isEditing ? (
                 <div className="relative flex h-64 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary/50 transition-all hover:bg-primary/70"
@@ -334,7 +334,7 @@ export default function Story({
                 </div>
                ):(
                 <Image
-                    src={story.url}
+                    src={story?.url || ''}
                     alt="Story Image preview" 
                     width={500}
                     height={500}
@@ -343,7 +343,7 @@ export default function Story({
               
                )}
             </> 
-            )}
+       
 
             <Separator />
 
