@@ -141,7 +141,6 @@ export const editStory = mutation({
       content: args.content,
       difficulty: args.difficulty,
       ageGroup: args.ageGroup,
-    
       minAge: args.minAge,
       maxAge: args.maxAge,
       readingTime: args.readingTime, // in minutes
@@ -159,11 +158,10 @@ export const editStory = mutation({
 export const addSequenceCards = mutation({
   args: {
     storyId: v.id('stories'),
-  
     description: v.string(),
     imageId: v.string(),
-    
     level: v.number(),
+    isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
     // Fetch the existing story document to get current sequence cards
@@ -187,6 +185,7 @@ export const addSequenceCards = mutation({
     // Update the story with the new sequence card appended to the array
     await ctx.db.patch(args.storyId, {
       sequenceCards: [...sequenceCards, newCard],
+      isActive: args.isActive
     });
   },
 });

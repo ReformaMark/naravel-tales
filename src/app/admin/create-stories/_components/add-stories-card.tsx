@@ -79,7 +79,7 @@ const storiesInitialData: Story = {
     tags: [],
     quizQuestions: [],
     culturalNotes: "",
-    isActive: true,
+    isActive: false,
   };
 
 

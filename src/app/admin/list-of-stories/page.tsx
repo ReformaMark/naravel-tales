@@ -157,6 +157,11 @@ export default function StoriesListPage() {
                                                 <h3 className="font-semibold text-lg mb-2 text-primary">
                                                     {story.title}
                                                 </h3>
+                                                <div className="flex flex-end w-full mb-2">
+
+                                                    <h1 className="bg-primary rounded-xl px-2 py-1 w-fit text-white text-xs text-bold text-right">{story.isActive ? "Active" : "Inactive"}</h1>
+                                                </div>
+                                              
                                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                                     <span>Age: {story.ageGroup}</span>
                                                     <span>•</span>

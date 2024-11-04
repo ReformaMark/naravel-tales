@@ -29,7 +29,7 @@ interface SequenceCardTypes {
 
 function SequencCardForm({
     level,
-   
+    order,
     storyId
 }:{
     level:number,
@@ -133,14 +133,25 @@ function SequencCardForm({
 
                 storageId = uploadedStorageId
             }
+            if(level === 3 && order === 5) {
+                mutate({
+                    storyId: storyId,
+                    description: sequenceCard.description,
+                    level: sequenceCard.level,
+                    imageId: storageId!,
+                    isActive: true
+                })
+            } else {
 
             mutate({
                 storyId: storyId,
                 description: sequenceCard.description,
                 level: sequenceCard.level,
-                imageId: storageId!
+                imageId: storageId!,
+                isActive: false
                 
             })
+            }
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)
