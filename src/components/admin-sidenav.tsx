@@ -1,7 +1,6 @@
 'use client'
 import {
     BookOpen,
-    Settings2,
     SquareTerminal
   } from "lucide-react"
 import {
@@ -33,14 +32,6 @@ export default function AdminSidebar() {
             title: "Overview",
             url: `/admin/overview`,
             },
-            {
-            title: "Monitoring",
-            url: `#`,
-            },
-            {
-            title: "Reports",
-            url: `#`,
-            },
         ],
         },
         {
@@ -62,25 +53,6 @@ export default function AdminSidebar() {
             },
            
           
-        ],
-        },
-        {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-            {
-            title: "User Profile",
-            url: "#",
-            },
-            {
-            title: "Classes",
-            url: "#",
-            },
-            {
-            title: "Students",
-            url: "#",
-            },
         ],
         },
     ],

@@ -33,7 +33,7 @@ export function LoginModal() {
       } else if (roleCheck === "parent") {
         router.push('/parent')
       } else if (roleCheck === "admin") {
-        router.push('/admin')
+        router.push('/admin/overview')
       }
     }
   }, [signIn, router, isAuthenticated, roleCheck])
