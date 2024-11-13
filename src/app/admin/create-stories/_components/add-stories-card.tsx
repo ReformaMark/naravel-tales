@@ -199,7 +199,7 @@ export default function AddStoriesCard() {
                 tags: storiesData.tags,
                 quizQuestions: storiesData.quizQuestions,
                 culturalNotes: storiesData.culturalNotes,
-                isActive: true,
+                isActive: false,
                 
             })
         } catch (error: unknown) {
