@@ -46,9 +46,6 @@ export default function StoriesListPage() {
         setCurrentPage(newPage)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-   
-    const data1 = stories[0] ?? []
-    console.log(data1.imageUrl)
 
     if (isLoading) {
         return (
@@ -150,10 +147,9 @@ export default function StoriesListPage() {
                                         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                                             <div className="aspect-video relative">
                                                 <Image
-                                                    src={story.imageUrl || ""}
-                                                    alt={story.imageUrl ?? ''}
-                                                    height={200}
-                                                    width={200}
+                                                    src={story.imageUrl ?? ""}
+                                                    alt={story.title}
+                                                    fill
                                                     className="object-cover"
                                                 />
                                             </div>
