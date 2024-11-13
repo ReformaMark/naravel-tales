@@ -33,8 +33,6 @@ export default function Header({
                         }
                     </div>
                 ))}
-                    
-                   
                 </BreadcrumbList>
             </Breadcrumb>
         </div>
