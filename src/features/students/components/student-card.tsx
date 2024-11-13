@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Copy, Check, UserPlus2, UserCheck2Icon } from "lucide-react"
+import { Copy, Check, UserPlus2, UserCheck2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { Student } from '../student-types'
 import { getAvatarColor, getInitials } from '@/lib/utils'
@@ -15,7 +14,7 @@ interface StudentCardProps {
     onArchive: (id: string) => void
 }
 
-export function StudentCard({ student, onArchive }: StudentCardProps) {
+export function StudentCard({ student }: StudentCardProps) {
     const [copiedstudentCode, setCopiedstudentCode] = useState<string | null>(null)
     const fullName = `${student.fname} ${student.lname}`
     const initials = getInitials(student.fname, student.lname)

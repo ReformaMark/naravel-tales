@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { DashboardOverviewCard } from "@/features/class/components/dashboard-overview-card"
 
 const HistoryPage = () => {
     return (
