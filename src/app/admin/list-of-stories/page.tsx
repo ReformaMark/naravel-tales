@@ -46,6 +46,7 @@ export default function StoriesListPage() {
         setCurrentPage(newPage)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
+   
 
     if (isLoading) {
         return (
@@ -147,8 +148,8 @@ export default function StoriesListPage() {
                                         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                                             <div className="aspect-video relative">
                                                 <Image
-                                                    src={story.imageUrl ?? ""}
-                                                    alt={story.title}
+                                                    src={ ""}
+                                                    alt={story.imageUrl?? ''}
                                                     fill
                                                     className="object-cover"
                                                 />

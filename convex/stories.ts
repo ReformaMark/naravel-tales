@@ -22,7 +22,7 @@ export const list = query({
         .collect()
 
        const storiesWithUrl = await Promise.all(
-          (byTitle || []).map(async (story) => ({
+        byTitle.map(async (story) => ({
             ...story,
             imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
           }))
