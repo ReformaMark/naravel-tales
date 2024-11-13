@@ -148,7 +148,7 @@ export default function StoriesListPage() {
                                         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                                             <div className="aspect-video relative">
                                                 <Image
-                                                    src={ ""}
+                                                    src={story.imageUrl || ""}
                                                     alt={story.imageUrl?? ''}
                                                     fill
                                                     className="object-cover"
