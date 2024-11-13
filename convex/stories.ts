@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 
 export const list = query({
@@ -23,7 +24,7 @@ export const list = query({
        const storiesWithUrl = await Promise.all(
           (byTitle || []).map(async (story) => ({
             ...story,
-            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
           }))
         );
       const startIndex = (args.page - 1) * args.limit
@@ -43,7 +44,7 @@ export const list = query({
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
-        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       }))
     );
     const startIndex = (args.page - 1) * args.limit
@@ -65,13 +66,13 @@ export const getById = query({
     const sequenceCardsWithUrls = await Promise.all(
       (story?.sequenceCards || []).map(async (card) => ({
         ...card,
-        url: card.imageId ? await ctx.storage.getUrl(card.imageId) : null,
+        url: card.imageId ? await ctx.storage.getUrl(card.imageId as Id<'_storage'>) : null,
       }))
     );
 
     return {
       ...story,
-      url: story?.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+      url: story?.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       sequenceCards: sequenceCardsWithUrls,
     };
   },
@@ -269,7 +270,7 @@ export const getArchivedtories = query({
         const storiesWithUrl = await Promise.all(
           (byTitle || []).map(async (story) => ({
             ...story,
-            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
           }))
         );
       const startIndex = (args.page - 1) * args.limit
@@ -287,7 +288,7 @@ export const getArchivedtories = query({
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
-        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId) : null,
+        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       }))
     );
     const startIndex = (args.page - 1) * args.limit

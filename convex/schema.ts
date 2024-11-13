@@ -80,7 +80,7 @@ const schema = defineSchema({
             id: v.string(),
             imageId: v.string(),
             description: v.string(),
-            order: v.number(),
+            order: v.number(), 
             level: v.number(),
         })),
         minAge: v.number(),
