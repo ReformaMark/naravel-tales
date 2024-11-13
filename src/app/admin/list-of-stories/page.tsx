@@ -150,7 +150,8 @@ export default function StoriesListPage() {
                                                 <Image
                                                     src={story.imageUrl || ""}
                                                     alt={story.imageUrl?? ''}
-                                                    fill
+                                                    height={200}
+                                                    width={200}
                                                     className="object-cover"
                                                 />
                                             </div>
