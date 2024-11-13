@@ -47,6 +47,8 @@ export default function StoriesListPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
    
+    const data1 = stories[0] ?? []
+    console.log(data1.imageUrl)
 
     if (isLoading) {
         return (
@@ -149,7 +151,7 @@ export default function StoriesListPage() {
                                             <div className="aspect-video relative">
                                                 <Image
                                                     src={story.imageUrl || ""}
-                                                    alt={story.imageUrl?? ''}
+                                                    alt={story.imageUrl ?? ''}
                                                     height={200}
                                                     width={200}
                                                     className="object-cover"

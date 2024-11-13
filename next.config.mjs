@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'abundant-crocodile-641.convex.cloud',
       },
+      {
+        protocol: 'https',
+        hostname: 'mellow-raven-947.convex.cloud',
+      },
     ],
   },
 };
