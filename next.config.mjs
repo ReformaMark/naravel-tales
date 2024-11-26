@@ -22,6 +22,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'mellow-raven-947.convex.cloud',
       },
+      {
+        protocol: 'https',
+        hostname: 'majestic-clownfish-172.convex.cloud',
+      },
     ],
   },
 };

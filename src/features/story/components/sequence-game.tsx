@@ -177,6 +177,14 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                   >
                     Arrange the images in the correct sequence
                   </motion.p>
+                  <motion.p
+                    className="text-sm text-muted-foreground max-w-2xl mx-auto"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {cards.map(card => (card.description + ".")).join('\n')}
+                  </motion.p>
                   {mistakes.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -233,11 +241,6 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                       sizes="180px"
                                       priority={index < 2}
                                     />
-                                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
-                                      <p className="text-white text-sm truncate">
-                                        {card.description}
-                                      </p>
-                                    </div>
                                   </div>
                                 </div>
                               )}
