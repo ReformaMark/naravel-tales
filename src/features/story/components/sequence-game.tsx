@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { useMutation } from 'convex/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Star, Speaker } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import ReactConfetti from 'react-confetti'
@@ -135,6 +135,39 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
     return 1;
   }
 
+  const speak = (text: string) => {
+    window.speechSynthesis.cancel()
+    
+    const utterance = new SpeechSynthesisUtterance(text)
+    
+    // Get available voices and select Zira
+    const voices = window.speechSynthesis.getVoices()
+    const ziraVoice = voices.find(voice => voice.name === 'Microsoft Zira - English (United States)')
+    
+    if (ziraVoice) {
+      utterance.voice = ziraVoice
+    }
+    
+    // Optimize parameters for Zira's voice
+    utterance.rate = 0.9     // Slightly slower for better clarity
+    utterance.pitch = 1.1    // Slightly higher pitch but not too much
+    utterance.volume = 1     // Full volume
+    
+    window.speechSynthesis.speak(utterance)
+  }
+
+  // Since voices might load after page load, we need to handle that
+  useEffect(() => {
+    function handleVoicesChanged() {
+      window.speechSynthesis.getVoices()
+    }
+
+    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
+    return () => {
+      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+    }
+  }, [])
+
   return (
     <>
       <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)] relative">
@@ -230,9 +263,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                   `}
                                   style={provided.draggableProps.style}
                                 >
-                                  <div
-                                    className="w-full h-full"
-                                  >
+                                  <div className="w-full h-full">
                                     <Image
                                       src={card.url || ""}
                                       alt={card.description}
@@ -241,6 +272,17 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                       sizes="180px"
                                       priority={index < 2}
                                     />
+                                    <Button
+                                      size="icon"
+                                      variant="secondary"
+                                      className="absolute bottom-2 right-2 w-8 h-8 rounded-full opacity-80 hover:opacity-100"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        speak(card.description)
+                                      }}
+                                    >
+                                      <Speaker className="w-4 h-4" />
+                                    </Button>
                                   </div>
                                 </div>
                               )}
