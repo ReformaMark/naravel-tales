@@ -16,6 +16,9 @@ import { Medal, Star, Trophy } from "lucide-react"
 import { api } from "../../../../convex/_generated/api"
 import { useClassId } from "../hooks/use-class-id"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
+
 
 export const ClassAchievementsCard = () => {
     const classId = useClassId()
@@ -29,27 +32,32 @@ export const ClassAchievementsCard = () => {
         sequence_master: {
             title: "Sequence Master",
             icon: Trophy,
-            description: "Mastering story sequences"
+            description: "Mastering story sequences",
+            criteria: "Complete a story sequence with 100% accuracy on your first attempt"
         },
         quick_learner: {
             title: "Quick Learner",
             icon: Star,
-            description: "Fast comprehension skills"
+            description: "Fast comprehension skills",
+            criteria: "Complete a story sequence within 2 minutes with at least 90% accuracy"
         },
         persistent_reader: {
             title: "Persistent Reader",
             icon: Medal,
-            description: "Consistent reading habits"
+            description: "Consistent reading habits",
+            criteria: "Complete 5 different stories"
         },
         story_expert: {
             title: "Story Expert",
             icon: Trophy,
-            description: "Deep story understanding"
+            description: "Deep story understanding",
+            criteria: "Earn 3 stars on 3 different stories"
         },
         practice_star: {
             title: "Practice Star",
             icon: Star,
-            description: "Regular practice completion"
+            description: "Regular practice completion",
+            criteria: "Complete at least one story every day for 5 consecutive days"
         }
     }
 
@@ -116,9 +124,20 @@ export const ClassAchievementsCard = () => {
                                         <Card key={type} className="hover:shadow-md transition-shadow">
                                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                                 <div className="space-y-1">
-                                                    <CardTitle className="text-sm font-medium text-primary">
-                                                        {info.title}
-                                                    </CardTitle>
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger>
+                                                                <CardTitle className="text-sm font-medium text-primary flex items-center gap-2">
+                                                                    {info.title}
+                                                                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                                                </CardTitle>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="max-w-[200px]">
+                                                                <p className="font-normal text-sm">How to earn:</p>
+                                                                <p className="text-xs text-muted-foreground mt-1">{info.criteria}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                     <CardDescription className="text-xs">
                                                         {info.description}
                                                     </CardDescription>

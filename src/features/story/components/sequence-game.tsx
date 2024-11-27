@@ -57,6 +57,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
   } = useGameSounds()
 
   const updateProgress = useMutation(api.progress.updateProgress)
+  const checkAndAwardAchievements = useMutation(api.achievements.checkAndAwardAchievements)
 
   useEffect(() => {
     const levelCards = sequenceCards
@@ -106,6 +107,14 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
           storyId,
           completed: true,
           sequenceAttempts: attempts,
+          sequenceScore: result.score,
+          timeSpent: Math.floor((Date.now() - startTime) / 1000),
+          stars: earnedStars,
+        })
+
+        await checkAndAwardAchievements({
+          studentId,
+          storyId,
           sequenceScore: result.score,
           timeSpent: Math.floor((Date.now() - startTime) / 1000),
           stars: earnedStars,
