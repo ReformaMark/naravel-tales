@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAllStory } from "@/features/story/api/use-all-story";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -144,32 +144,50 @@ export default function StoriesListPage({
                         ) : (
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {stories.map((story) => (
-                                    <Link
+                                    <div 
                                         key={story._id}
-                                        href={`/teachers/${classId}/list/${story._id}`}
-                                    >
-                                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                                            <div className="aspect-video relative">
-                                                <Image
-                                                    src={story.imageUrl ?? ""}
-                                                    alt={story.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                            <div className="p-4">
-                                                <h3 className="font-semibold text-lg mb-2 text-primary">
-                                                    {story.title}
-                                                </h3>
-                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                    <span>Age: {story.ageGroup}</span>
-                                                    <span>•</span>
-                                                    <span>Difficulty: {story.difficulty}</span>
+                                        className="">
+                                       
+                                            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                                            <Link
+                                           
+                                                href={`/teachers/${classId}/list/${story._id}`}
+                                            >
+                                                <div className="aspect-video relative">
+                                                    <Image
+                                                        src={story.imageUrl ?? ""}
+                                                        alt={story.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
                                                 </div>
-                                            </div>
-                                        </Card>
-                                    </Link>
+                                                <div className="p-4 pb-0">
+                                                    <h3 className="font-semibold text-lg mb-2 text-primary">
+                                                        {story.title}
+                                                    </h3>
+                                                </div>
+                                                </Link>
+                                                <div className="flex justify-between items-center px-4 pb-4">
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <span>Age: {story.ageGroup}</span>
+                                                        <span>•</span>
+                                                        <span>Difficulty: {story.difficulty}</span>
+                                                    </div>
+                                                    <Link href={'/teachers/'+classId+'/list/edit/'+story._id}>
+                                                        <Button variant={'ghost'}>
+                                                            <Edit/>
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                                
+                                            </Card>
+                                       
+                                        
+                                    </div>
                                 ))}
+                                
+                              
+                               
                             </div>
                         )}
                     </ScrollArea>

@@ -34,27 +34,6 @@ export default function AdminSidebar() {
             },
         ],
         },
-        {
-        title: "Stories",
-        url: "#",
-        icon: BookOpen,
-        items: [
-            {
-            title: "Create Stories",
-            url: "/admin/create-stories",
-            },
-            {
-            title: "List of Stories",
-            url: `/admin/list-of-stories`,
-            },
-            {
-            title: "Inactive Stories",
-            url: "/admin/archived-stories",
-            },
-           
-          
-        ],
-        },
     ],
    
     }

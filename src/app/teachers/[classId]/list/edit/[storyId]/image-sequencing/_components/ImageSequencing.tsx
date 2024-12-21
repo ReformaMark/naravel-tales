@@ -11,19 +11,16 @@ import React, { useState } from 'react'
 // import Image from 'next/image'
 import Header from '@/app/admin/_components/header'
 import { useParams } from 'next/navigation'
-import { Id } from '../../../../../../../convex/_generated/dataModel'
 import { useeStory } from '@/features/story/api/use-story'
 import { ProgressFooter } from '@/features/auth/components/progress-footer'
 import LevelOne from './LevelOne'
 import LevelTwo from './LevelTwo'
-import LevelThree from '@/app/teachers/[classId]/list/edit/[storyId]/image-sequencing/_components/LevelThree'
+import LevelThree from './LevelThree'
+import { Id } from '../../../../../../../../../convex/_generated/dataModel'
 
 function Sequencing() {
     const [currentStep, setCurrentStep] = useState(0)
-    const params = useParams<{ 
-        storyId: Id<'stories'>
-        classId: Id<'classes'>
-     }>()
+    const params = useParams<{ storyId: Id<'stories'> }>()
     const { data: story } = useeStory({ storyId: params.storyId })
     const sequenceCards = story?.sequenceCards
     const levels = [1,2,3] 
@@ -51,7 +48,7 @@ function Sequencing() {
             case 2:
                 return <LevelTwo storyId={params.storyId} levelTwo={levelTwo} onSelect={handleLevelChange} />
             case 3:
-                return <LevelThree storyId={params.storyId} levelThree={levelThree} onSelect={handleLevelChange} classId={params.classId}/>
+                return <LevelThree storyId={params.storyId} levelThree={levelThree} onSelect={handleLevelChange} />
             default:
                 return null
         }
