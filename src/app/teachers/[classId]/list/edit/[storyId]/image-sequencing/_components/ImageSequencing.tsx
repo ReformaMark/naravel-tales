@@ -20,7 +20,10 @@ import { Id } from '../../../../../../../../../convex/_generated/dataModel'
 
 function Sequencing() {
     const [currentStep, setCurrentStep] = useState(0)
-    const params = useParams<{ storyId: Id<'stories'> }>()
+    const params = useParams<{ 
+        storyId: Id<'stories'>
+        classId: Id<'classes'>
+     }>()
     const { data: story } = useeStory({ storyId: params.storyId })
     const sequenceCards = story?.sequenceCards
     const levels = [1,2,3] 
@@ -48,7 +51,7 @@ function Sequencing() {
             case 2:
                 return <LevelTwo storyId={params.storyId} levelTwo={levelTwo} onSelect={handleLevelChange} />
             case 3:
-                return <LevelThree storyId={params.storyId} levelThree={levelThree} onSelect={handleLevelChange} />
+                return <LevelThree storyId={params.storyId} levelThree={levelThree} onSelect={handleLevelChange} classId={params.classId} />
             default:
                 return null
         }

@@ -1,6 +1,5 @@
 'use client'
 import {
-    BookOpen,
     SquareTerminal
   } from "lucide-react"
 import {
