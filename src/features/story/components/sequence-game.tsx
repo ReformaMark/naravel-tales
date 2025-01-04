@@ -47,6 +47,12 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
   const [progressId, setProgressId] = useState<Id<"progress"> | null>(null)
   const [startTime] = useState(Date.now())
   const { width, height } = useWindowSize()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [shuffledCards, setShuffledCards] = useState<SequenceCard[]>([])
+
+  const currentCards = sequenceCards
+    .filter(card => card.level === currentLevel)
+    .sort((a, b) => a.order - b.order)
 
   const {
     playSelect,
@@ -65,7 +71,15 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
       .sort((a, b) => a.order - b.order);
     setCards(fisherYatesShuffle(levelCards));
     setMistakes([]);
+    reshuffleCards();
   }, [currentLevel, sequenceCards])
+
+  const reshuffleCards = () => {
+    const levelCards = sequenceCards.filter(card => card.level === currentLevel);
+    const shuffledImages = fisherYatesShuffle(levelCards.map(card => ({ ...card, description: '' })));
+    setShuffledCards(shuffledImages);
+    setCards(shuffledImages);
+  };
 
   const handleDragStart = () => {
     playSelect()
@@ -130,6 +144,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
       }
     } else {
       playError()
+      reshuffleCards()
       setAttempts(prev => prev + 1)
       setMistakes(result.mistakes)
       setShowShake(true)
@@ -146,22 +161,22 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
 
   const speak = (text: string) => {
     window.speechSynthesis.cancel()
-    
+
     const utterance = new SpeechSynthesisUtterance(text)
-    
+
     // Get available voices and select Zira
     const voices = window.speechSynthesis.getVoices()
     const ziraVoice = voices.find(voice => voice.name === 'Microsoft Zira - English (United States)')
-    
+
     if (ziraVoice) {
       utterance.voice = ziraVoice
     }
-    
+
     // Optimize parameters for Zira's voice
     utterance.rate = 0.9     // Slightly slower for better clarity
     utterance.pitch = 1.1    // Slightly higher pitch but not too much
     utterance.volume = 1     // Full volume
-    
+
     window.speechSynthesis.speak(utterance)
   }
 
@@ -210,6 +225,19 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                     transition={{ delay: 0.2 }}
                   >
                     <h2 className="text-3xl font-bold text-primary">Level {currentLevel}</h2>
+
+                    <Button
+                      size="icon"
+                      variant="default"
+                      className="absolute bottom-3 -right-5 w-8 h-8 rounded-full opacity-80 hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        // @ts-expect-error this is correctly-typed
+                        speak(currentCards.map(c => c.description))
+                      }}
+                    >
+                      <Speaker className="w-4 h-4" />
+                    </Button>
                   </motion.div>
                   <motion.p
                     className="text-lg text-muted-foreground"
@@ -225,7 +253,9 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                   >
-                    {cards.map(card => (card.description + ".")).join('\n')}
+                    {/* {cards.map(card => (card.description + ".")).join('\n')} */}
+                    {/* {sequenceCards.map(s => (s.description + ".")).join('\n')} */}
+                    {currentCards.map(c => (c.description + ".")).join('\n')}
                   </motion.p>
                   {mistakes.length > 0 && (
                     <motion.div
@@ -281,7 +311,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                       sizes="180px"
                                       priority={index < 2}
                                     />
-                                    <Button
+                                    {/* <Button
                                       size="icon"
                                       variant="secondary"
                                       className="absolute bottom-2 right-2 w-8 h-8 rounded-full opacity-80 hover:opacity-100"
@@ -291,7 +321,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                       }}
                                     >
                                       <Speaker className="w-4 h-4" />
-                                    </Button>
+                                    </Button> */}
                                   </div>
                                 </div>
                               )}
