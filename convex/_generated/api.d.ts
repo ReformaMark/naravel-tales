@@ -16,10 +16,12 @@ import type {
 import type * as achievements from "../achievements.js";
 import type * as auth from "../auth.js";
 import type * as classes from "../classes.js";
+import type * as CustomPassword from "../CustomPassword.js";
 import type * as http from "../http.js";
 import type * as inquiries from "../inquiries.js";
 import type * as parents from "../parents.js";
 import type * as progress from "../progress.js";
+import type * as resendOTP from "../resendOTP.js";
 import type * as seed from "../seed.js";
 import type * as stories from "../stories.js";
 import type * as students from "../students.js";
@@ -38,10 +40,12 @@ declare const fullApi: ApiFromModules<{
   achievements: typeof achievements;
   auth: typeof auth;
   classes: typeof classes;
+  CustomPassword: typeof CustomPassword;
   http: typeof http;
   inquiries: typeof inquiries;
   parents: typeof parents;
   progress: typeof progress;
+  resendOTP: typeof resendOTP;
   seed: typeof seed;
   stories: typeof stories;
   students: typeof students;

@@ -6,7 +6,7 @@ const schema = defineSchema({
     ...authTables,
     users: defineTable({
         image: v.optional(v.string()),
-        email: v.optional(v.string()),
+        email: v.string(),
         emailVerificationTime: v.optional(v.number()),
         phone: v.optional(v.string()),
         phoneVerificationTime: v.optional(v.number()),
@@ -16,7 +16,8 @@ const schema = defineSchema({
         role: v.optional(v.union(v.literal("teacher"), v.literal("admin"), v.literal("parent"))),
         address: v.optional(v.string()),
         onboarding: v.optional(v.boolean()),
-    }),
+        isVerified: v.optional(v.boolean()),
+    }).index('email', ['email']),
 
     classes: defineTable({
         name: v.string(),
@@ -80,7 +81,7 @@ const schema = defineSchema({
             id: v.string(),
             imageId: v.string(),
             description: v.string(),
-            order: v.number(), 
+            order: v.number(),
             level: v.number(),
         })),
         minAge: v.number(),

@@ -15,6 +15,7 @@ import { ProgressFooter } from './progress-footer'
 import { RegistrationForm } from './registration-form'
 import { RoleSelectionStep } from './role-selection-step'
 import { UserTypeStep } from './user-type-step'
+import { VerificationForm } from './verification-form'
 
 const steps = [
     'userTypeCheck',
@@ -32,6 +33,8 @@ export interface ValidationErrors {
 }
 
 export default function OnboardingFlow() {
+    const [isVerifying, setIsVerifying] = useState(false)
+    const [verificationCode, setVerificationCode] = useState('')
     const [currentStep, setCurrentStep] = useState(0)
     const [, setUserType] = useState<UserType>(null)
     const [role, setRole] = useState<UserRole>(null)
@@ -147,6 +150,8 @@ export default function OnboardingFlow() {
                 onboarding: false,
                 flow: "signUp"
             })
+
+            setIsVerifying(true)
         } catch (error) {
             console.error(error)
             setErrors({
@@ -163,6 +168,27 @@ export default function OnboardingFlow() {
         }
     }
 
+    const handleVerification = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setPending(true)
+
+        try {
+            await signIn("password", {
+                email: formData.email,
+                code: verificationCode,
+                flow: "email-verification"
+            })
+            // After successful verification, user will be automatically logged in
+        } catch (error) {
+            console.error(error)
+            setErrors({
+                email: "Invalid verification code. Please try again."
+            })
+        } finally {
+            setPending(false)
+        }
+    }
+
     const renderStep = () => {
         switch (steps[currentStep]) {
             case 'userTypeCheck':
@@ -170,7 +196,16 @@ export default function OnboardingFlow() {
             case 'selectRole':
                 return <RoleSelectionStep onSelect={handleRoleSelection} />
             case 'registration':
-                return role && (
+                return isVerifying ? (
+                    <VerificationForm
+                        email={formData.email}
+                        verificationCode={verificationCode}
+                        onChange={(e) => setVerificationCode(e.target.value)}
+                        onSubmit={handleVerification}
+                        pending={pending}
+                        error={errors.email}
+                    />
+                ) : (
                     <RegistrationForm
                         errors={errors}
                         pending={pending}

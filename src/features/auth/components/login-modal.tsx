@@ -115,7 +115,15 @@ export function LoginModal() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  className="text-xs text-blue-400 p-0 h-auto font-normal"
+                  href="/auth/reset-password"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
@@ -126,6 +134,7 @@ export function LoginModal() {
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
