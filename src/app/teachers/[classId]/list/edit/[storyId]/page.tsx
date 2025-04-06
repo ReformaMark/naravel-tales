@@ -22,10 +22,13 @@ import Header from '@/app/admin/_components/header'
 import { ImagePreview } from '../../../create-stories/_components/ImagePreview'
 import { UploadPlaceholder } from '../../../create-stories/_components/UploadPlaceHolder'
 import { TagInput } from '../../../create-stories/_components/TagInput'
+import { Badge } from '@/components/ui/badge'
 
 interface Story {
     title: string;
     content: string;
+    author: string;
+    category: "Fables" | "Legends";
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image:  File | string | null;
@@ -55,6 +58,8 @@ export default function Story({
     const initialData : Story = {
         title: story?.title || "",
         content: story?.content || "",
+        author: story?.content || "",
+        category: story?.content as "Fables" | "Legends" || "Fables",
         difficulty: story?.difficulty || "easy",
         ageGroup: story?.ageGroup || "3-4",
         image: story?.url || null,
@@ -123,6 +128,8 @@ export default function Story({
             {
                 title: story?.title || "",
                 content: story?.content || "",
+                author: story?.author || "",
+                category: story?.category || "Fables",
                 difficulty: story?.difficulty || "easy",
                 ageGroup: story?.ageGroup || "3-4",
                 image: story?.url || null,
@@ -174,26 +181,12 @@ export default function Story({
             }
 
             
-            if(editedValues.image instanceof String){
+        
                 mutate({
                     storyId: params.storyId,
                     title: editedValues.title,
-                    content: editedValues.content,
-                    difficulty: editedValues.difficulty,
-                    ageGroup: editedValues.ageGroup,
-                    minAge: Number(editedValues.minAge),
-                    maxAge:  Number(editedValues.maxAge),
-                    readingTime:  Number(editedValues.readingTime),
-                    points:  Number(editedValues.points),
-                    tags: editedValues.tags,
-                    culturalNotes: editedValues.culturalNotes,
-                    isActive: true,
-                    
-                })
-            } else {
-                mutate({
-                    storyId: params.storyId,
-                    title: editedValues.title,
+                    category: editedValues.category,
+                    author: editedValues.author,
                     content: editedValues.content,
                     difficulty: editedValues.difficulty,
                     imageId: storageId,
@@ -207,10 +200,9 @@ export default function Story({
                     isActive: true,
                     
                 })
-            }
            
 
-            console.log(editedValues)
+            console.log(storageId)
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)
@@ -255,6 +247,12 @@ export default function Story({
             ageGroup: value,
         }))
     }
+    const handleCategoryChange = (value: "Fables"| "Legends") => {
+        setEditedValues((prevData) => ({
+            ...prevData,
+            category: value,
+        }))
+    }
     const handleDifficultyChange = (value: "easy" | "medium" | "hard") => {
         setEditedValues((prevData) => ({
             ...prevData,
@@ -278,8 +276,9 @@ export default function Story({
         <div className="space-y-6">
             {/* Story Title and Content */}
             
-            <div className="flex items-center justify-between ">
-                <div className="flex items-center gap-x-4 md:w-1/2">
+            <div className="grid grid-cols-12 items-center justify-between ">
+              
+                <div className="col-span-12 lg:col-span-8 flex items-center gap-x-4 ">
                     <Button
                         size="icon"
                         onClick={() => router.push('/teachers/'+params.classId+'/list')}
@@ -293,7 +292,7 @@ export default function Story({
                         value={editedValues?.title}
                         onChange={handleInputChange}
                         required
-                        className="w-full border-primary bg-primary/50 focus:ring-primary"
+                        className=" border-primary bg-primary/50 focus:ring-primary w-fit"
                         placeholder="Enter title"
                         disabled={isPending}
                     />
@@ -302,16 +301,53 @@ export default function Story({
 
                     )}
                 </div>
-                <div className="flex justify-end w-full ">
-                {!isEditing ? 
-                    <Edit onClick={handleEditToggle} className='text-gray-500 cursor-pointer' /> :
-                    <div className="flex gap-x-5">
-
-                        <Button variant={'destructive'} disabled={isLoading} onClick={handleCancel}>Cancel</Button>
-                        <Button variant={'default'} disabled={isLoading} onClick={handleSubmit}>Save</Button>
-                    </div>
-                }
+                
+                {!isEditing && (
+                <div className="col-span-12 lg:col-span-4  flex justify-end ">
+                    <Edit onClick={handleEditToggle} className='text-gray-500 cursor-pointer' />
+                </div>
+                )}
             </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gapx-x-10">
+                {isEditing ? (
+                    <div className=" flex items-center gap-3 ">
+                        Author:
+                        <Input
+                            id="author"
+                            name="author"
+                            value={editedValues?.author}
+                            onChange={handleInputChange}
+                            required
+                           className="border-primary bg-primary/50 focus:ring-primary md:w-1/2"
+                            placeholder="Enter author"
+                            disabled={isPending}
+                        />
+                    </div>
+                    ):(
+                        <h2 className="text-lg font-semibold tracking-tight">Author: {story?.author ?? "-"}</h2>
+
+                )}
+                {isEditing ? (
+                    <div className=" flex items-center gap-3">
+                        Category:
+                        <Select 
+                            onValueChange={handleCategoryChange}
+                            value={editedValues?.category}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary md:w-1/2">
+                                <SelectValue placeholder="Select Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                            <SelectItem value="Fables">Fables</SelectItem>
+                            <SelectItem value="Legends">Legends</SelectItem>
+                        </SelectContent>
+                        </Select>
+                    </div>
+                    ):(
+                        <h2 className="text-lg font-semibold tracking-tight">Category: <Badge >{story?.category ?? "-"}</Badge></h2>
+
+                )}
             </div>
             {isEditing ? (
             <div className="space-y-2">
@@ -375,10 +411,8 @@ export default function Story({
               
                )}
             </> 
-       
-
             <Separator />
-
+        
             {/* Story Information */}
             <div className="space-y-4">
                 
@@ -524,11 +558,23 @@ export default function Story({
                     </div>
                 </div>
             </div>
+            {isEditing && (
 
+                <div className=" flex justify-end ">
+              
+                    <div className="flex gap-x-5">
+
+                        <Button variant={'destructive'} disabled={isLoading} onClick={handleCancel}>Cancel</Button>
+                        <Button variant={'default'} disabled={isLoading} onClick={handleSubmit}>Save</Button>
+                    </div>
+            
+            </div>
+            )}
             <Separator />
 
             {/* Game Options */}
-            <div className="space-y-4">
+            {!isEditing && (
+                <div className="space-y-4">
                 <h2 className="text-lg font-bold text-primary">Interactive Options</h2>
                 <div className="space-y-3">
                     <Link
@@ -558,6 +604,8 @@ export default function Story({
                  
                 </div>
             </div>
+            )}
+
         </div>
     ) : (
         <div className="text-center text-gray-500">Loading story details...</div>

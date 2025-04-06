@@ -82,6 +82,8 @@ export const createStory = mutation({
   args: {
     title: v.string(),
     content: v.string(),
+    author: v.string(),
+    category: v.union(v.literal("Fables"), v.literal("Legends")),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
     imageId: v.optional(v.string()),
@@ -120,6 +122,8 @@ export const editStory = mutation({
   args: {
     storyId: v.id('stories'),
     title: v.string(),
+    author: v.string(),
+    category: v.union(v.literal("Fables"), v.literal("Legends")),
     content: v.string(),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
@@ -137,10 +141,14 @@ export const editStory = mutation({
       
   },
   handler: async (ctx, args) => {
+    const story = await ctx.db.get(args.storyId)
+    if(!story) return
     return await ctx.db.patch(args.storyId, {
       title: args.title,
       content: args.content,
       difficulty: args.difficulty,
+      author: args.author,
+      category: args.category,
       ageGroup: args.ageGroup,
       minAge: args.minAge,
       maxAge: args.maxAge,
@@ -150,7 +158,7 @@ export const editStory = mutation({
       culturalNotes: args.culturalNotes,
       isActive: true,
       createdAt: Date.now(),
-      imageId: args.imageId
+      imageId: args.imageId ? args.imageId : story.imageId
     });
   },
 });

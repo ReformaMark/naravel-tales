@@ -21,7 +21,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
-import { Book, Clock, Feather, PlusIcon, Star, UserCheck } from 'lucide-react'
+import { Book, Clock, Feather, PenLine, PlusIcon, Star, UserCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -50,6 +50,8 @@ interface QuizQuestion {
 interface Story {
     title: string;
     content: string;
+    author: string;
+    category: "Fables" | "Legends";
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image: File | null;
@@ -68,6 +70,8 @@ interface Story {
 const storiesInitialData: Story = {
     title: "",
     content: "",
+    category: "Fables",
+    author: "",
     difficulty: "easy",
     ageGroup: "3-4",
     image: null,
@@ -153,20 +157,16 @@ export default function AddStoriesCard() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
         let storageId: Id<"_storage"> | undefined;
-
         try {
             if (storiesData.image) {
                 const url = await generateUploadUrl({}, {
                     throwError: true
                 })
-
                 if (!url) {
                     toast.error('Failed to generate upload URL')
                     return
                 }
-
                 const result = await fetch(url, {
                     method: 'POST',
                     body: storiesData.image,
@@ -174,20 +174,19 @@ export default function AddStoriesCard() {
                         'Content-Type': storiesData.image.type
                     }
                 })
-
                 if (!result.ok) {
                     toast.error('Failed to upload image')
                     return
                 }
-
                 const { storageId: uploadedStorageId } = await result.json()
-
                 storageId = uploadedStorageId
             }
 
             await mutate({
                 title: storiesData.title,
                 content: storiesData.content,
+                author: storiesData.author,
+                category: storiesData.category,
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
                 imageId: storageId!,
@@ -254,6 +253,46 @@ export default function AddStoriesCard() {
                     placeholder="Enter the story content..."
                     disabled={isPending}
                 />
+            </div>
+            <div className="grid grid-cols-2 gap-x-5">
+                <div className="space-y-2">
+                    <Label htmlFor="author" className="text-sm font-medium text-primary">Author</Label>
+                    <div className="relative">
+                        <PenLine className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+                        <Input
+                            id="author"
+                            name="author"
+                            value={storiesData.title}
+                            onChange={handleInputChange}
+                            required
+                            className="pl-10 border-primary bg-primary/50 focus:ring-primary"
+                            placeholder="Enter author"
+                            disabled={isPending}
+                        />
+                    </div>
+                </div> <div className="space-y-2">
+                    <Label htmlFor="category" className="text-sm font-medium text-primary">Category</Label>
+                    <div className="space-y-2">
+                        <Select
+                            onValueChange={(value) =>
+                                setStoriesData((prevData) => ({
+                                    ...prevData,
+                                    category: value as "Fables" | "Legends",
+                                }))
+                            }
+                            value={storiesData.category || ""}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
+                                <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Fables">Fables</SelectItem>
+                                <SelectItem value="Legends">Legends</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -74,6 +74,11 @@ const schema = defineSchema({
     stories: defineTable({
         title: v.string(),
         content: v.string(),
+        author: v.optional(v.string()),
+        category: v.optional(v.union(
+            v.literal("Fables"),
+            v.literal("Legends"),
+        )),
         difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
         ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
         imageId: v.optional(v.string()),

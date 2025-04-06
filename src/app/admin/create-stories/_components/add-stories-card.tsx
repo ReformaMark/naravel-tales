@@ -50,6 +50,8 @@ interface QuizQuestion {
 interface Story {
     title: string;
     content: string;
+    category: "Fables" | "Legends";
+    author: string;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image: File | null;
@@ -68,6 +70,8 @@ interface Story {
 const storiesInitialData: Story = {
     title: "",
     content: "",
+    author: "",
+    category: "Fables",
     difficulty: "easy",
     ageGroup: "3-4",
     image: null,
@@ -188,6 +192,9 @@ export default function AddStoriesCard() {
             await mutate({
                 title: storiesData.title,
                 content: storiesData.content,
+                author: storiesData.author,
+                category: storiesData.category,
+
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
                 imageId: storageId!,
@@ -225,19 +232,54 @@ export default function AddStoriesCard() {
             <h3 className="w-full text-lg font-semibold text-primary">Basic Information</h3>
             
             <div className="space-y-2">
-                <Label htmlFor="title" className="text-sm font-medium text-primary">Title</Label>
+                <Label htmlFor="author" className="text-sm font-medium text-primary">Author</Label>
                 <div className="relative">
-                    <Book className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
                     <Input
-                        id="title"
-                        name="title"
-                        value={storiesData.title}
+                        id="author"
+                        name="author"
+                        value={storiesData.author}
                         onChange={handleInputChange}
                         required
                         className="pl-10 border-primary bg-primary/50 focus:ring-primary"
-                        placeholder="Enter title"
+                        placeholder="Enter author"
                         disabled={isPending}
                     />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-medium text-primary">Category</Label>
+                    <Select
+                        onValueChange={(value: "Fables" | "Legends") =>
+                            setStoriesData((prevData) => ({ ...prevData, category: value }))
+                        }
+                        value={storiesData.category}
+                        disabled={isPending}
+                    >
+                        <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
+                            <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Fables">Fables</SelectItem>
+                            <SelectItem value="Legends">Legends</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-medium text-primary">Title</Label>
+                    <div className="relative">
+                        <Book className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+                        <Input
+                            id="title"
+                            name="title"
+                            value={storiesData.title}
+                            onChange={handleInputChange}
+                            required
+                            className="pl-10 border-primary bg-primary/50 focus:ring-primary"
+                            placeholder="Enter title"
+                            disabled={isPending}
+                        />
+                    </div>
                 </div>
             </div>
 

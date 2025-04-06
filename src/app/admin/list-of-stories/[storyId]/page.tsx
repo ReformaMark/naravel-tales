@@ -81,7 +81,7 @@ export default function Story({
     const pages = ["Stories", "list of stories", `${story?.title}`]
     const router = useRouter()
 
-    const { mutate, isPending } = useMutationQ({
+    const {  isPending } = useMutationQ({
         mutationFn: useConvexMutation(api.stories.editStory),
         onSuccess: () => {
             setEditedValues(editedValues)
@@ -139,7 +139,7 @@ export default function Story({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        let storageId: Id<"_storage"> | undefined;
+        // let storageId: Id<"_storage"> | undefined;
 
         try {
             if (editedValues.image) {
@@ -165,29 +165,29 @@ export default function Story({
                     return
                 }
 
-                const { storageId: uploadedStorageId } = await result.json()
+                // const { storageId: uploadedStorageId } = await result.json()
 
-                storageId = uploadedStorageId
+                // uploadedStorageId
             }
 
-            mutate({
-                storyId: params.storyId,
-                title: editedValues.title,
-                content: editedValues.content,
-                difficulty: editedValues.difficulty,
-                ageGroup: editedValues.ageGroup,
-                imageId: storageId!,
+            // mutate({
+            //     storyId: params.storyId,
+            //     title: editedValues.title,
+            //     content: editedValues.content,
+            //     difficulty: editedValues.difficulty,
+            //     ageGroup: editedValues.ageGroup,
+            //     imageId: storageId!,
                
-                minAge: Number(editedValues.minAge),
-                maxAge:  Number(editedValues.maxAge),
-                readingTime:  Number(editedValues.readingTime),
-                points:  Number(editedValues.points),
-                tags: editedValues.tags,
+            //     minAge: Number(editedValues.minAge),
+            //     maxAge:  Number(editedValues.maxAge),
+            //     readingTime:  Number(editedValues.readingTime),
+            //     points:  Number(editedValues.points),
+            //     tags: editedValues.tags,
                
-                culturalNotes: editedValues.culturalNotes,
-                isActive: true,
+            //     culturalNotes: editedValues.culturalNotes,
+            //     isActive: true,
                 
-            })
+            // })
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)
