@@ -184,6 +184,13 @@ const schema = defineSchema({
         .index("by_weekly_points", ["weeklyPoints"])
         .index("by_monthly_points", ["monthlyPoints"]),
 
+    quiz: defineTable({
+        question: v.string(),
+        answer: v.string(),
+        points: v.number(),
+        createdBy: v.id("users"),
+        storyId: v.id("stories"),
+    })
 
 });
 

@@ -271,7 +271,7 @@ export default function Story({
     }
 
   return (
-    <div className="px-4 space-y-6 pb-10">
+    <div className=" space-y-6 pb-10">
     <Header breadcrumbPages={pages} />
 
     {!isLoading ? (
@@ -533,10 +533,18 @@ export default function Story({
                 <div className="space-y-3">
                     <Link
                         href={'/teachers/'+params.classId+'/list/edit/'+params.storyId+'/image-sequencing'}
-                        className="w-full p-3 flex items-center justify-center space-x-2 border rounded-lg bg-primary text-white transition hover:bg-primary/80"
+                        className="w-full p-3 flex items-center justify-center space-x-2 border rounded-lg bg-primary text-white transition hover:bg-purple-700"
                     >
                         <Shuffle className="text-white" />
                         <span>Set up Image Sequencing Game</span>
+                    </Link>
+              
+                    <Link
+                        href={'/teachers/'+params.classId+'/list/edit/'+params.storyId+'/quiz'}
+                        className="w-full p-3 flex items-center justify-center space-x-2 border rounded-lg bg-purple-700 text-white transition hover:bg-primary"
+                    >
+                        <Feather className="text-white" />
+                        <span>Set up Quiz Questionnaires</span>
                     </Link>
                     <Button
                         variant={'destructive'}
