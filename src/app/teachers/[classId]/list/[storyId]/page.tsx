@@ -9,10 +9,11 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { useQuery } from "convex/react";
 import { Suspense } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { SoundToggle } from "@/components/sound-toggle";
+import { SequenceGame } from "@/features/story/components/sequence-game";
 
 export default function StoryPage({
   params: { classId, storyId },
@@ -36,10 +37,13 @@ function StoryContent({
   storyId: Id<"stories">;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const story = useQuery(api.stories.getById, { id: storyId });
+  const studentIds = searchParams.getAll("studentIds[]") as Id<"students">[];
+  const students = useQuery(api.students.getByIds, { ids: studentIds });
 
   if (!story) {
-    return <div>Story not found</div>;
+    return <StoryPageSkeleton />;
   }
 
   return (
@@ -51,10 +55,22 @@ function StoryContent({
         <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
         <SoundToggle />
       </div>
-      <StoryReader
-        story={story as StoryReaderProps["story"]}
-        classId={classId}
-      />
+
+      {studentIds.length > 0 ? (
+        <div className="max-w-7xl mx-auto">
+          <SequenceGame
+            storyId={storyId}
+            sequenceCards={story.sequenceCards}
+            studentIds={studentIds}
+            students={students || []}
+          />
+        </div>
+      ) : (
+        <StoryReader
+          story={story as StoryReaderProps["story"]}
+          classId={classId}
+        />
+      )}
     </div>
   );
 }

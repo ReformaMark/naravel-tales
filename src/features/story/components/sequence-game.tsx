@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Star, Users2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
@@ -30,22 +30,21 @@ export interface SequenceCard {
 
 interface SequenceGameProps {
   storyId: Id<"stories">;
-  studentId: Id<"students">;
+  studentIds: Id<"students">[]; // Changed from single studentId to array
   sequenceCards: SequenceCard[];
-  student: Student;
+  students: Student[]; // Changed from single student to array
 }
 
 const MAX_ATTEMPTS_PER_STORY = 3;
 
 export function SequenceGame({
   storyId,
-  studentId,
   sequenceCards,
-  student,
+  studentIds,
+  students,
 }: SequenceGameProps) {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [cards, setCards] = useState<SequenceCard[]>([]);
-  const [attempts, setAttempts] = useState(0);
   const [mistakes, setMistakes] = useState<
     Array<{ index: number; expected: number; received: number }>
   >([]);
@@ -54,7 +53,6 @@ export function SequenceGame({
   const [finalStars, setFinalStars] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
-  const [progressId, setProgressId] = useState<Id<"progress"> | null>(null);
   const [startTime] = useState(Date.now());
   const { width, height } = useWindowSize();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,7 +72,10 @@ export function SequenceGame({
   const { playSelect, playError, playSuccess, playLevelUp, playComplete } =
     useGameSounds();
 
-  const updateProgress = useMutation(api.progress.updateProgress);
+  // const updateProgress = useMutation(api.progress.updateProgress);
+  const updateMultipleProgress = useMutation(
+    api.progress.updateMultipleProgress
+  );
   const checkAndAwardAchievements = useMutation(
     api.achievements.checkAndAwardAchievements
   );
@@ -195,8 +196,38 @@ export function SequenceGame({
         setIsCompleted(true);
         playComplete();
 
-        const progress = await updateProgress({
-          studentId,
+        // const progress = await updateProgress({
+        //   studentId: isGroupMode ? undefined : (studentId as Id<"students">),
+        //   groupId: isGroupMode ? group?.id : undefined,
+        //   groupMembers: isGroupMode ? group?.members : undefined,
+        //   storyId,
+        //   completed: true,
+        //   sequenceAttempts: totalAttempts,
+        //   sequenceScore: result.score,
+        //   timeSpent: Math.floor((Date.now() - startTime) / 1000),
+        //   stars: earnedStars,
+        // });
+
+        // if (isGroupMode && group) {
+        //   await Promise.all(
+        //     group.members.map((member) =>
+        //       checkAndAwardAchievements({
+        //         studentId: member.studentId,
+        //         storyId,
+        //         sequenceScore: result.score,
+        //         timeSpent: Math.floor((Date.now() - startTime) / 1000),
+        //         stars: earnedStars,
+        //       })
+        //     )
+        //   );
+        // }
+
+        // setProgressId(progress);
+        // setShowNoteModal(true);
+        // toast.success("Congratulations! You completed all levels!");
+
+        await updateMultipleProgress({
+          studentIds,
           storyId,
           completed: true,
           sequenceAttempts: totalAttempts,
@@ -205,9 +236,22 @@ export function SequenceGame({
           stars: earnedStars,
         });
 
-        setProgressId(progress);
+        await Promise.all(
+          studentIds.map((studentId) =>
+            checkAndAwardAchievements({
+              studentId,
+              storyId,
+              sequenceScore: result.score,
+              timeSpent: Math.floor((Date.now() - startTime) / 1000),
+              stars: earnedStars,
+            })
+          )
+        );
+
         setShowNoteModal(true);
-        toast.success("Congratulations! You completed all levels!");
+        toast.success(
+          `Congratulations! All ${students.length} students have been graded!`
+        );
       } else {
         playLevelUp();
         toast.success("Level completed! Moving to next level");
@@ -303,6 +347,28 @@ export function SequenceGame({
                   transition={{ duration: 0.5 }}
                   className="text-center space-y-4"
                 >
+                  {/* {isGroupMode && group && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center justify-center gap-2 mb-4"
+                    >
+                      <Users2Icon className="w-5 h-5 text-primary" />
+                      <span className="font-medium text-primary">
+                        {group.name}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        ({group.members.length} members)
+                      </span>
+                    </motion.div>
+                  )} */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <Users2Icon className="w-5 h-5 text-primary" />
+                    <span className="font-medium text-primary">
+                      Grading {students.length} students
+                    </span>
+                  </div>
+
                   <motion.div
                     className="flex flex-col gap-3 items-center justify-center px-6 py-2 bg-primary/10 rounded-full"
                     initial={{ scale: 0.8 }}
@@ -552,12 +618,15 @@ export function SequenceGame({
         </div>
       </div>
 
-      {showNoteModal && progressId && (
+      {showNoteModal && (
         <TeacherNoteModal
           isOpen={showNoteModal}
           onClose={() => setShowNoteModal(false)}
-          progressId={progressId}
-          studentName={`${student.fname} ${student.lname}`}
+          studentIds={studentIds}
+          studentsNames={students
+            .map((s) => `${s.fname} ${s.lname}`)
+            .join(", ")}
+          storyId={storyId}
         />
       )}
     </>

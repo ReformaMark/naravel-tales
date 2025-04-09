@@ -1,59 +1,288 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { api } from "./_generated/api";
 
-export const updateProgress = mutation({
+// export const updateProgress = mutation({
+//     args: {
+//         studentId: v.optional(v.id("students")),
+//         groupId: v.optional(v.string()),
+//         groupMembers: v.optional(v.array(v.object({
+//             studentId: v.id("students"),
+//             name: v.string()
+//         }))),
+//         storyId: v.id("stories"),
+//         completed: v.boolean(),
+//         sequenceAttempts: v.number(),
+//         sequenceScore: v.number(),
+//         timeSpent: v.number(),
+//         teacherNotes: v.optional(v.string()),
+//         stars: v.number(),
+//     },
+//     async handler(ctx, args) {
+//         // Handle individual progress
+//         if (args.studentId) {
+//             const existingProgress = await ctx.db
+//                 .query("progress")
+//                 .withIndex("by_student", (q) =>
+//                     q.eq("studentId", args.studentId)
+//                 )
+//                 .filter((q) =>
+//                     q.eq(q.field("storyId"), args.storyId)
+//                 )
+//                 .first();
+
+//             if (existingProgress) {
+//                 return await ctx.db.patch(existingProgress._id, {
+//                     completed: args.completed,
+//                     sequenceAttempts: args.sequenceAttempts,
+//                     sequenceScore: args.sequenceScore,
+//                     timeSpent: args.timeSpent,
+//                     teacherNotes: args.teacherNotes,
+//                     stars: args.stars,
+//                     lastPlayed: Date.now(),
+//                 });
+//             }
+
+//             return await ctx.db.insert("progress", {
+//                 studentId: args.studentId,
+//                 storyId: args.storyId,
+//                 completed: args.completed,
+//                 sequenceAttempts: args.sequenceAttempts,
+//                 sequenceScore: args.sequenceScore,
+//                 timeSpent: args.timeSpent,
+//                 teacherNotes: args.teacherNotes,
+//                 stars: args.stars,
+//                 lastPlayed: Date.now(),
+//             });
+//         }
+
+//         // Handle group progress
+//         if (args.groupId && args.groupMembers) {
+//             const existingProgress = await ctx.db
+//                 .query("progress")
+//                 .withIndex("by_group", (q) =>
+//                     q.eq("groupId", args.groupId)
+//                 )
+//                 .filter((q) =>
+//                     q.eq(q.field("storyId"), args.storyId)
+//                 )
+//                 .first();
+
+//             if (existingProgress) {
+//                 return await ctx.db.patch(existingProgress._id, {
+//                     completed: args.completed,
+//                     sequenceAttempts: args.sequenceAttempts,
+//                     sequenceScore: args.sequenceScore,
+//                     timeSpent: args.timeSpent,
+//                     teacherNotes: args.teacherNotes,
+//                     stars: args.stars,
+//                     lastPlayed: Date.now(),
+//                 });
+//             }
+
+//             return await ctx.db.insert("progress", {
+//                 groupId: args.groupId,
+//                 groupMembers: args.groupMembers,
+//                 storyId: args.storyId,
+//                 completed: args.completed,
+//                 sequenceAttempts: args.sequenceAttempts,
+//                 sequenceScore: args.sequenceScore,
+//                 timeSpent: args.timeSpent,
+//                 teacherNotes: args.teacherNotes,
+//                 stars: args.stars,
+//                 lastPlayed: Date.now(),
+//             });
+//         }
+//     },
+// });
+
+// export const updateProgress = mutation({
+//     args: {
+//         studentId: v.optional(v.id("students")),
+//         groupId: v.optional(v.string()),
+//         groupMembers: v.optional(v.array(v.object({
+//             studentId: v.id("students"),
+//             name: v.string()
+//         }))),
+//         storyId: v.id("stories"),
+//         completed: v.boolean(),
+//         sequenceAttempts: v.number(),
+//         sequenceScore: v.number(),
+//         timeSpent: v.number(),
+//         teacherNotes: v.optional(v.string()),
+//         stars: v.number(),
+//     },
+//     async handler(ctx, args) {
+//         if (args.groupId && args.groupMembers) {
+//             // First create/update group progress
+//             const groupProgress = await handleGroupProgress(ctx, args);
+
+//             // Then create/update individual progress for each member
+//             await Promise.all(
+//                 args.groupMembers.map(async (member) => {
+//                     const existingProgress = await ctx.db
+//                         .query("progress")
+//                         .withIndex("by_student", (q) =>
+//                             q.eq("studentId", member.studentId)
+//                         )
+//                         .filter((q) =>
+//                             q.eq(q.field("storyId"), args.storyId)
+//                         )
+//                         .first();
+
+//                     if (existingProgress) {
+//                         await ctx.db.patch(existingProgress._id, {
+//                             completed: args.completed,
+//                             sequenceAttempts: args.sequenceAttempts,
+//                             sequenceScore: args.sequenceScore,
+//                             timeSpent: args.timeSpent,
+//                             stars: args.stars,
+//                             lastPlayed: Date.now(),
+//                             groupId: args.groupId, // Link to group progress
+//                         });
+//                     } else {
+//                         await ctx.db.insert("progress", {
+//                             studentId: member.studentId,
+//                             storyId: args.storyId,
+//                             completed: args.completed,
+//                             sequenceAttempts: args.sequenceAttempts,
+//                             sequenceScore: args.sequenceScore,
+//                             timeSpent: args.timeSpent,
+//                             stars: args.stars,
+//                             lastPlayed: Date.now(),
+//                             groupId: args.groupId, // Link to group progress
+//                         });
+//                     }
+
+//                     // Update gamification stats for each student
+//                     await updateGamificationStats(ctx, {
+//                         studentId: member.studentId,
+//                         completed: args.completed,
+//                         sequenceScore: args.sequenceScore,
+//                         stars: args.stars,
+//                     });
+//                 })
+//             );
+
+//             return groupProgress;
+//         } else if (args.studentId) {
+//             // Handle individual progress as before
+//             return await handleIndividualProgress(ctx, args);
+//         }
+//     },
+// });
+
+// export const updateMultipleStudentProgress = mutation({
+//     args: {
+//         studentIds: v.array(v.id("students")),
+//         storyId: v.id("stories"),
+//         completed: v.boolean(),
+//         sequenceAttempts: v.number(),
+//         sequenceScore: v.number(),
+//         timeSpent: v.number(),
+//         stars: v.number(),
+//     },
+//     handler: async (ctx, args) => {
+//         // Update progress for each student
+//         await Promise.all(
+//             args.studentIds.map(async (studentId) => {
+//                 const existingProgress = await ctx.db
+//                     .query("progress")
+//                     .withIndex("by_student", (q) =>
+//                         q.eq("studentId", studentId)
+//                     )
+//                     .filter((q) =>
+//                         q.eq(q.field("storyId"), args.storyId)
+//                     )
+//                     .first();
+
+//                 if (existingProgress) {
+//                     await ctx.db.patch(existingProgress._id, {
+//                         completed: args.completed,
+//                         sequenceAttempts: args.sequenceAttempts,
+//                         sequenceScore: args.sequenceScore,
+//                         timeSpent: args.timeSpent,
+//                         stars: args.stars,
+//                         lastPlayed: Date.now(),
+//                     });
+//                 } else {
+//                     await ctx.db.insert("progress", {
+//                         studentId,
+//                         storyId: args.storyId,
+//                         completed: args.completed,
+//                         sequenceAttempts: args.sequenceAttempts,
+//                         sequenceScore: args.sequenceScore,
+//                         timeSpent: args.timeSpent,
+//                         stars: args.stars,
+//                         lastPlayed: Date.now(),
+//                     });
+//                 }
+
+//                 // Update gamification stats for each student
+//                 await updateGamificationStats(ctx, {
+//                     studentId,
+//                     completed: args.completed,
+//                     sequenceScore: args.sequenceScore,
+//                     stars: args.stars,
+//                 });
+
+//                 // Award achievements for each student
+//                 await ctx.scheduler.runAfter(0, api.achievements.checkAndAwardAchievements, {
+//                     studentId,
+//                     storyId: args.storyId,
+//                     sequenceScore: args.sequenceScore,
+//                     timeSpent: args.timeSpent,
+//                     stars: args.stars,
+//                 });
+//             })
+//         );
+//     },
+// });
+
+export const updateMultipleProgress = mutation({
     args: {
-        studentId: v.id("students"),
+        studentIds: v.array(v.id("students")),
         storyId: v.id("stories"),
-        completed: v.boolean(),
-        sequenceAttempts: v.number(),
-        sequenceScore: v.number(),
-        timeSpent: v.number(),
-        teacherNotes: v.optional(v.string()),
-        stars: v.number(),
+        note: v.optional(v.string()),
+        completed: v.optional(v.boolean()),
+        sequenceAttempts: v.optional(v.number()),
+        sequenceScore: v.optional(v.number()),
+        timeSpent: v.optional(v.number()),
+        stars: v.optional(v.number()),
     },
-    async handler(ctx, args) {
-        const existingProgress = await ctx.db
-            .query("progress")
-            .withIndex("by_student", (q) =>
-                q.eq("studentId", args.studentId)
-            )
-            .filter((q) =>
-                q.eq(q.field("storyId"), args.storyId)
-            )
-            .first();
+    handler: async (ctx, args) => {
+        // Update progress for each student
+        await Promise.all(
+            args.studentIds.map(async (studentId) => {
+                const existingProgress = await ctx.db
+                    .query("progress")
+                    .withIndex("by_student", (q) => q.eq("studentId", studentId))
+                    .filter((q) => q.eq(q.field("storyId"), args.storyId))
+                    .first();
 
+                const updateData: any = {};
+                if (args.note !== undefined) updateData.teacherNotes = args.note;
+                if (args.completed !== undefined) updateData.completed = args.completed;
+                if (args.sequenceAttempts !== undefined) updateData.sequenceAttempts = args.sequenceAttempts;
+                if (args.sequenceScore !== undefined) updateData.sequenceScore = args.sequenceScore;
+                if (args.timeSpent !== undefined) updateData.timeSpent = args.timeSpent;
+                if (args.stars !== undefined) updateData.stars = args.stars;
+                updateData.lastPlayed = Date.now();
 
-        await updateGamificationStats(ctx, args);
+                if (existingProgress) {
+                    await ctx.db.patch(existingProgress._id, updateData);
+                } else {
+                    await ctx.db.insert("progress", {
+                        studentId,
+                        storyId: args.storyId,
+                        ...updateData
+                    });
+                }
+            })
+        );
 
-        if (existingProgress) {
-            return await ctx.db.patch(existingProgress._id, {
-                completed: args.completed,
-                sequenceAttempts: args.sequenceAttempts,
-                sequenceScore: args.sequenceScore,
-                timeSpent: args.timeSpent,
-                teacherNotes: args.teacherNotes,
-                stars: args.stars,
-                lastPlayed: Date.now(),
-            });
-        }
-
-        const score = Math.max(0, Math.min(100, args.sequenceScore));
-
-        const progress = await ctx.db.insert("progress", {
-            studentId: args.studentId,
-            storyId: args.storyId,
-            completed: args.completed,
-            sequenceAttempts: args.sequenceAttempts,
-            sequenceScore: score,
-            timeSpent: args.timeSpent,
-            teacherNotes: args.teacherNotes,
-            stars: args.stars,
-            lastPlayed: Date.now(),
-        });
-
-        return progress;
+        return true;
     },
 });
 
@@ -239,3 +468,105 @@ export const addTeacherNote = mutation({
         });
     }
 });
+
+export const getGroupProgress = query({
+    args: {
+        groupId: v.string(),
+        storyId: v.id("stories"),
+    },
+    handler: async (ctx, args) => {
+        const progress = await ctx.db
+            .query("progress")
+            .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+            .filter((q) => q.eq(q.field("storyId"), args.storyId))
+            .first();
+
+        if (!progress) {
+            return null;
+        }
+
+        return progress;
+    },
+});
+
+
+// Helper function to handle group progress
+// eslint-disable-next-line @no-explicit-any no convex types
+async function handleGroupProgress(ctx: any, args: any) {
+    const existingProgress = await ctx.db
+        .query("progress")
+        // @ts-expect-error no convex types
+        .withIndex("by_group", (q) =>
+            q.eq("groupId", args.groupId)
+        )
+        // @ts-expect-error no convex types
+        .filter((q) =>
+            q.eq(q.field("storyId"), args.storyId)
+        )
+        .first();
+
+    if (existingProgress) {
+        return await ctx.db.patch(existingProgress._id, {
+            completed: args.completed,
+            sequenceAttempts: args.sequenceAttempts,
+            sequenceScore: args.sequenceScore,
+            timeSpent: args.timeSpent,
+            teacherNotes: args.teacherNotes,
+            stars: args.stars,
+            lastPlayed: Date.now(),
+        });
+    }
+
+    return await ctx.db.insert("progress", {
+        groupId: args.groupId,
+        groupMembers: args.groupMembers,
+        storyId: args.storyId,
+        completed: args.completed,
+        sequenceAttempts: args.sequenceAttempts,
+        sequenceScore: args.sequenceScore,
+        timeSpent: args.timeSpent,
+        teacherNotes: args.teacherNotes,
+        stars: args.stars,
+        lastPlayed: Date.now(),
+    });
+}
+
+// Helper function to handle individual progress
+// eslint-disable-next-line @no-explicit-any no convex types
+async function handleIndividualProgress(ctx: any, args: any) {
+    const existingProgress = await ctx.db
+        .query("progress")
+        // @ts-expect-error no convex types
+        .withIndex("by_student", (q) =>
+            q.eq("studentId", args.studentId)
+        )
+        // @ts-expect-error no convex types
+        .filter((q) =>
+            q.eq(q.field("storyId"), args.storyId)
+        )
+        .first();
+
+    if (existingProgress) {
+        return await ctx.db.patch(existingProgress._id, {
+            completed: args.completed,
+            sequenceAttempts: args.sequenceAttempts,
+            sequenceScore: args.sequenceScore,
+            timeSpent: args.timeSpent,
+            teacherNotes: args.teacherNotes,
+            stars: args.stars,
+            lastPlayed: Date.now(),
+        });
+    }
+
+    return await ctx.db.insert("progress", {
+        studentId: args.studentId,
+        storyId: args.storyId,
+        completed: args.completed,
+        sequenceAttempts: args.sequenceAttempts,
+        sequenceScore: args.sequenceScore,
+        timeSpent: args.timeSpent,
+        teacherNotes: args.teacherNotes,
+        stars: args.stars,
+        lastPlayed: Date.now(),
+    });
+}

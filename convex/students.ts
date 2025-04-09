@@ -1,6 +1,8 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { Doc } from "./_generated/dataModel";
+import { Student } from "@/features/students/student-types";
 
 const generateStudentCode = () => {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -149,6 +151,16 @@ export const getById = query({
         return await ctx.db.get(args.id)
     }
 })
+
+export const getByIds = query({
+    args: { ids: v.array(v.id("students")) },
+    handler: async (ctx, args) => {
+        const students = await Promise.all(
+            args.ids.map(id => ctx.db.get(id))
+        );
+        return students.filter((s): s is Student => s !== null);
+    },
+});
 
 export const linkParentToStudent = mutation({
     args: {

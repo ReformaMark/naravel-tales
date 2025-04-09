@@ -109,7 +109,12 @@ const schema = defineSchema({
     }),
 
     progress: defineTable({
-        studentId: v.id("students"),
+        studentId: v.optional(v.id("students")),
+        groupId: v.optional(v.string()),
+        groupMembers: v.optional(v.array(v.object({
+            studentId: v.id("students"),
+            name: v.string()
+        }))),
         storyId: v.id("stories"),
         completed: v.boolean(),
         lastPlayed: v.number(),
@@ -120,7 +125,7 @@ const schema = defineSchema({
         teacherNotes: v.optional(v.string()),
         // Simple star rating for gamification (1-3 stars)
         stars: v.number(),
-    }).index("by_student", ["studentId"]).index("by_story", ["storyId"]),
+    }).index("by_student", ["studentId"]).index("by_story", ["storyId"]).index("by_group", ["groupId"]),
 
     achievements: defineTable({
         studentId: v.id("students"),
@@ -131,7 +136,9 @@ const schema = defineSchema({
             v.literal("quick_learner"), // Complete under certain time
             v.literal("persistent_reader"), // Complete multiple stories
             v.literal("story_expert"), // Get 3 stars on multiple stories
-            v.literal("practice_star") // Practice consistently
+            v.literal("practice_star"), // Practice consistently
+            v.literal("team_player"),
+            v.literal("group_master"),
         ),
         criteria: v.object({
             requiredScore: v.optional(v.number()),
