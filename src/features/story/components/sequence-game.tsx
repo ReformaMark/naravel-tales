@@ -1,22 +1,23 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { fisherYatesShuffle, validateSequence } from '@/lib/algorithms'
-import { useWindowSize } from '@/lib/hooks/use-window-size'
-import { useGameSounds } from '@/lib/sounds'
-import { cn } from '@/lib/utils'
-import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import { useMutation } from 'convex/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { Star, Speaker } from 'lucide-react'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import ReactConfetti from 'react-confetti'
-import { toast } from 'sonner'
-import { api } from '../../../../convex/_generated/api'
-import { Id } from '../../../../convex/_generated/dataModel'
-import { TeacherNoteModal } from "@/features/class/components/teacher-note-modal"
-import { Student } from '@/features/students/student-types'
+import { Button } from "@/components/ui/button";
+import { fisherYatesShuffle, validateSequence } from "@/lib/algorithms";
+import { useWindowSize } from "@/lib/hooks/use-window-size";
+import { useGameSounds } from "@/lib/sounds";
+import { cn } from "@/lib/utils";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { useMutation } from "convex/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Star, Speaker } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import ReactConfetti from "react-confetti";
+import { toast } from "sonner";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { TeacherNoteModal } from "@/features/class/components/teacher-note-modal";
+import { Student } from "@/features/students/student-types";
+import { SpeechControls } from "@/components/speech-controls";
 
 export interface SequenceCard {
   url: string | null;
@@ -34,56 +35,64 @@ interface SequenceGameProps {
   student: Student;
 }
 
-export function SequenceGame({ storyId, studentId, sequenceCards, student }: SequenceGameProps) {
-  const [currentLevel, setCurrentLevel] = useState(1)
-  const [cards, setCards] = useState<SequenceCard[]>([])
-  const [attempts, setAttempts] = useState(0)
-  const [mistakes, setMistakes] = useState<Array<{ index: number; expected: number; received: number }>>([])
+export function SequenceGame({
+  storyId,
+  studentId,
+  sequenceCards,
+  student,
+}: SequenceGameProps) {
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [cards, setCards] = useState<SequenceCard[]>([]);
+  const [attempts, setAttempts] = useState(0);
+  const [mistakes, setMistakes] = useState<
+    Array<{ index: number; expected: number; received: number }>
+  >([]);
   const [showShake, setShowShake] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false)
-  const [finalStars, setFinalStars] = useState(0)
-  const [showConfetti, setShowConfetti] = useState(false)
-  const [showNoteModal, setShowNoteModal] = useState(false)
-  const [progressId, setProgressId] = useState<Id<"progress"> | null>(null)
-  const [startTime] = useState(Date.now())
-  const { width, height } = useWindowSize()
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [finalStars, setFinalStars] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [progressId, setProgressId] = useState<Id<"progress"> | null>(null);
+  const [startTime] = useState(Date.now());
+  const { width, height } = useWindowSize();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [shuffledCards, setShuffledCards] = useState<SequenceCard[]>([])
+  const [shuffledCards, setShuffledCards] = useState<SequenceCard[]>([]);
 
   const currentCards = sequenceCards
-    .filter(card => card.level === currentLevel)
-    .sort((a, b) => a.order - b.order)
+    .filter((card) => card.level === currentLevel)
+    .sort((a, b) => a.order - b.order);
 
-  const {
-    playSelect,
-    playError,
-    playSuccess,
-    playLevelUp,
-    playComplete
-  } = useGameSounds()
+  const { playSelect, playError, playSuccess, playLevelUp, playComplete } =
+    useGameSounds();
 
-  const updateProgress = useMutation(api.progress.updateProgress)
-  const checkAndAwardAchievements = useMutation(api.achievements.checkAndAwardAchievements)
+  const updateProgress = useMutation(api.progress.updateProgress);
+  const checkAndAwardAchievements = useMutation(
+    api.achievements.checkAndAwardAchievements
+  );
 
   useEffect(() => {
     const levelCards = sequenceCards
-      .filter(card => card.level === currentLevel)
+      .filter((card) => card.level === currentLevel)
       .sort((a, b) => a.order - b.order);
     setCards(fisherYatesShuffle(levelCards));
     setMistakes([]);
     reshuffleCards();
-  }, [currentLevel, sequenceCards])
+  }, [currentLevel, sequenceCards]);
 
   const reshuffleCards = () => {
-    const levelCards = sequenceCards.filter(card => card.level === currentLevel);
-    const shuffledImages = fisherYatesShuffle(levelCards.map(card => ({ ...card, description: '' })));
+    const levelCards = sequenceCards.filter(
+      (card) => card.level === currentLevel
+    );
+    const shuffledImages = fisherYatesShuffle(
+      levelCards.map((card) => ({ ...card, description: "" }))
+    );
     setShuffledCards(shuffledImages);
     setCards(shuffledImages);
   };
 
   const handleDragStart = () => {
-    playSelect()
-  }
+    playSelect();
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (result: any) => {
@@ -92,28 +101,28 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
     const items = Array.from(cards);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    playSelect()
+    playSelect();
     setCards(items);
     setMistakes([]);
-  }
+  };
 
   const checkSequence = async () => {
     const correctSequence = sequenceCards
-      .filter(card => card.level === currentLevel)
+      .filter((card) => card.level === currentLevel)
       .sort((a, b) => a.order - b.order);
 
     const result = validateSequence(cards, correctSequence);
     setMistakes(result.mistakes);
 
     if (result.isCorrect) {
-      playSuccess()
+      playSuccess();
       if (currentLevel === 3) {
-        const earnedStars = calculateStars(attempts)
-        setFinalStars(earnedStars)
-        setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 5000)
-        setIsCompleted(true)
-        playComplete()
+        const earnedStars = calculateStars(attempts);
+        setFinalStars(earnedStars);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000);
+        setIsCompleted(true);
+        playComplete();
 
         // Update this section
         const progress = await updateProgress({
@@ -124,7 +133,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
           sequenceScore: result.score,
           timeSpent: Math.floor((Date.now() - startTime) / 1000),
           stars: earnedStars,
-        })
+        });
 
         await checkAndAwardAchievements({
           studentId,
@@ -132,26 +141,26 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
           sequenceScore: result.score,
           timeSpent: Math.floor((Date.now() - startTime) / 1000),
           stars: earnedStars,
-        })
+        });
 
-        setProgressId(progress)
-        setShowNoteModal(true)
-        toast.success('Congratulations! You completed all levels!')
+        setProgressId(progress);
+        setShowNoteModal(true);
+        toast.success("Congratulations! You completed all levels!");
       } else {
-        playLevelUp()
-        toast.success('Level completed! Moving to next level')
-        setCurrentLevel(prev => prev + 1)
+        playLevelUp();
+        toast.success("Level completed! Moving to next level");
+        setCurrentLevel((prev) => prev + 1);
       }
     } else {
-      playError()
-      reshuffleCards()
-      setAttempts(prev => prev + 1)
-      setMistakes(result.mistakes)
-      setShowShake(true)
-      setTimeout(() => setShowShake(false), 1000)
-      toast.error('Try again! The sequence is not correct.')
+      playError();
+      reshuffleCards();
+      setAttempts((prev) => prev + 1);
+      setMistakes(result.mistakes);
+      setShowShake(true);
+      setTimeout(() => setShowShake(false), 1000);
+      toast.error("Try again! The sequence is not correct.");
     }
-  }
+  };
 
   function calculateStars(attempts: number): number {
     if (attempts <= 3) return 3;
@@ -160,37 +169,39 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
   }
 
   const speak = (text: string) => {
-    window.speechSynthesis.cancel()
+    window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text)
+    const utterance = new SpeechSynthesisUtterance(text);
 
     // Get available voices and select Zira
-    const voices = window.speechSynthesis.getVoices()
-    const ziraVoice = voices.find(voice => voice.name === 'Microsoft Zira - English (United States)')
+    const voices = window.speechSynthesis.getVoices();
+    const ziraVoice = voices.find(
+      (voice) => voice.name === "Microsoft Zira - English (United States)"
+    );
 
     if (ziraVoice) {
-      utterance.voice = ziraVoice
+      utterance.voice = ziraVoice;
     }
 
     // Optimize parameters for Zira's voice
-    utterance.rate = 0.9     // Slightly slower for better clarity
-    utterance.pitch = 1.1    // Slightly higher pitch but not too much
-    utterance.volume = 1     // Full volume
+    utterance.rate = 0.9; // Slightly slower for better clarity
+    utterance.pitch = 1.1; // Slightly higher pitch but not too much
+    utterance.volume = 1; // Full volume
 
-    window.speechSynthesis.speak(utterance)
-  }
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Since voices might load after page load, we need to handle that
   useEffect(() => {
     function handleVoicesChanged() {
-      window.speechSynthesis.getVoices()
+      window.speechSynthesis.getVoices();
     }
 
-    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
+    speechSynthesis.addEventListener("voiceschanged", handleVoicesChanged);
     return () => {
-      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
-    }
-  }, [])
+      speechSynthesis.removeEventListener("voiceschanged", handleVoicesChanged);
+    };
+  }, []);
 
   return (
     <>
@@ -219,14 +230,16 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                   className="text-center space-y-4"
                 >
                   <motion.div
-                    className="inline-block px-6 py-2 bg-primary/10 rounded-full"
+                    className="flex flex-col gap-3 items-center justify-center px-6 py-2 bg-primary/10 rounded-full"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <h2 className="text-3xl font-bold text-primary">Level {currentLevel}</h2>
+                    <h2 className="text-3xl font-bold text-primary">
+                      Level {currentLevel}
+                    </h2>
 
-                    <Button
+                    {/* <Button
                       size="icon"
                       variant="default"
                       className="absolute bottom-3 -right-5 w-8 h-8 rounded-full opacity-80 hover:opacity-100"
@@ -237,7 +250,11 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                       }}
                     >
                       <Speaker className="w-4 h-4" />
-                    </Button>
+                    </Button> */}
+
+                    <SpeechControls
+                      text={currentCards.map((c) => c.description).join(". ")}
+                    />
                   </motion.div>
                   <motion.p
                     className="text-lg text-muted-foreground"
@@ -255,7 +272,7 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                   >
                     {/* {cards.map(card => (card.description + ".")).join('\n')} */}
                     {/* {sequenceCards.map(s => (s.description + ".")).join('\n')} */}
-                    {currentCards.map(c => (c.description + ".")).join('\n')}
+                    {currentCards.map((c) => c.description + ".").join("\n")}
                   </motion.p>
                   {mistakes.length > 0 && (
                     <motion.div
@@ -263,13 +280,17 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                       animate={{ opacity: 1 }}
                       className="mt-2 text-destructive text-sm font-medium"
                     >
-                      Found {mistakes.length} incorrect {mistakes.length === 1 ? 'position' : 'positions'}
+                      Found {mistakes.length} incorrect{" "}
+                      {mistakes.length === 1 ? "position" : "positions"}
                     </motion.div>
                   )}
                 </motion.div>
 
                 <div className="w-full">
-                  <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                  <DragDropContext
+                    onDragEnd={handleDragEnd}
+                    onDragStart={handleDragStart}
+                  >
                     <Droppable droppableId="cards" direction="horizontal">
                       {(provided) => (
                         <div
@@ -293,12 +314,17 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                                     rounded-xl overflow-hidden
                                     transition-all duration-200
                                     shadow-lg hover:shadow-xl
-                                    ${snapshot.isDragging ? 'ring-4 ring-primary shadow-2xl z-10' : ''}
-                                    ${mistakes.some(m => m.index === index) && showShake
-                                      ? 'ring-2 ring-destructive animate-shake'
-                                      : mistakes.some(m => m.index === index)
-                                        ? 'ring-2 ring-destructive'
-                                        : 'ring-1 ring-border hover:ring-2 hover:ring-primary/50'}
+                                    ${snapshot.isDragging ? "ring-4 ring-primary shadow-2xl z-10" : ""}
+                                    ${
+                                      mistakes.some((m) => m.index === index) &&
+                                      showShake
+                                        ? "ring-2 ring-destructive animate-shake"
+                                        : mistakes.some(
+                                              (m) => m.index === index
+                                            )
+                                          ? "ring-2 ring-destructive"
+                                          : "ring-1 ring-border hover:ring-2 hover:ring-primary/50"
+                                    }
                                   `}
                                   style={provided.draggableProps.style}
                                 >
@@ -375,7 +401,9 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <h2 className="text-4xl font-bold mb-4">Story Completed! 🎉</h2>
+                  <h2 className="text-4xl font-bold mb-4">
+                    Story Completed! 🎉
+                  </h2>
                   <p className="text-xl text-muted-foreground">
                     You&apos;ve successfully arranged all sequences!
                   </p>
@@ -397,10 +425,10 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                       <Star
                         size={64}
                         className={cn(
-                          'transition-all duration-300',
+                          "transition-all duration-300",
                           star <= finalStars
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-gray-200 text-gray-200'
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "fill-gray-200 text-gray-200"
                         )}
                       />
                     </motion.div>
@@ -414,11 +442,13 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
                   className="space-y-4 text-center"
                 >
                   <div className="text-xl">
-                    <span className="text-muted-foreground">Total Attempts:</span>{' '}
+                    <span className="text-muted-foreground">
+                      Total Attempts:
+                    </span>{" "}
                     <span className="font-semibold">{attempts}</span>
                   </div>
                   <div className="text-xl">
-                    <span className="text-muted-foreground">Stars Earned:</span>{' '}
+                    <span className="text-muted-foreground">Stars Earned:</span>{" "}
                     <span className="font-semibold">{finalStars} of 3</span>
                   </div>
                 </motion.div>
@@ -452,5 +482,5 @@ export function SequenceGame({ storyId, studentId, sequenceCards, student }: Seq
         />
       )}
     </>
-  )
+  );
 }
