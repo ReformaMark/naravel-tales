@@ -1,7 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
-import { api } from "./_generated/api";
+import { mutation, query } from "./_generated/server";
 
 // export const updateProgress = mutation({
 //     args: {
@@ -248,11 +247,12 @@ export const updateMultipleProgress = mutation({
         completed: v.optional(v.boolean()),
         sequenceAttempts: v.optional(v.number()),
         sequenceScore: v.optional(v.number()),
+        quizScore: v.optional(v.number()),
+        totalScore: v.optional(v.number()),
         timeSpent: v.optional(v.number()),
         stars: v.optional(v.number()),
     },
     handler: async (ctx, args) => {
-        // Update progress for each student
         await Promise.all(
             args.studentIds.map(async (studentId) => {
                 const existingProgress = await ctx.db
@@ -261,24 +261,75 @@ export const updateMultipleProgress = mutation({
                     .filter((q) => q.eq(q.field("storyId"), args.storyId))
                     .first();
 
-                const updateData: any = {};
-                if (args.note !== undefined) updateData.teacherNotes = args.note;
-                if (args.completed !== undefined) updateData.completed = args.completed;
-                if (args.sequenceAttempts !== undefined) updateData.sequenceAttempts = args.sequenceAttempts;
-                if (args.sequenceScore !== undefined) updateData.sequenceScore = args.sequenceScore;
-                if (args.timeSpent !== undefined) updateData.timeSpent = args.timeSpent;
-                if (args.stars !== undefined) updateData.stars = args.stars;
-                updateData.lastPlayed = Date.now();
-
                 if (existingProgress) {
+                    // Preserve existing values if not provided in the update
+                    const updateData: {
+                        lastPlayed: number;
+                        quizScore: number;
+                        totalScore: number;
+                        sequenceScore: number;
+                        completed: boolean;
+                        sequenceAttempts: number;
+                        timeSpent: number;
+                        stars: number;
+                        teacherNotes?: string;
+                    } = {
+                        lastPlayed: Date.now(),
+                        quizScore: args.quizScore ?? existingProgress.quizScore ?? 0,
+                        totalScore: args.totalScore ?? existingProgress.totalScore ?? 0,
+                        sequenceScore: args.sequenceScore ?? existingProgress.sequenceScore ?? 0,
+                        completed: args.completed ?? existingProgress.completed,
+                        sequenceAttempts: args.sequenceAttempts ?? existingProgress.sequenceAttempts,
+                        timeSpent: args.timeSpent ?? existingProgress.timeSpent,
+                        stars: args.stars ?? existingProgress.stars,
+                    };
+
+                    if (args.note !== undefined) {
+                        updateData.teacherNotes = args.note;
+                    }
+
                     await ctx.db.patch(existingProgress._id, updateData);
                 } else {
-                    await ctx.db.insert("progress", {
+                    // For new entries, use provided values or defaults
+                    const newData: {
+                        studentId: Id<"students">;
+                        storyId: Id<"stories">;
+                        lastPlayed: number;
+                        quizScore: number;
+                        totalScore: number;
+                        sequenceScore: number;
+                        completed: boolean;
+                        sequenceAttempts: number;
+                        timeSpent: number;
+                        stars: number;
+                        teacherNotes?: string; // Added teacherNotes property
+                    } = {
                         studentId,
                         storyId: args.storyId,
-                        ...updateData
-                    });
+                        lastPlayed: Date.now(),
+                        quizScore: args.quizScore ?? 0,
+                        totalScore: args.totalScore ?? 0,
+                        sequenceScore: args.sequenceScore ?? 0,
+                        completed: args.completed ?? false,
+                        sequenceAttempts: args.sequenceAttempts ?? 0,
+                        timeSpent: args.timeSpent ?? 0,
+                        stars: args.stars ?? 0,
+                    };
+
+                    if (args.note !== undefined) {
+                        newData.teacherNotes = args.note;
+                    }
+
+                    await ctx.db.insert("progress", newData);
                 }
+
+                // Update gamification stats
+                await updateGamificationStats(ctx, {
+                    studentId,
+                    completed: args.completed || existingProgress?.completed || false,
+                    sequenceScore: args.sequenceScore || existingProgress?.sequenceScore || 0,
+                    stars: args.stars || existingProgress?.stars || 0,
+                });
             })
         );
 

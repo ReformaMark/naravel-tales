@@ -120,7 +120,9 @@ const schema = defineSchema({
         lastPlayed: v.number(),
         // Sequence activity specific fields
         sequenceAttempts: v.number(),
-        sequenceScore: v.number(), // Percentage correct (0-100)
+        sequenceScore: v.number(), // 50% of total score
+        quizScore: v.optional(v.number()), // 50% of total score
+        totalScore: v.optional(v.number()), // Combined score (0-100)
         timeSpent: v.number(), // in seconds
         teacherNotes: v.optional(v.string()),
         // Simple star rating for gamification (1-3 stars)

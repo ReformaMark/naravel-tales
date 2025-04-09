@@ -170,7 +170,7 @@ export function StudentSelectDialog({
                 );
                 const stars = studentProgress?.stars ?? 0;
                 const completionPercentage = studentProgress
-                  ? Math.round((studentProgress.sequenceScore / 100) * 100)
+                  ? Math.round(((studentProgress.totalScore ?? 0) / 100) * 100)
                   : 0;
                 const isSelected = selectedIds.includes(student._id);
 

@@ -7,17 +7,17 @@ import { Student } from "@/features/students/student-types";
 import { fisherYatesShuffle, validateSequence } from "@/lib/algorithms";
 import { useWindowSize } from "@/lib/hooks/use-window-size";
 import { useGameSounds } from "@/lib/sounds";
-import { cn } from "@/lib/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Star, Users2Icon } from "lucide-react";
+import { Users2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { QuizSection } from "./quiz-section";
 
 export interface SequenceCard {
   url: string | null;
@@ -54,6 +54,12 @@ export function SequenceGame({
   const [showConfetti, setShowConfetti] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [startTime] = useState(Date.now());
+  const [showQuiz, setShowQuiz] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, string>>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [quizScore, setQuizScore] = useState(0);
+  const [sequenceScore, setSequenceScore] = useState(0);
   const { width, height } = useWindowSize();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [shuffledCards, setShuffledCards] = useState<SequenceCard[]>([]);
@@ -64,6 +70,8 @@ export function SequenceGame({
     (sum, count) => sum + count,
     0
   );
+
+  const quizzes = useQuery(api.quiz.get, { storyId });
 
   const currentCards = sequenceCards
     .filter((card) => card.level === currentLevel)
@@ -172,6 +180,10 @@ export function SequenceGame({
   //   }
   // };
 
+  const calculateSequenceScore = (result: { score: number }) => {
+    return Math.round((result.score / 100) * 50);
+  };
+
   const checkSequence = async () => {
     // Check if max attempts reached
     if (totalAttempts >= MAX_ATTEMPTS_PER_STORY) {
@@ -189,10 +201,9 @@ export function SequenceGame({
       playSuccess();
       if (currentLevel === 3) {
         const earnedStars = calculateStars(totalAttempts);
+        const calculatedSequenceScore = calculateSequenceScore(result);
+        setSequenceScore(calculatedSequenceScore);
         setFinalStars(earnedStars);
-
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
         setIsCompleted(true);
         playComplete();
 
@@ -231,9 +242,11 @@ export function SequenceGame({
           storyId,
           completed: true,
           sequenceAttempts: totalAttempts,
-          sequenceScore: result.score,
+          sequenceScore: calculatedSequenceScore,
           timeSpent: Math.floor((Date.now() - startTime) / 1000),
           stars: earnedStars,
+          quizScore: 0, // Initialize with 0
+          totalScore: calculatedSequenceScore, // Initially just the sequence score
         });
 
         await Promise.all(
@@ -248,10 +261,7 @@ export function SequenceGame({
           )
         );
 
-        setShowNoteModal(true);
-        toast.success(
-          `Congratulations! All ${students.length} students have been graded!`
-        );
+        toast.success("Game completed! Continue to quiz.");
       } else {
         playLevelUp();
         toast.success("Level completed! Moving to next level");
@@ -336,8 +346,82 @@ export function SequenceGame({
 
         <div className="max-w-7xl mx-auto space-y-12">
           <AnimatePresence mode="wait">
-            {!isCompleted ? (
-              // Game Content
+            {isCompleted ? (
+              !showQuiz ? (
+                <motion.div
+                  key="completion"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center space-y-8 py-12"
+                >
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <h2 className="text-4xl font-bold mb-4">
+                      Game Completed! 🎉
+                    </h2>
+                    <p className="text-xl text-muted-foreground">
+                      Great job! Let&apos;s continue with the quiz.
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 1.6 }}
+                    className="pt-8"
+                  >
+                    <Button
+                      onClick={() => setShowQuiz(true)}
+                      size="lg"
+                      className="px-8 py-6 text-xl font-semibold rounded-full"
+                    >
+                      Continue to Quiz
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <QuizSection
+                  quizzes={quizzes || []}
+                  finalStars={finalStars}
+                  onComplete={async (quizScore) => {
+                    setQuizScore(quizScore);
+
+                    setShowConfetti(true);
+                    setTimeout(() => setShowConfetti(false), 5000);
+
+                    // Calculate total score (sequence + quiz)
+                    const totalScore = sequenceScore + quizScore;
+
+                    await updateMultipleProgress({
+                      studentIds,
+                      storyId,
+                      completed: true,
+                      sequenceAttempts: totalAttempts,
+                      sequenceScore: sequenceScore,
+                      quizScore: quizScore,
+                      totalScore: totalScore,
+                      timeSpent: Math.floor((Date.now() - startTime) / 1000),
+                      stars: finalStars,
+                    });
+
+                    setShowNoteModal(true);
+
+                    if (quizzes && quizzes.length > 0) {
+                      toast.success(
+                        `Quiz completed! Total Score: ${totalScore}% (Sequence: ${sequenceScore}%, Quiz: ${quizScore}%). All ${students.length} students have been graded!`
+                      );
+                    } else {
+                      toast.success(
+                        `All ${students.length} students have been graded! Final Score: ${totalScore}%`
+                      );
+                    }
+                  }}
+                />
+              )
+            ) : (
               <>
                 <motion.div
                   key={`level-${currentLevel}`}
@@ -530,6 +614,11 @@ export function SequenceGame({
                   </motion.div>
                 </div>
               </>
+            )}
+
+            {/* {!isCompleted ? (
+              // Game Content
+              
             ) : (
               // Completion Content
               <motion.div
@@ -553,10 +642,10 @@ export function SequenceGame({
                       ? "Maximum attempts reached. Try again?"
                       : "You've successfully arranged all sequences!"}
                   </p>
-                </motion.div>
+                </motion.div> */}
 
-                {/* Only show stars and confetti for successful completion */}
-                {totalAttempts < MAX_ATTEMPTS_PER_STORY && (
+            {/* Only show stars and confetti for successful completion */}
+            {/* {totalAttempts < MAX_ATTEMPTS_PER_STORY && (
                   <>
                     {showConfetti && (
                       <ReactConfetti
@@ -613,7 +702,7 @@ export function SequenceGame({
                   </Button>
                 </motion.div>
               </motion.div>
-            )}
+            )} */}
           </AnimatePresence>
         </div>
       </div>

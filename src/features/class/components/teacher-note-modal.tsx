@@ -41,9 +41,10 @@ export function TeacherNoteModal({
     try {
       setIsSubmitting(true);
 
+      // Only send the note update
       await updateProgress({
         studentIds,
-        storyId, // You'll need to pass this as a prop
+        storyId,
         note: note.trim(),
       });
 
