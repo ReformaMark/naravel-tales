@@ -1,6 +1,9 @@
 "use client";
 
+import { SpeechControls } from "@/components/speech-controls";
 import { Button } from "@/components/ui/button";
+import { TeacherNoteModal } from "@/features/class/components/teacher-note-modal";
+import { Student } from "@/features/students/student-types";
 import { fisherYatesShuffle, validateSequence } from "@/lib/algorithms";
 import { useWindowSize } from "@/lib/hooks/use-window-size";
 import { useGameSounds } from "@/lib/sounds";
@@ -8,16 +11,13 @@ import { cn } from "@/lib/utils";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Star, Speaker } from "lucide-react";
+import { Star } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { toast } from "sonner";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { TeacherNoteModal } from "@/features/class/components/teacher-note-modal";
-import { Student } from "@/features/students/student-types";
-import { SpeechControls } from "@/components/speech-controls";
 
 export interface SequenceCard {
   url: string | null;
@@ -34,6 +34,8 @@ interface SequenceGameProps {
   sequenceCards: SequenceCard[];
   student: Student;
 }
+
+const MAX_ATTEMPTS_PER_STORY = 3;
 
 export function SequenceGame({
   storyId,
@@ -57,6 +59,13 @@ export function SequenceGame({
   const { width, height } = useWindowSize();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [shuffledCards, setShuffledCards] = useState<SequenceCard[]>([]);
+  const [attemptsPerLevel, setAttemptsPerLevel] = useState<
+    Record<number, number>
+  >({});
+  const totalAttempts = Object.values(attemptsPerLevel).reduce(
+    (sum, count) => sum + count,
+    0
+  );
 
   const currentCards = sequenceCards
     .filter((card) => card.level === currentLevel)
@@ -106,7 +115,68 @@ export function SequenceGame({
     setMistakes([]);
   };
 
+  // const checkSequence = async () => {
+  //   const correctSequence = sequenceCards
+  //     .filter((card) => card.level === currentLevel)
+  //     .sort((a, b) => a.order - b.order);
+
+  //   const result = validateSequence(cards, correctSequence);
+  //   setMistakes(result.mistakes);
+
+  //   if (result.isCorrect) {
+  //     playSuccess();
+  //     if (currentLevel === 3) {
+  //       const earnedStars = calculateStars(attempts);
+  //       setFinalStars(earnedStars);
+  //       setShowConfetti(true);
+  //       setTimeout(() => setShowConfetti(false), 5000);
+  //       setIsCompleted(true);
+  //       playComplete();
+
+  //       // Update this section
+  //       const progress = await updateProgress({
+  //         studentId,
+  //         storyId,
+  //         completed: true,
+  //         sequenceAttempts: attempts,
+  //         sequenceScore: result.score,
+  //         timeSpent: Math.floor((Date.now() - startTime) / 1000),
+  //         stars: earnedStars,
+  //       });
+
+  //       await checkAndAwardAchievements({
+  //         studentId,
+  //         storyId,
+  //         sequenceScore: result.score,
+  //         timeSpent: Math.floor((Date.now() - startTime) / 1000),
+  //         stars: earnedStars,
+  //       });
+
+  //       setProgressId(progress);
+  //       setShowNoteModal(true);
+  //       toast.success("Congratulations! You completed all levels!");
+  //     } else {
+  //       playLevelUp();
+  //       toast.success("Level completed! Moving to next level");
+  //       setCurrentLevel((prev) => prev + 1);
+  //     }
+  //   } else {
+  //     playError();
+  //     reshuffleCards();
+  //     setAttempts((prev) => prev + 1);
+  //     setMistakes(result.mistakes);
+  //     setShowShake(true);
+  //     setTimeout(() => setShowShake(false), 1000);
+  //     toast.error("Try again! The sequence is not correct.");
+  //   }
+  // };
+
   const checkSequence = async () => {
+    // Check if max attempts reached
+    if (totalAttempts >= MAX_ATTEMPTS_PER_STORY) {
+      return;
+    }
+
     const correctSequence = sequenceCards
       .filter((card) => card.level === currentLevel)
       .sort((a, b) => a.order - b.order);
@@ -117,27 +187,19 @@ export function SequenceGame({
     if (result.isCorrect) {
       playSuccess();
       if (currentLevel === 3) {
-        const earnedStars = calculateStars(attempts);
+        const earnedStars = calculateStars(totalAttempts);
         setFinalStars(earnedStars);
+
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 5000);
         setIsCompleted(true);
         playComplete();
 
-        // Update this section
         const progress = await updateProgress({
           studentId,
           storyId,
           completed: true,
-          sequenceAttempts: attempts,
-          sequenceScore: result.score,
-          timeSpent: Math.floor((Date.now() - startTime) / 1000),
-          stars: earnedStars,
-        });
-
-        await checkAndAwardAchievements({
-          studentId,
-          storyId,
+          sequenceAttempts: totalAttempts,
           sequenceScore: result.score,
           timeSpent: Math.floor((Date.now() - startTime) / 1000),
           stars: earnedStars,
@@ -154,42 +216,54 @@ export function SequenceGame({
     } else {
       playError();
       reshuffleCards();
-      setAttempts((prev) => prev + 1);
       setMistakes(result.mistakes);
       setShowShake(true);
       setTimeout(() => setShowShake(false), 1000);
-      toast.error("Try again! The sequence is not correct.");
+
+      // Only increment attempts on incorrect answers
+      setAttemptsPerLevel((prev) => ({
+        ...prev,
+        [currentLevel]: (prev[currentLevel] || 0) + 1,
+      }));
+
+      // Check if this attempt maxes out the limit
+      if (totalAttempts + 1 >= MAX_ATTEMPTS_PER_STORY) {
+        setIsCompleted(true);
+        toast.error("Maximum attempts reached. Story ended.");
+      } else {
+        toast.error("Try again! The sequence is not correct.");
+      }
     }
   };
 
   function calculateStars(attempts: number): number {
-    if (attempts <= 3) return 3;
-    if (attempts <= 5) return 2;
-    return 1;
+    if (attempts === 0) return 3; // Perfect score
+    if (attempts <= 1) return 2; // 1 mistake
+    return 1; // More than 1 mistake
   }
 
-  const speak = (text: string) => {
-    window.speechSynthesis.cancel();
+  // const speak = (text: string) => {
+  //   window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+  //   const utterance = new SpeechSynthesisUtterance(text);
 
-    // Get available voices and select Zira
-    const voices = window.speechSynthesis.getVoices();
-    const ziraVoice = voices.find(
-      (voice) => voice.name === "Microsoft Zira - English (United States)"
-    );
+  //   // Get available voices and select Zira
+  //   const voices = window.speechSynthesis.getVoices();
+  //   const ziraVoice = voices.find(
+  //     (voice) => voice.name === "Microsoft Zira - English (United States)"
+  //   );
 
-    if (ziraVoice) {
-      utterance.voice = ziraVoice;
-    }
+  //   if (ziraVoice) {
+  //     utterance.voice = ziraVoice;
+  //   }
 
-    // Optimize parameters for Zira's voice
-    utterance.rate = 0.9; // Slightly slower for better clarity
-    utterance.pitch = 1.1; // Slightly higher pitch but not too much
-    utterance.volume = 1; // Full volume
+  //   // Optimize parameters for Zira's voice
+  //   utterance.rate = 0.9; // Slightly slower for better clarity
+  //   utterance.pitch = 1.1; // Slightly higher pitch but not too much
+  //   utterance.volume = 1; // Full volume
 
-    window.speechSynthesis.speak(utterance);
-  };
+  //   window.speechSynthesis.speak(utterance);
+  // };
 
   // Since voices might load after page load, we need to handle that
   useEffect(() => {
@@ -382,7 +456,9 @@ export function SequenceGame({
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <span>Attempts: {attempts}</span>
+                    <span>
+                      Mistakes: {totalAttempts}/{MAX_ATTEMPTS_PER_STORY}
+                    </span>
                     <span>•</span>
                     <span>Level {currentLevel} of 3</span>
                   </motion.div>
@@ -402,56 +478,57 @@ export function SequenceGame({
                   transition={{ delay: 0.2 }}
                 >
                   <h2 className="text-4xl font-bold mb-4">
-                    Story Completed! 🎉
+                    {totalAttempts >= MAX_ATTEMPTS_PER_STORY
+                      ? "Story Ended"
+                      : "Story Completed! 🎉"}
                   </h2>
                   <p className="text-xl text-muted-foreground">
-                    You&apos;ve successfully arranged all sequences!
+                    {totalAttempts >= MAX_ATTEMPTS_PER_STORY
+                      ? "Maximum attempts reached. Try again?"
+                      : "You've successfully arranged all sequences!"}
                   </p>
                 </motion.div>
 
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex justify-center gap-6 py-8"
-                >
-                  {[1, 2, 3].map((star) => (
-                    <motion.div
-                      key={star}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.8 + star * 0.2 }}
-                    >
-                      <Star
-                        size={64}
-                        className={cn(
-                          "transition-all duration-300",
-                          star <= finalStars
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "fill-gray-200 text-gray-200"
-                        )}
+                {/* Only show stars and confetti for successful completion */}
+                {totalAttempts < MAX_ATTEMPTS_PER_STORY && (
+                  <>
+                    {showConfetti && (
+                      <ReactConfetti
+                        width={width}
+                        height={height}
+                        recycle={false}
+                        numberOfPieces={500}
+                        gravity={0.2}
                       />
-                    </motion.div>
-                  ))}
-                </motion.div>
+                    )}
 
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 1.4 }}
-                  className="space-y-4 text-center"
-                >
-                  <div className="text-xl">
-                    <span className="text-muted-foreground">
-                      Total Attempts:
-                    </span>{" "}
-                    <span className="font-semibold">{attempts}</span>
-                  </div>
-                  <div className="text-xl">
-                    <span className="text-muted-foreground">Stars Earned:</span>{" "}
-                    <span className="font-semibold">{finalStars} of 3</span>
-                  </div>
-                </motion.div>
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="flex justify-center gap-6 py-8"
+                    >
+                      {[1, 2, 3].map((star) => (
+                        <motion.div
+                          key={star}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.8 + star * 0.2 }}
+                        >
+                          <Star
+                            size={64}
+                            className={cn(
+                              "transition-all duration-300",
+                              star <= finalStars
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "fill-gray-200 text-gray-200"
+                            )}
+                          />
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
 
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
@@ -464,7 +541,9 @@ export function SequenceGame({
                     size="lg"
                     className="px-8 py-6 text-xl font-semibold rounded-full"
                   >
-                    Play Again
+                    {totalAttempts >= MAX_ATTEMPTS_PER_STORY
+                      ? "Try Again"
+                      : "Play Again"}
                   </Button>
                 </motion.div>
               </motion.div>
