@@ -26,6 +26,8 @@ export function LoginModal() {
 
   const router = useRouter()
 
+  console.log(`Role Check: `, roleCheck)
+
   useEffect(() => {
     if (isAuthenticated) {
       if (roleCheck === "teacher") {
