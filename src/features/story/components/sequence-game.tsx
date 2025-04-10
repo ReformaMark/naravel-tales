@@ -237,17 +237,17 @@ export function SequenceGame({
         // setShowNoteModal(true);
         // toast.success("Congratulations! You completed all levels!");
 
-        await updateMultipleProgress({
-          studentIds,
-          storyId,
-          completed: true,
-          sequenceAttempts: totalAttempts,
-          sequenceScore: calculatedSequenceScore,
-          timeSpent: Math.floor((Date.now() - startTime) / 1000),
-          stars: earnedStars,
-          quizScore: 0, // Initialize with 0
-          totalScore: calculatedSequenceScore, // Initially just the sequence score
-        });
+        // await updateMultipleProgress({
+        //   studentIds,
+        //   storyId,
+        //   completed: true,
+        //   sequenceAttempts: totalAttempts,
+        //   sequenceScore: calculatedSequenceScore,
+        //   timeSpent: Math.floor((Date.now() - startTime) / 1000),
+        //   stars: earnedStars,
+        //   quizScore: 0, // Initialize with 0
+        //   totalScore: calculatedSequenceScore, // Initially just the sequence score
+        // });
 
         await Promise.all(
           studentIds.map((studentId) =>
@@ -388,7 +388,6 @@ export function SequenceGame({
                   finalStars={finalStars}
                   onComplete={async (quizScore) => {
                     setQuizScore(quizScore);
-
                     setShowConfetti(true);
                     setTimeout(() => setShowConfetti(false), 5000);
 
@@ -410,12 +409,10 @@ export function SequenceGame({
                     setShowNoteModal(true);
 
                     if (quizzes && quizzes.length > 0) {
-                      toast.success(
-                        `Quiz completed! Total Score: ${totalScore}% (Sequence: ${sequenceScore}%, Quiz: ${quizScore}%). All ${students.length} students have been graded!`
-                      );
+                      toast.success("Quiz completed!");
                     } else {
                       toast.success(
-                        `All ${students.length} students have been graded! Final Score: ${totalScore}%`
+                        "All ${students.length} students have been graded!"
                       );
                     }
                   }}

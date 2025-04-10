@@ -329,6 +329,8 @@ export const updateMultipleProgress = mutation({
                     completed: args.completed || existingProgress?.completed || false,
                     sequenceScore: args.sequenceScore || existingProgress?.sequenceScore || 0,
                     stars: args.stars || existingProgress?.stars || 0,
+                    storyId: args.storyId,
+                    totalScore: args.totalScore || 0,
                 });
             })
         );
@@ -345,8 +347,16 @@ async function updateGamificationStats(
         completed: boolean;
         sequenceScore: number;
         stars: number;
+        storyId: Id<"stories">;
+        totalScore: number;
     }
 ) {
+    const existingProgress = await ctx.db
+        .query("progress")
+        .withIndex("by_student", (q: any) => q.eq("studentId", args.studentId))
+        .filter((q: any) => q.eq(q.field("storyId"), args.storyId))
+        .first();
+
     const stats = await ctx.db
         .query("gamificationStats")
         .withIndex("by_student", (q: any) =>
@@ -355,19 +365,22 @@ async function updateGamificationStats(
         .first();
 
     const points = calculatePoints(args.sequenceScore, args.stars);
+    const isFirstTimeCompletion = !existingProgress?.completed;
 
     if (stats) {
         await ctx.db.patch(stats._id, {
             totalPoints: stats.totalPoints + points,
             weeklyPoints: stats.weeklyPoints + points,
             monthlyPoints: stats.monthlyPoints + points,
-            storiesCompleted: args.completed
+            storiesCompleted: args.completed && isFirstTimeCompletion
                 ? stats.storiesCompleted + 1
                 : stats.storiesCompleted,
-            totalStarsEarned: stats.totalStarsEarned + args.stars,
+            totalStarsEarned: isFirstTimeCompletion
+                ? stats.totalStarsEarned + args.stars
+                : stats.totalStarsEarned,
             averageAccuracy: calculateNewAverage(
                 stats.averageAccuracy,
-                args.sequenceScore,
+                args.totalScore,
                 stats.storiesCompleted
             ),
             lastUpdated: Date.now(),
@@ -381,7 +394,7 @@ async function updateGamificationStats(
             nextLevelExp: 1000,
             storiesCompleted: args.completed ? 1 : 0,
             totalStarsEarned: args.stars,
-            averageAccuracy: args.sequenceScore,
+            averageAccuracy: args.totalScore,
             weeklyPoints: points,
             monthlyPoints: points,
             weekStartDate: getWeekStartDate(),
@@ -403,8 +416,10 @@ function calculateNewAverage(
     newScore: number,
     totalStories: number
 ): number {
+    const weightedScore = newScore === 100 ? 100 : newScore;
+
     return Math.round(
-        (currentAverage * totalStories + newScore) / (totalStories + 1)
+        (currentAverage * totalStories + weightedScore) / (totalStories + 1)
     );
 }
 

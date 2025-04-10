@@ -246,7 +246,7 @@ export const LearningProgressCard = () => {
                             ))}
                           </div>
                           <div className="text-sm font-medium">
-                            {entry.sequenceScore}%
+                            {entry.totalScore}%
                           </div>
                         </div>
                       </div>
@@ -258,6 +258,14 @@ export const LearningProgressCard = () => {
                         <div className="flex items-center gap-1">
                           <Target className="h-4 w-4" />
                           <span>Attempts: {entry.sequenceAttempts}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <BookOpen className="h-4 w-4" />
+                          <span>
+                            Quiz Score:{" "}
+                            {(entry.quizScore ?? 0) / 10 +
+                              ` / ${(entry.quizScore ?? 0) / 10}`}
+                          </span>
                         </div>
                       </div>
                     </CardContent>
