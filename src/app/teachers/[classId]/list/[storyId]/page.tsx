@@ -14,6 +14,7 @@ import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { SoundToggle } from "@/components/sound-toggle";
 import { SequenceGame } from "@/features/story/components/sequence-game";
+import { Badge } from "@/components/ui/badge";
 
 export default function StoryPage({
   params: { classId, storyId },
@@ -48,14 +49,21 @@ function StoryContent({
 
   return (
     <div className="space-y-6 text-primary">
-      <div className="flex items-center justify-center gap-4 max-w-4xl mx-auto">
+      <div className="flex items-start justify-start gap-4 max-w-4xl mx-auto">
         <Button size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+        <div className="w-full">
+
+          <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+          <div className="max-w-4xl mx-auto  text-muted-foreground w-full">
+            <h3 className="text-sm">Author: {story.author?? "-"}</h3>
+            <h3 className="text-sm">Category: <Badge>{story.category ?? "-"}</Badge></h3>
+          </div>
+        </div>
         <SoundToggle />
       </div>
-
+     
       {studentIds.length > 0 ? (
         <div className="max-w-7xl mx-auto">
           <SequenceGame

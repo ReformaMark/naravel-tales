@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SoundToggle } from "@/components/sound-toggle";
 import { useSearchParams } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
 const STORIES_PER_PAGE = 12;
 
@@ -136,7 +137,7 @@ export default function StoriesListPage({
                         </Breadcrumb>
                     </div>
                 </header>
-            <h1 className="text-xl font-semibold">Category: {selectedCategory}</h1>
+            <h1 className="text-xl font-semibold">Category: <Badge>{selectedCategory}</Badge></h1>
                 <Card className="w-full max-w-7xl m-auto">
                     <CardHeader className="flex flex-col space-y-4">
                         <div className="flex flex-row items-center justify-between">
@@ -180,9 +181,10 @@ export default function StoriesListPage({
                                                     />
                                                 </div>
                                                 <div className="p-4 pb-0">
-                                                    <h3 className="font-semibold text-lg mb-2 text-primary">
+                                                    <h3 className="font-semibold text-lg  text-primary">
                                                         {story.title}
                                                     </h3>
+                                                    <h4 className="text-sm text-muted-foreground ">Author: <span className="font-normal"> {story.author}</span></h4>
                                                 </div>
                                             </Link>
                                                 <div className="flex justify-between items-center px-4 pb-4">

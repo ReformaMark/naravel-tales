@@ -115,8 +115,11 @@ return (
                                           />
                                       </div>
                                       <div className="p-4">
-                                          <h3 className="font-semibold text-lg mb-2 text-primary">
+                                          <h3 className="font-semibold text-lg  text-primary">
                                               {story.title}
+                                          </h3>
+                                          <h3 className="font-semibold  text-sm text-muted-foreground">
+                                              Author: {story.author ?? "-"}
                                           </h3>
                                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                               <span>Age: {story.ageGroup}</span>

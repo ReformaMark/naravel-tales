@@ -262,7 +262,7 @@ export default function AddStoriesCard() {
                         <Input
                             id="author"
                             name="author"
-                            value={storiesData.title}
+                            value={storiesData.author}
                             onChange={handleInputChange}
                             required
                             className="pl-10 border-primary bg-primary/50 focus:ring-primary"
