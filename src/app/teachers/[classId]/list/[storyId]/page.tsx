@@ -52,7 +52,10 @@ function StoryContent({
         <Button size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+        <div className="flex flex-col justify-center items-center">
+          <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
+          <p className="text-muted-foreground">Author: {story.author}</p>
+        </div>
         <SoundToggle />
       </div>
 
