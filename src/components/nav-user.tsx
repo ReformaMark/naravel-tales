@@ -1,16 +1,8 @@
-"use client"
+"use client";
 
-import {
-  ChevronsUpDown,
-  LogOut,
+import { ChevronsUpDown, LogOut, User2Icon } from "lucide-react";
 
-} from "lucide-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,14 +10,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useAuthActions } from "@convex-dev/auth/react"
+} from "@/components/ui/sidebar";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useAtom } from "jotai";
+import { isUpdateProfileModalOpenAtom } from "@/features/settings/update-profile";
 
 export function NavUser({
   user,
@@ -35,12 +29,15 @@ export function NavUser({
     lname: string;
     email: string;
     avatar: string;
-  }
+  };
 }) {
-  const { isMobile } = useSidebar()
-  const { signOut } = useAuthActions()
+  const { isMobile } = useSidebar();
+  const { signOut } = useAuthActions();
+  const [, setIsUpdateProfileDialogOpen] = useAtom(
+    isUpdateProfileModalOpenAtom
+  );
 
-  const formattedName = `${user?.fname} ${user?.lname}`
+  const formattedName = `${user?.fname} ${user?.lname}`;
 
   return (
     <SidebarMenu>
@@ -52,9 +49,14 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user?.avatar} alt={user?.fname} className="object-cover" />
+                <AvatarImage
+                  src={user?.avatar}
+                  alt={user?.fname}
+                  className="object-cover"
+                />
                 <AvatarFallback className="rounded-lg bg-primary text-white">
-                  {user?.fname.charAt(0).toUpperCase()}{user?.lname.charAt(0).toUpperCase()}
+                  {user?.fname.charAt(0).toUpperCase()}
+                  {user?.lname.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -75,11 +77,14 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.avatar} alt={user?.fname} />
                   <AvatarFallback className="rounded-lg bg-primary text-white">
-                    {user?.fname.charAt(0).toUpperCase()}{user?.lname.charAt(0).toUpperCase()}
+                    {user?.fname.charAt(0).toUpperCase()}
+                    {user?.lname.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{formattedName}</span>
+                  <span className="truncate font-semibold">
+                    {formattedName}
+                  </span>
                   <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
@@ -103,6 +108,15 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                setIsUpdateProfileDialogOpen(true);
+              }}
+              className="cursor-pointer"
+            >
+              <User2Icon />
+              Edit profile
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={signOut} className="cursor-pointer">
               <LogOut />
               Log out
@@ -111,5 +125,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

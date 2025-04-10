@@ -1,6 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { query } from "./_generated/server";
-import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
 import { asyncMap } from "convex-helpers";
 
 export const current = query({
@@ -50,7 +50,7 @@ export const checkEmailExists = query({
 });
 
 export const getAllUsers = query({
-    handler: async(ctx) => {
+    handler: async (ctx) => {
         return (await ctx.db.query('users').collect())
     }
 })
@@ -59,14 +59,14 @@ export const getActiveUsers = query({
     handler: async (ctx) => {
         const users = await ctx.db.query('users').collect();
 
-        const activeUsers = await asyncMap(users, async(user) => {
+        const activeUsers = await asyncMap(users, async (user) => {
             // Get the current date
             const currentDate = new Date();
-            
+
             // Calculate the date one month ago
             const lastMonthDate = new Date(currentDate);
             lastMonthDate.setMonth(currentDate.getMonth() - 1);
-            
+
             // Convert lastMonthDate to a timestamp for querying
             const lastMonthTimestamp = lastMonthDate.getTime(); // Optional: if your DB uses timestamps
 
@@ -76,8 +76,8 @@ export const getActiveUsers = query({
                 .order('desc')
                 .collect(); // Ensure to call find() or similar method to execute the query
             const getUser = authSessions.find(session => session.userId === user._id && session._creationTime > lastMonthTimestamp)
-            
-            if(getUser) {
+
+            if (getUser) {
                 return getUser
             } else {
                 return null
@@ -89,7 +89,7 @@ export const getActiveUsers = query({
 })
 
 export const getNumberOfRoles = query({
-    handler: async(ctx) => {
+    handler: async (ctx) => {
         const users = await ctx.db.query('users').collect()
         const usersCounts = {
             admin: 0,
@@ -148,7 +148,7 @@ export const getTeacherByStudentId = query({
         // Get the teacher from users table
         const teacher = await ctx.db
             .query("users")
-            .filter((q) => 
+            .filter((q) =>
                 q.and(
                     q.eq(q.field("_id"), class_.teacherId),
                     q.eq(q.field("role"), "teacher")
@@ -159,3 +159,18 @@ export const getTeacherByStudentId = query({
         return teacher;
     },
 });
+
+export const updateInfo = mutation({
+    args: {
+        fname: v.optional(v.string()),
+        lname: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const userId = await getAuthUserId(ctx)
+        if (!userId) throw new ConvexError("Error: Unauthorized")
+
+        return await ctx.db.patch(userId, {
+            ...args,
+        })
+    }
+})

@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 
 import {
   Frame,
@@ -8,29 +7,28 @@ import {
   Map,
   MessageSquareIcon,
   PieChart,
-  Settings2,
-  TrophyIcon
-} from "lucide-react"
+  TrophyIcon,
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { useCurrentUser } from "@/features/auth/api/use-current-user"
-import { useMyChildren } from "@/features/parents/api/use-my-children"
-import { useStudentId } from "@/features/students/hooks/use-student-id"
-import { UserSidebarType } from "@/types"
-import { StudentSwitcher } from "./student-switcher"
+} from "@/components/ui/sidebar";
+import { useCurrentUser } from "@/features/auth/api/use-current-user";
+import { useMyChildren } from "@/features/parents/api/use-my-children";
+import { useStudentId } from "@/features/students/hooks/use-student-id";
+import { UserSidebarType } from "@/types";
+import { StudentSwitcher } from "./student-switcher";
 
-
-
-export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const studentId = useStudentId()
+export function ParentSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const studentId = useStudentId();
 
   const data = {
     navMain: [
@@ -47,7 +45,7 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           {
             title: "Recent Activities",
             url: `/parent/${studentId}/activities`,
-          }
+          },
         ],
       },
       {
@@ -62,7 +60,7 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           {
             title: "Teacher Notes",
             url: `/parent/${studentId}/notes`,
-          }
+          },
         ],
       },
       {
@@ -91,21 +89,21 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
           },
         ],
       },
-      {
-        title: "Settings",
-        url: `/parent/${studentId}/settings`,
-        icon: Settings2,
-        items: [
-          {
-            title: "Profile Settings",
-            url: `/parent/${studentId}/settings`,
-          },
-          {
-            title: "Notifications",
-            url: `/parent/${studentId}/settings/notifications`,
-          }
-        ],
-      }
+      // {
+      //   title: "Settings",
+      //   url: `/parent/${studentId}/settings`,
+      //   icon: Settings2,
+      //   items: [
+      //     {
+      //       title: "Profile Settings",
+      //       url: `/parent/${studentId}/settings`,
+      //     },
+      //     {
+      //       title: "Notifications",
+      //       url: `/parent/${studentId}/settings/notifications`,
+      //     }
+      //   ],
+      // }
     ],
     projects: [
       {
@@ -124,21 +122,31 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
         icon: Map,
       },
     ],
-  }
+  };
 
-  const { data: user } = useCurrentUser()
-  const { data: students, isLoading: studentsLoading } = useMyChildren()
-  const currentStudent = students?.find(s => s._id === studentId)
+  const { data: user } = useCurrentUser();
+  const { data: students, isLoading: studentsLoading } = useMyChildren();
+  const currentStudent = students?.find((s) => s._id === studentId);
 
-  if (!user) return null
-  if (!students) return null
+  if (!user) return null;
+  if (!students) return null;
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <StudentSwitcher
-          students={students.map(s => ({ name: `${s.fname} ${s.lname}`, _id: s._id }))}
-          currentStudent={currentStudent ? { name: `${currentStudent.fname} ${currentStudent.lname}`, _id: currentStudent._id } : undefined}
+          students={students.map((s) => ({
+            name: `${s.fname} ${s.lname}`,
+            _id: s._id,
+          }))}
+          currentStudent={
+            currentStudent
+              ? {
+                  name: `${currentStudent.fname} ${currentStudent.lname}`,
+                  _id: currentStudent._id,
+                }
+              : undefined
+          }
           isLoading={studentsLoading}
         />
       </SidebarHeader>
@@ -151,5 +159,5 @@ export function ParentSidebar({ ...props }: React.ComponentProps<typeof Sidebar>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

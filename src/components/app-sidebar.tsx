@@ -1,6 +1,5 @@
 "use client";
 
-import { BookOpen, Bot, Settings2, SquareTerminal } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { SectionSwitcher } from "@/components/section-switcher";
@@ -15,6 +14,7 @@ import { useCurrentUser } from "@/features/auth/api/use-current-user";
 import { useAllClass } from "@/features/class/api/use-all-class";
 import { useClassId } from "@/features/class/hooks/use-class-id";
 import { UserSidebarType } from "@/types";
+import { BookOpen, Bot, SquareTerminal } from "lucide-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const classId = useClassId();
@@ -23,150 +23,108 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: [
       {
         title: "Dashboard",
-
         url: `/teachers/${classId}/dashboard`,
-
         icon: SquareTerminal,
-
         isActive: true,
-
         items: [
           {
             title: "Overview",
-
             url: `/teachers/${classId}`,
           },
-
           // {
           //   title: "Monitoring",
 
           //   url: `/teachers/${classId}/monitoring`,
           // },
-
           {
             title: "History",
-
             url: `/teachers/${classId}/history`,
           },
         ],
       },
-
       {
         title: "Class",
-
         url: "#",
-
         icon: Bot,
-
         items: [
           {
             title: "My Students",
-
             url: `/teachers/${classId}/my-students`,
           },
-
           {
             title: "Inquiries",
-
             url: `/teachers/${classId}/inquiries`,
           },
-
           {
             title: "Achievements",
-
             url: `/teachers/${classId}/achievements`,
           },
-
           // {
-          //   title: "Performance",
-
+          //   t
           //   url: "#",
           // },
-
           // {
           //   title: "Settings",
-
           //   url: "#",
           // },
         ],
       },
-
       {
         title: "Stories",
-
         url: "#",
-
         icon: BookOpen,
-
         items: [
           {
             title: "List of Stories",
-
             url: `/teachers/${classId}/list`,
           },
           {
             title: "Add Stories",
-
             url: `/teachers/${classId}/create-stories`,
           },
           {
             title: "Archived Stories",
-
             url: `/teachers/${classId}/archived-stories`,
           },
-
           // {
           //   title: "Archived Stories",
-
           //   url: "#",
           // },
-
           // {
           //   title: "Settings",
-
           //   url: "#",
           // },
         ],
       },
 
-      {
-        title: "Settings",
-
-        url: "#",
-
-        icon: Settings2,
-
-        items: [
-          {
-            title: "User Profile",
-
-            url: "#",
-          },
-
-          // {
-          //   title: "Classes",
-
-          //   url: "#",
-          // },
-
-          // {
-          //   title: "Students",
-
-          //   url: "#",
-          // },
-        ],
-      },
+      // {
+      //   title: "Settings",
+      //   url: "#",
+      //   icon: Settings2,
+      //   items: [
+      //     {
+      //       title: "User Profile",
+      //       url: "#",
+      //     },
+      //     // {
+      //     //   title: "Classes",
+      //     //   url: "#",
+      //     // },
+      //     // {
+      //     //   title: "Students",
+      //     //   url: "#",
+      //     // },
+      //   ],
+      // },
     ],
   };
 
   const { data: user } = useCurrentUser();
-
   const { data: classes, isLoading: sectionSwitcherLoading } = useAllClass();
 
   const currentClass = classes?.find((c) => c._id === classId);
 
   if (!user) return null;
-
   if (!classes) return null;
 
   return (
