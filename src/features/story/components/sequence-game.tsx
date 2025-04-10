@@ -67,6 +67,9 @@ export function SequenceGame({
     Record<number, number>
   >({});
   const [showInstructions, setShowInstructions] = useState(true);
+  const [gameEndReason, setGameEndReason] = useState<
+    "completed" | "max-attempts"
+  >("completed");
 
   const totalAttempts = Object.values(attemptsPerLevel).reduce(
     (sum, count) => sum + count,
@@ -275,6 +278,8 @@ export function SequenceGame({
         setIsCompleted(true);
         playComplete();
 
+        setGameEndReason("completed");
+
         await Promise.all(
           studentIds.map((studentId) =>
             checkAndAwardAchievements({
@@ -309,6 +314,7 @@ export function SequenceGame({
       // Check if this attempt maxes out the limit
       if (totalAttempts + 1 >= MAX_ATTEMPTS_PER_STORY) {
         setIsCompleted(true);
+        setGameEndReason("max-attempts");
         toast.error("Maximum attempts reached. Story ended.");
       } else {
         toast.error("Try again! The sequence is not correct.");
@@ -362,12 +368,31 @@ export function SequenceGame({
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                   >
-                    <h2 className="text-4xl font-bold mb-4">
+                    {/* <h2 className="text-4xl font-bold mb-4">
                       Game Completed! 🎉
                     </h2>
                     <p className="text-xl text-muted-foreground">
                       Great job! Let&apos;s continue with the quiz.
-                    </p>
+                    </p> */}
+                    {gameEndReason === "completed" ? (
+                      <>
+                        <h2 className="text-4xl font-bold mb-4">
+                          Game Completed! 🎉
+                        </h2>
+                        <p className="text-xl text-muted-foreground">
+                          Great job! Let&apos;s continue with the quiz.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="text-4xl font-bold mb-4 text-destructive">
+                          Game Over
+                        </h2>
+                        <p className="text-xl text-muted-foreground">
+                          Maximum attempts reached. Please try again.
+                        </p>
+                      </>
+                    )}
                   </motion.div>
 
                   <motion.div
@@ -376,13 +401,37 @@ export function SequenceGame({
                     transition={{ delay: 1.6 }}
                     className="pt-8"
                   >
-                    <Button
+                    {/* <Button
                       onClick={() => setShowQuiz(true)}
                       size="lg"
                       className="px-8 py-6 text-xl font-semibold rounded-full"
                     >
                       Continue to Quiz
-                    </Button>
+                    </Button> */}
+                    {gameEndReason === "completed" ? (
+                      <Button
+                        onClick={() => setShowQuiz(true)}
+                        size="lg"
+                        className="px-8 py-6 text-xl font-semibold rounded-full"
+                      >
+                        Continue to Quiz
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          // Reset the game
+                          setIsCompleted(false);
+                          setCurrentLevel(1);
+                          setAttemptsPerLevel({});
+                          setMistakes([]);
+                          // Reinitialize will happen via useEffect
+                        }}
+                        size="lg"
+                        className="px-8 py-6 text-xl font-semibold rounded-full"
+                      >
+                        Try Again
+                      </Button>
+                    )}
                   </motion.div>
                 </motion.div>
               ) : (
