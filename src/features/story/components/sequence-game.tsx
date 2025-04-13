@@ -504,24 +504,37 @@ export function SequenceGame({
                         .join(". ")}
                     />
                   </motion.div>
-                  <motion.p
+                  {/* <motion.p
                     className="text-lg text-muted-foreground"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                   >
                     Arrange the images in the correct sequence
-                  </motion.p>
-                  <motion.p
-                    className="text-sm text-muted-foreground max-w-2xl mx-auto"
+                  </motion.p> */}
+                  <motion.div
+                    className="text-sm text-muted-foreground max-w-2xl mx-auto space-y-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                   >
-                    {currentLevelCards
-                      .map((c) => c.description + ".")
-                      .join("\n")}
-                  </motion.p>
+                    {currentLevelCards.map((c, index) => (
+                      <p key={index}>{c.description}</p>
+                    ))}
+                  </motion.div>
+
+                  <motion.div
+                    className="text-sm text-muted-foreground max-w-2xl mx-auto space-y-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <h1 className="text-black text-base underline underline-offset-4">
+                      Drag and position the image correctly based on the content
+                      text provided.
+                    </h1>
+                  </motion.div>
+
                   {mistakes.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -535,7 +548,7 @@ export function SequenceGame({
                 </motion.div>
 
                 {/* Game Instructions */}
-                <AnimatePresence>
+                {/* <AnimatePresence>
                   {showInstructions && (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -563,7 +576,7 @@ export function SequenceGame({
                       </Button>
                     </motion.div>
                   )}
-                </AnimatePresence>
+                </AnimatePresence> */}
 
                 <div className="w-full space-y-6">
                   <DragDropContext

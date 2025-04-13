@@ -20,12 +20,15 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { useAtom } from "jotai";
+import { isShowInstructionsModalOpenAtom } from "@/features/settings/show-instructions";
 
 const PlayGamePage = ({
   params: { classId, storyId },
 }: {
   params: { classId: Id<"classes">; storyId: Id<"stories"> };
 }) => {
+  const [, setIsOpen] = useAtom(isShowInstructionsModalOpenAtom);
   const searchParams = useSearchParams();
 
   const studentIds = searchParams.getAll("studentIds[]") as Id<"students">[];
@@ -225,7 +228,7 @@ const PlayGamePage = ({
         <div className="max-w-7xl mx-auto">
           <Card className="shadow-lg">
             <CardHeader className="p-3 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center">
                 <Button
                   variant="ghost"
                   asChild
@@ -248,9 +251,18 @@ const PlayGamePage = ({
                   </p>
                 </div>
 
-                <div className="w-full sm:w-[100px] flex justify-end">
-                  <SoundToggle />
+                <div className="w-full flex justify-center mt-3 lg:mt-0">
+                  <Button
+                    variant="default"
+                    className="text-sm sm:text-base lg:w-[250px]"
+                    onClick={() => setIsOpen(true)}
+                  >
+                    How to Play
+                  </Button>
                 </div>
+              </div>
+              <div className="w-full sm:w-[100px] flex justify-end">
+                <SoundToggle />
               </div>
             </CardHeader>
 
