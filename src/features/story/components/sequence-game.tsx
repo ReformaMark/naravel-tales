@@ -10,7 +10,7 @@ import { useGameSounds } from "@/lib/sounds";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation, useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowDown, ArrowUp, HelpCircle, Users2Icon } from "lucide-react";
+import { ArrowDown, ArrowUp, Users2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import ReactConfetti from "react-confetti";
@@ -66,6 +66,7 @@ export function SequenceGame({
   const [attemptsPerLevel, setAttemptsPerLevel] = useState<
     Record<number, number>
   >({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showInstructions, setShowInstructions] = useState(true);
   const [gameEndReason, setGameEndReason] = useState<
     "completed" | "max-attempts"
