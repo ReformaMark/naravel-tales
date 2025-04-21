@@ -31,6 +31,7 @@ import { UploadPlaceholder } from './UploadPlaceHolder'
 import { ImagePreview } from './ImagePreview'
 import { api } from '../../../../../../convex/_generated/api'
 import { Id } from '../../../../../../convex/_generated/dataModel'
+import { useQuery } from 'convex/react'
 
 interface SequenceCard {
     id: string;
@@ -51,7 +52,7 @@ interface Story {
     title: string;
     content: string;
     author: string;
-    category: "Fables" | "Legends";
+    categoryId: Id<'storyCategories'> | undefined;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image: File | null;
@@ -70,7 +71,7 @@ interface Story {
 const storiesInitialData: Story = {
     title: "",
     content: "",
-    category: "Fables",
+    categoryId: undefined,
     author: "",
     difficulty: "easy",
     ageGroup: "3-4",
@@ -89,6 +90,7 @@ const storiesInitialData: Story = {
 
 export default function AddStoriesCard() {
     const [storiesData, setStoriesData] = useState<Story>(storiesInitialData)
+    const categories = useQuery(api.storyCategories.getCategories)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const { mutate: generateUploadUrl } = useGenerateUploadUrl()
@@ -186,7 +188,7 @@ export default function AddStoriesCard() {
                 title: storiesData.title,
                 content: storiesData.content,
                 author: storiesData.author,
-                category: storiesData.category,
+                categoryId: storiesData.categoryId,
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
                 imageId: storageId!,
@@ -277,18 +279,19 @@ export default function AddStoriesCard() {
                             onValueChange={(value) =>
                                 setStoriesData((prevData) => ({
                                     ...prevData,
-                                    category: value as "Fables" | "Legends",
+                                    categoryId: value as Id<'storyCategories'>,
                                 }))
                             }
-                            value={storiesData.category || ""}
+                            value={storiesData.categoryId || ""}
                             disabled={isPending}
                         >
                             <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Fables">Fables</SelectItem>
-                                <SelectItem value="Legends">Legends</SelectItem>
+                                {categories?.map((category) =>(
+                                     <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>

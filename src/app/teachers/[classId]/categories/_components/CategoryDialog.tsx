@@ -2,7 +2,6 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import React, { useEffect, useRef, useState } from 'react'
 import { Id } from '../../../../../../convex/_generated/dataModel';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -244,7 +243,7 @@ function CategoryDialog({ categoryDialog, setCategoryDialog, categoryId}: Catego
                             size={'icon'}
                             variant={'destructive'}
                             className=" transition-all duration-300 ease-in "
-                            disabled={isPending}
+                            disabled={isDeletePending}
                             >
                         
                             <TrashIcon/>

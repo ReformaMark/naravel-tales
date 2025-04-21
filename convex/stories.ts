@@ -69,10 +69,13 @@ export const getById = query({
         url: card.imageId ? await ctx.storage.getUrl(card.imageId as Id<'_storage'>) : null,
       }))
     );
+    const category = story && story.categoryId ? await ctx.db.get(story.categoryId) : null
+   
 
     return {
       ...story,
       url: story?.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
+      categoryDoc: category,
       sequenceCards: sequenceCardsWithUrls,
     };
   },
@@ -83,7 +86,7 @@ export const createStory = mutation({
     title: v.string(),
     content: v.string(),
     author: v.string(),
-    category: v.union(v.literal("Fables"), v.literal("Legends")),
+    categoryId: v.optional(v.id('storyCategories')),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
     imageId: v.optional(v.string()),
@@ -123,7 +126,7 @@ export const editStory = mutation({
     storyId: v.id('stories'),
     title: v.string(),
     author: v.string(),
-    category: v.union(v.literal("Fables"), v.literal("Legends")),
+    categoryId: v.optional(v.id('storyCategories')),
     content: v.string(),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
@@ -148,7 +151,7 @@ export const editStory = mutation({
       content: args.content,
       difficulty: args.difficulty,
       author: args.author,
-      category: args.category,
+      categoryId: args.categoryId,
       ageGroup: args.ageGroup,
       minAge: args.minAge,
       maxAge: args.maxAge,
