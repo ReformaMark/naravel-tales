@@ -25,6 +25,7 @@ import type * as quiz from "../quiz.js";
 import type * as resendOTP from "../resendOTP.js";
 import type * as seed from "../seed.js";
 import type * as stories from "../stories.js";
+import type * as storyCategories from "../storyCategories.js";
 import type * as students from "../students.js";
 import type * as upload from "../upload.js";
 import type * as users from "../users.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   resendOTP: typeof resendOTP;
   seed: typeof seed;
   stories: typeof stories;
+  storyCategories: typeof storyCategories;
   students: typeof students;
   upload: typeof upload;
   users: typeof users;

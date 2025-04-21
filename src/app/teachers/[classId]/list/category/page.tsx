@@ -243,8 +243,6 @@ export default function StoriesListPage({
                         )}
                     </CardContent>
                 </Card>
-              
-           
         </>
     );
 }

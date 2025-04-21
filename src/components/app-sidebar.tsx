@@ -86,6 +86,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Archived Stories",
             url: `/teachers/${classId}/archived-stories`,
           },
+          {
+            title: "Categories",
+            url: `/teachers/${classId}/categories`,
+          },
           // {
           //   title: "Archived Stories",
           //   url: "#",

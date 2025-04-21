@@ -71,6 +71,12 @@ const schema = defineSchema({
         respondedAt: v.optional(v.number()),
     }).index("by_teacher", ["teacherId"]).index("by_student", ["studentId"]),
 
+    storyCategories: defineTable({
+        name: v.string(),
+        description: v.optional(v.string()),
+        imageId: v.optional(v.string()),
+    }),
+
     stories: defineTable({
         title: v.string(),
         content: v.string(),
@@ -79,6 +85,7 @@ const schema = defineSchema({
             v.literal("Fables"),
             v.literal("Legends"),
         )),
+        categoryId: v.optional(v.id("storyCategories")),
         difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
         ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
         imageId: v.optional(v.string()),
