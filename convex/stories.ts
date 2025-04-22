@@ -115,7 +115,6 @@ export const createStory = mutation({
   handler: async (ctx, args) => {
     return await ctx.db.insert("stories", {
       ...args,
-      isActive: true,
       createdAt: Date.now(),
       imageId: args.imageId
     });
