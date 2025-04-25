@@ -2,7 +2,6 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 
-
 export const list = query({
   args: {
     searchQuery: v.optional(v.string()),
@@ -10,50 +9,59 @@ export const list = query({
     limit: v.number(),
   },
   handler: async (ctx, args) => {
-    const stories = ctx.db.query("stories")
+    const stories = ctx.db
+      .query("stories")
       .filter((q) => q.eq(q.field("isActive"), true));
 
     if (args.searchQuery && args.searchQuery.trim()) {
-      const search = args.searchQuery.trim()
+      const search = args.searchQuery.trim();
 
       const byTitle = await ctx.db
         .query("stories")
-        .withSearchIndex("search_title", q => q.search("title", search))
-        .collect()
+        .withSearchIndex("search_title", (q) => q.search("title", search))
+        .collect();
 
-       const storiesWithUrl = await Promise.all(
+      const storiesWithUrl = await Promise.all(
         byTitle.map(async (story) => ({
-            ...story,
-            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
-          }))
-        );
-      const startIndex = (args.page - 1) * args.limit
-      const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+          ...story,
+          imageUrl: story.imageId
+            ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
+            : null,
+        }))
+      );
+      const startIndex = (args.page - 1) * args.limit;
+      const paginatedResults = storiesWithUrl.slice(
+        startIndex,
+        startIndex + args.limit
+      );
 
       return {
         stories: paginatedResults,
         totalPages: Math.ceil(storiesWithUrl.length / args.limit),
-      }
+      };
     }
 
     // if no search query, return all stories with just pagination.
-    const allStories = await stories
-      .order("desc")
-      .collect()
+    const allStories = await stories.order("desc").collect();
 
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
-        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
+        imageUrl: story.imageId
+          ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
+          : null,
       }))
     );
-    const startIndex = (args.page - 1) * args.limit
-    const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+    const startIndex = (args.page - 1) * args.limit;
+    const paginatedResults = storiesWithUrl.slice(
+      startIndex,
+      startIndex + args.limit
+    );
 
     return {
       stories: paginatedResults,
       totalPages: Math.ceil(storiesWithUrl.length / args.limit),
-    }
+    };
   },
 });
 
@@ -66,13 +74,17 @@ export const getById = query({
     const sequenceCardsWithUrls = await Promise.all(
       (story?.sequenceCards || []).map(async (card) => ({
         ...card,
-        url: card.imageId ? await ctx.storage.getUrl(card.imageId as Id<'_storage'>) : null,
+        url: card.imageId
+          ? await ctx.storage.getUrl(card.imageId as Id<"_storage">)
+          : null,
       }))
     );
 
     return {
       ...story,
-      url: story?.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
+      url: story?.imageId
+        ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
+        : null,
       sequenceCards: sequenceCardsWithUrls,
     };
   },
@@ -84,65 +96,74 @@ export const createStory = mutation({
     content: v.string(),
     author: v.string(),
     category: v.union(v.literal("Fables"), v.literal("Legends")),
-    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+    difficulty: v.union(
+      v.literal("easy"),
+      v.literal("medium"),
+      v.literal("hard")
+    ),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
     imageId: v.optional(v.string()),
-    sequenceCards: v.array(v.object({
+    sequenceCards: v.array(
+      v.object({
         id: v.string(),
         imageId: v.string(),
         description: v.string(),
         order: v.number(),
         level: v.number(),
-    })),
+      })
+    ),
     minAge: v.number(),
     maxAge: v.number(),
     readingTime: v.number(), // in minutes
     points: v.number(), // points earned for completion
     tags: v.array(v.string()), // for cultural themes/values
-    quizQuestions: v.array(v.object({
+    quizQuestions: v.array(
+      v.object({
         question: v.string(),
         options: v.array(v.string()),
         correctAnswer: v.number(),
-        points: v.number()
-    })),
+        points: v.number(),
+      })
+    ),
     culturalNotes: v.string(),
     isActive: v.boolean(),
-      
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("stories", {
       ...args,
       isActive: true,
       createdAt: Date.now(),
-      imageId: args.imageId
+      imageId: args.imageId,
     });
   },
 });
 export const editStory = mutation({
   args: {
-    storyId: v.id('stories'),
+    storyId: v.id("stories"),
     title: v.string(),
     author: v.string(),
     category: v.union(v.literal("Fables"), v.literal("Legends")),
     content: v.string(),
-    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+    difficulty: v.union(
+      v.literal("easy"),
+      v.literal("medium"),
+      v.literal("hard")
+    ),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
     imageId: v.optional(v.string()),
-   
+
     minAge: v.number(),
     maxAge: v.number(),
     readingTime: v.number(), // in minutes
     points: v.number(), // points earned for completion
     tags: v.array(v.string()), // for cultural themes/values
-    
+
     culturalNotes: v.string(),
     isActive: v.boolean(),
-  
-      
   },
   handler: async (ctx, args) => {
-    const story = await ctx.db.get(args.storyId)
-    if(!story) return
+    const story = await ctx.db.get(args.storyId);
+    if (!story) return;
     return await ctx.db.patch(args.storyId, {
       title: args.title,
       content: args.content,
@@ -158,15 +179,14 @@ export const editStory = mutation({
       culturalNotes: args.culturalNotes,
       isActive: true,
       createdAt: Date.now(),
-      imageId: args.imageId ? args.imageId : story.imageId
+      imageId: args.imageId ? args.imageId : story.imageId,
     });
   },
 });
 
-
 export const addSequenceCards = mutation({
   args: {
-    storyId: v.id('stories'),
+    storyId: v.id("stories"),
     description: v.string(),
     imageId: v.string(),
     level: v.number(),
@@ -176,9 +196,11 @@ export const addSequenceCards = mutation({
     // Fetch the existing story document to get current sequence cards
     const story = await ctx.db.get(args.storyId);
 
-    const storySequenceCardlegth = story?.sequenceCards.filter(card => card.level === args.level).length
+    const storySequenceCardlegth = story?.sequenceCards.filter(
+      (card) => card.level === args.level
+    ).length;
 
-    const cardId = `card${storySequenceCardlegth! + 1}-l${args.level}`
+    const cardId = `card${storySequenceCardlegth! + 1}-l${args.level}`;
     // Ensure that the sequenceCards array is initialized
     const sequenceCards = story?.sequenceCards || [];
 
@@ -194,7 +216,7 @@ export const addSequenceCards = mutation({
     // Update the story with the new sequence card appended to the array
     await ctx.db.patch(args.storyId, {
       sequenceCards: [...sequenceCards, newCard],
-      isActive: args.isActive
+      isActive: args.isActive,
     });
   },
 });
@@ -236,27 +258,25 @@ export const removeSequenceCard = mutation({
 });
 
 export const archiveStories = mutation({
-  args:{
-    storyId:v.id('stories')
+  args: {
+    storyId: v.id("stories"),
   },
-  handler: async(ctx, args)=>{
-    
+  handler: async (ctx, args) => {
     return await ctx.db.patch(args.storyId, {
-      isActive: false
-    })
-  }
-})
+      isActive: false,
+    });
+  },
+});
 export const restoreStory = mutation({
-  args:{
-    storyId:v.id('stories')
+  args: {
+    storyId: v.id("stories"),
   },
-  handler: async(ctx, args)=>{
-    
+  handler: async (ctx, args) => {
     return await ctx.db.patch(args.storyId, {
-      isActive: true
-    })
-  }
-})
+      isActive: true,
+    });
+  },
+});
 
 export const getArchivedtories = query({
   args: {
@@ -264,48 +284,67 @@ export const getArchivedtories = query({
     page: v.number(),
     limit: v.number(),
   },
-  handler: async(ctx, args) =>{
-    const stories = await ctx.db.query('stories')
-    .filter(q => q.eq(q.field('isActive'),false));
-    
+  handler: async (ctx, args) => {
+    const stories = await ctx.db
+      .query("stories")
+      .filter((q) => q.eq(q.field("isActive"), false));
+
     if (args.searchQuery && args.searchQuery.trim()) {
-      const search = args.searchQuery.trim()
+      const search = args.searchQuery.trim();
 
       const byTitle = await ctx.db
         .query("stories")
-        .withSearchIndex("search_title", q => q.search("title", search))
-        .collect()
-        const storiesWithUrl = await Promise.all(
-          (byTitle || []).map(async (story) => ({
-            ...story,
-            imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
-          }))
-        );
-      const startIndex = (args.page - 1) * args.limit
-      const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+        .withSearchIndex("search_title", (q) => q.search("title", search))
+        .collect();
+      const storiesWithUrl = await Promise.all(
+        (byTitle || []).map(async (story) => ({
+          ...story,
+          imageUrl: story.imageId
+            ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
+            : null,
+        }))
+      );
+      const startIndex = (args.page - 1) * args.limit;
+      const paginatedResults = storiesWithUrl.slice(
+        startIndex,
+        startIndex + args.limit
+      );
 
       return {
         stories: paginatedResults,
         totalPages: Math.ceil(storiesWithUrl.length / args.limit),
-      }
+      };
     }
 
     // if no search query, return all stories with just pagination.
-    const allStories = await stories.order('desc').collect();
+    const allStories = await stories.order("desc").collect();
 
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
-        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
+        imageUrl: story.imageId
+          ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
+          : null,
       }))
     );
-    const startIndex = (args.page - 1) * args.limit
-    const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
+    const startIndex = (args.page - 1) * args.limit;
+    const paginatedResults = storiesWithUrl.slice(
+      startIndex,
+      startIndex + args.limit
+    );
 
     return {
       stories: paginatedResults,
       totalPages: Math.ceil(storiesWithUrl.length / args.limit),
-    }
+    };
+  },
+});
 
-  }
+export const countStories = query({
+  args: {},
+  handler: async (ctx) => {
+    const count = await ctx.db.query("stories").collect();
+
+    return count.length;
+  },
 });

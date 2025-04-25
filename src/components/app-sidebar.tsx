@@ -36,10 +36,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
           //   url: `/teachers/${classId}/monitoring`,
           // },
-          {
-            title: "History",
-            url: `/teachers/${classId}/history`,
-          },
+          // {
+          //   title: "History",
+          //   url: `/teachers/${classId}/history`,
+          // },
         ],
       },
       {
