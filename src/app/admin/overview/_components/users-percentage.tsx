@@ -1,16 +1,15 @@
 "use client";
-import React, { useMemo } from "react";
+import { LoaderComponent } from "@/components/loader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { PieChart, Pie, Label } from "recharts";
 import { useNumberOfRoles } from "@/features/auth/api/use-all-user-count";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LoaderComponent } from "@/components/loader";
-import { cn } from "@/lib/utils";
+import { useMemo } from "react";
+import { Label, Pie, PieChart } from "recharts";
 
 export type UserRole = "Admin" | "Teacher" | "Parent";
 
