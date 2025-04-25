@@ -21,6 +21,10 @@ import { useEffect, useState } from "react";
 import { SoundToggle } from "@/components/sound-toggle";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery } from "convex/react";
+import { api } from "../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 
 const STORIES_PER_PAGE = 12;
 
@@ -34,7 +38,8 @@ export default function StoriesListPage({
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
+  const [activeTab, setActiveTab] = useState<string>('all')
+  const languages = useQuery(api.storyLanguages.getstoryLanguages)
   const {
     data: stories,
     totalPages,
@@ -51,6 +56,7 @@ export default function StoriesListPage({
       setCurrentPage(1);
     }, 500);
 
+   
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -59,15 +65,24 @@ export default function StoriesListPage({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const filterStoriesByCategoryAndLanguage = () => {
+    if (!stories) return [];
+    return stories.filter(
+      (story) =>
+        story.categoryDoc?.name?.toLowerCase() === selectedCategory.toLowerCase() && story.languageDoc?.name === activeTab
+    );
+  };
+
   const filterStoriesByCategory = () => {
     if (!stories) return [];
     return stories.filter(
       (story) =>
-        story.category?.toLowerCase() === selectedCategory.toLowerCase()
+        story.categoryDoc?.name?.toLowerCase() === selectedCategory.toLowerCase()
     );
   };
 
-  const filtiredstoriesByCategory = filterStoriesByCategory();
+  const filtiredstoriesByCategoryAndLanguage = filterStoriesByCategoryAndLanguage();
+  const filtiredstoriesByCategory = filterStoriesByCategory()
 
   if (isLoading) {
     return (
@@ -148,7 +163,7 @@ export default function StoriesListPage({
                         </Breadcrumb>
                     </div>
                 </header>
-            <h1 className="text-xl font-semibold">Category: <Badge>{selectedCategory}</Badge></h1>
+                <h1 className="text-xl font-semibold">Category: <Badge>{selectedCategory}</Badge></h1>
                 <Card className="w-full max-w-7xl m-auto">
                     <CardHeader className="flex flex-col space-y-4">
                         <div className="flex flex-row items-center justify-between">
@@ -167,54 +182,128 @@ export default function StoriesListPage({
                     </CardHeader>
                     <CardContent className="flex flex-col gap-6">
                         <ScrollArea className="h-[calc(100vh-300px)]">
-                            {filtiredstoriesByCategory.length === 0 ? (
-                                <div className="text-center text-muted-foreground py-8">
-                                    No stories found matching your search
-                                </div>
-                            ) : (
-                                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                    {filtiredstoriesByCategory.map((story) => (
-                                    <div 
-                                        key={story._id}
-                                        className=""
-                                    >
-                                        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                                            <Link
-                                        
-                                                href={`/teachers/${classId}/list/${story._id}`}
-                                            >
-                                                <div className="aspect-video relative">
-                                                    <Image
-                                                        src={story.imageUrl ?? ""}
-                                                        alt={story.title}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                                <div className="p-4 pb-0">
-                                                    <h3 className="font-semibold text-lg  text-primary">
-                                                        {story.title}
-                                                    </h3>
-                                                    <h4 className="text-sm text-muted-foreground ">Author: <span className="font-normal"> {story.author}</span></h4>
-                                                </div>
-                                            </Link>
-                                                <div className="flex justify-between items-center px-4 pb-4">
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <span>Age: {story.ageGroup}</span>
-                                                        <span>•</span>
-                                                        <span>Difficulty: {story.difficulty}</span>
-                                                    </div>
-                                                    <Link href={'/teachers/'+classId+'/list/edit/'+story._id}>
-                                                        <Button variant={'ghost'}>
-                                                            <Edit/>
-                                                        </Button>
-                                                    </Link>
-                                                </div>
-                                        </Card>
-                                    </div>
+                          
+                                <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)}>
+                                  <TabsList>
+                                    <TabsTrigger value={'all'} className="capitalize">All</TabsTrigger>
+                                    {languages?.map((lang)=> (
+                                      <TabsTrigger key={lang._id} value={lang.name} className="capitalize">{lang.name}</TabsTrigger>
                                     ))}
-                                </div>
-                            )}
+                                  </TabsList>
+                                    <TabsContent value={'all'}>
+                                    {filtiredstoriesByCategory.length === 0 ? (
+                                        <div className="text-center text-muted-foreground py-8">
+                                            No stories found matching your search
+                                        </div>
+                                      ) : (
+                                        <div className="">
+                                      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                        {filtiredstoriesByCategory.map((story) => (
+                                        <div 
+                                            key={story._id}
+                                            className=""
+                                        >
+                                            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                                                <Link
+                                            
+                                                    href={`/teachers/${classId}/list/${story._id}`}
+                                                >
+                                                    <div className="aspect-video relative">
+                                                        <Image
+                                                            src={story.imageUrl ?? ""}
+                                                            alt={story.title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
+                                                    <div className="p-4 pb-0">
+                                                        <h3 className="font-semibold text-lg  text-primary">
+                                                            {story.title}
+                                                        </h3>
+                                                        <h4 className="text-sm text-muted-foreground ">Author: <span className="font-normal"> {story.author}</span></h4>
+                                                    </div>
+                                                </Link>
+                                                    <div className="flex justify-between items-center px-4 pb-4">
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                            <span>Age: {story.ageGroup}</span>
+                                                            <span>•</span>
+                                                            <span>Difficulty: {story.difficulty}</span>
+                                                        </div>
+                                                        <Link href={'/teachers/'+classId+'/list/edit/'+story._id}>
+                                                            <Button variant={'ghost'}>
+                                                                <Edit/>
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
+                                            </Card>
+                                        </div>
+                                        ))}
+                                      </div>
+                                          
+                                    </div>
+                                    )}
+                                    </TabsContent>
+                                  {languages?.map((lang)=>(
+                                   
+                                    <TabsContent key={lang._id} value={lang.name}>
+                                      {filtiredstoriesByCategoryAndLanguage.length === 0 ? (
+                                        <div className="text-center text-muted-foreground py-8">
+                                            No stories found matching your search
+                                        </div>
+                                      ) : (
+                                        <div className="">
+                                      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                        {filtiredstoriesByCategoryAndLanguage.map((story) => (
+                                        <div 
+                                            key={story._id}
+                                            className=""
+                                        >
+                                            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                                                <Link
+                                            
+                                                    href={`/teachers/${classId}/list/${story._id}`}
+                                                >
+                                                    <div className="aspect-video relative">
+                                                        <Image
+                                                            src={story.imageUrl ?? ""}
+                                                            alt={story.title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
+                                                    <div className="p-4 pb-0">
+                                                        <h3 className="font-semibold text-lg  text-primary">
+                                                            {story.title}
+                                                        </h3>
+                                                        <h4 className="text-sm text-muted-foreground ">Author: <span className="font-normal"> {story.author}</span></h4>
+                                                    </div>
+                                                </Link>
+                                                    <div className="flex justify-between items-center px-4 pb-4">
+                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                            <span>Age: {story.ageGroup}</span>
+                                                            <span>•</span>
+                                                            <span>Difficulty: {story.difficulty}</span>
+                                                        </div>
+                                                        <Link href={'/teachers/'+classId+'/list/edit/'+story._id}>
+                                                            <Button variant={'ghost'}>
+                                                                <Edit/>
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
+                                            </Card>
+                                        </div>
+                                        ))}
+                                      </div>
+                                          
+                                    </div>
+                                    )}
+                                    </TabsContent>
+                                  ))}
+                                  
+                                </Tabs>
+                      
+                         
+                      
                         </ScrollArea>
                         {totalPages > 1 && (
                             <div className="flex items-center justify-center space-x-2 mt-auto">

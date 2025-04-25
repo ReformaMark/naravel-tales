@@ -29,6 +29,7 @@ interface Story {
     content: string;
     author: string;
     categoryId: Id<'storyCategories'> | undefined;
+    language: Id<'storyLanguages'> | undefined;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image:  File | string | null;
@@ -56,11 +57,13 @@ export default function Story({
     const {data: story, isLoading} = useeStory({storyId: params.storyId})
     const archivedStory =  useMutation(api.stories.archiveStories);
     const categories = useQuery(api.storyCategories.getCategories)
+    const languages = useQuery(api.storyLanguages.getstoryLanguages)
     const initialData : Story = {
         title: story?.title || "",
         content: story?.content || "",
         author: story?.author || "",
         categoryId: story?.categoryDoc?._id,
+        language: story?.language,
         difficulty: story?.difficulty || "easy",
         ageGroup: story?.ageGroup || "3-4",
         image: story?.url || null,
@@ -131,6 +134,7 @@ export default function Story({
                 content: story?.content || "",
                 author: story?.author || "",
                 categoryId: story?.categoryDoc?._id,
+                language: story?.language,
                 difficulty: story?.difficulty || "easy",
                 ageGroup: story?.ageGroup || "3-4",
                 image: story?.url || null,
@@ -254,6 +258,12 @@ export default function Story({
             categoryId: value as Id<'storyCategories'>,
         }))
     }
+    const handleLanguageChange = (value: string) => {
+        setEditedValues((prevData) => ({
+            ...prevData,
+            language: value as Id<'storyLanguages'>,
+        }))
+    }
     const handleDifficultyChange = (value: "easy" | "medium" | "hard") => {
         setEditedValues((prevData) => ({
             ...prevData,
@@ -309,7 +319,7 @@ export default function Story({
                 </div>
                 )}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gapx-x-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gapx-x-10">
                 {isEditing ? (
                     <div className=" flex items-center gap-3 ">
                         Author:
@@ -325,7 +335,7 @@ export default function Story({
                         />
                     </div>
                     ):(
-                        <h2 className="text-lg font-semibold tracking-tight">Author: {story?.author ?? "-"}</h2>
+                        <h2 className="text-lg font-semibold tracking-tight">Author: <Badge > {story?.author ?? "-"}</Badge></h2>
 
                 )}
                 {isEditing ? (
@@ -347,7 +357,29 @@ export default function Story({
                         </Select>
                     </div>
                     ):(
-                        <h2 className="text-lg font-semibold tracking-tight">Category: <Badge >{story?.category ?? "-"}</Badge></h2>
+                        <h2 className="text-lg font-semibold tracking-tight">Category: <Badge >{story?.categoryDoc?.name ?? "-"}</Badge></h2>
+
+                )}
+                {isEditing ? (
+                    <div className=" flex items-center gap-3">
+                        Language:
+                        <Select 
+                            onValueChange={handleLanguageChange}
+                            value={editedValues?.language}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary md:w-1/2">
+                                <SelectValue placeholder="Select Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languages?.map((language) =>(
+                                    <SelectItem key={language._id} value={language._id} className='capitalize'>{language.name}</SelectItem>
+                                ))}
+                        </SelectContent>
+                        </Select>
+                    </div>
+                    ):(
+                        <h2 className="text-lg font-semibold tracking-tight capitalize">Language: <Badge >{story?.languageDoc?.name ?? "-"}</Badge></h2>
 
                 )}
             </div>

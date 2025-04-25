@@ -24,6 +24,8 @@ export const list = query({
        const storiesWithUrl = await Promise.all(
         byTitle.map(async (story) => ({
             ...story,
+            categoryDoc: story.categoryId ? await ctx.db.get(story.categoryId) : null,
+            languageDoc: story.language ? await ctx.db.get(story.language) : null,
             imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
           }))
         );
@@ -44,6 +46,8 @@ export const list = query({
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
+        categoryDoc: story.categoryId ? await ctx.db.get(story.categoryId) : null,
+        languageDoc: story.language ? await ctx.db.get(story.language) : null,
         imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       }))
     );
@@ -70,12 +74,14 @@ export const getById = query({
       }))
     );
     const category = story && story.categoryId ? await ctx.db.get(story.categoryId) : null
+    const language = story && story.language ? await ctx.db.get(story.language) : null
    
 
     return {
       ...story,
       url: story?.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       categoryDoc: category,
+      languageDoc: language,
       sequenceCards: sequenceCardsWithUrls,
     };
   },
@@ -110,6 +116,7 @@ export const createStory = mutation({
     })),
     culturalNotes: v.string(),
     isActive: v.boolean(),
+    language: v.optional(v.id('storyLanguages')), // Language of the story
       
   },
   handler: async (ctx, args) => {
@@ -172,7 +179,6 @@ export const addSequenceCards = mutation({
     description: v.string(),
     imageId: v.string(),
     level: v.number(),
-    isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
     // Fetch the existing story document to get current sequence cards
@@ -196,7 +202,6 @@ export const addSequenceCards = mutation({
     // Update the story with the new sequence card appended to the array
     await ctx.db.patch(args.storyId, {
       sequenceCards: [...sequenceCards, newCard],
-      isActive: args.isActive
     });
   },
 });
@@ -311,3 +316,19 @@ export const getArchivedtories = query({
 
   }
 });
+
+export const isComplete = query({
+  args:{
+    storyId:v.id('stories')
+  },
+  handler: async(ctx, args) => {
+    const story = await ctx.db.get(args.storyId)
+    const levelCardRequirements = { 1: 3, 2: 4, 3: 5 }; // Define the required number of cards for each level
+    const complete = Object.entries(levelCardRequirements).every(([level, requiredCards]) =>
+      story?.sequenceCards?.filter(card => card.level === Number(level)).length === requiredCards
+    );
+    if(!story) return false
+    
+    return complete
+  }
+})

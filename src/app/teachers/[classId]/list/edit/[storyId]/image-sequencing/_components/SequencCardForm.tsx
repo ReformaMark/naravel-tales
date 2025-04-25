@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { ImagePreview } from '@/app/admin/create-stories/_components/ImagePreview'
 import { UploadPlaceholder } from '@/app/admin/create-stories/_components/UploadPlaceHolder'
-import { useMutation } from "@tanstack/react-query"
 import { useConvexMutation } from '@convex-dev/react-query'
 import { useGenerateUploadUrl } from '@/features/upload/api/use-generate-upload-url'
 import { toast } from 'sonner'
@@ -16,6 +15,7 @@ import {
   } from "@/components/ui/card"
 import { Id } from '../../../../../../../../../convex/_generated/dataModel'
 import { api } from '../../../../../../../../../convex/_generated/api'
+import { useMutation } from "@tanstack/react-query"
 
 interface SequenceCardTypes {
 
@@ -29,16 +29,13 @@ interface SequenceCardTypes {
 
 function SequencCardForm({
     level,
-    order,
+  
     storyId
 }:{
     level:number,
     order: number,
     storyId: Id<'stories'>
 }) {
-
-
-    
 
     const initialSequanceCardValue: SequenceCardTypes = {
         image: null,
@@ -133,25 +130,15 @@ function SequencCardForm({
 
                 storageId = uploadedStorageId
             }
-            if(level === 3 && order === 5) {
-                mutate({
-                    storyId: storyId,
-                    description: sequenceCard.description,
-                    level: sequenceCard.level,
-                    imageId: storageId!,
-                    isActive: true
-                })
-            } else {
-
-            mutate({
+        
+            mutate({ 
                 storyId: storyId,
                 description: sequenceCard.description,
                 level: sequenceCard.level,
                 imageId: storageId!,
-                isActive: false
                 
             })
-            }
+            
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)

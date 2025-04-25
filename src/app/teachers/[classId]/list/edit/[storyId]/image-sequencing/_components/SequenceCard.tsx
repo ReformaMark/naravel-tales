@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/button'
 import { useMutation } from "@tanstack/react-query"
 import { useConvexMutation } from '@convex-dev/react-query'
 import { toast } from 'sonner'
-import { Id } from '../../../../../../../../../convex/_generated/dataModel'
 import { api } from '../../../../../../../../../convex/_generated/api'
+import { Id } from '../../../../../../../../../convex/_generated/dataModel'
+
 export default function SequenceCard({
   id,
   description,
@@ -33,25 +34,25 @@ export default function SequenceCard({
   const { mutate, isPending } = useMutation({
     mutationFn: useConvexMutation(api.stories.removeSequenceCard),
     onSuccess: () => {
-       
+      toast.success("Card removed successfully")
        
     },
     onError: () => {
-      
+      toast.error("Card removed successfully")
     },
 })
+
   const handleRemove = async ()=>{
     try {
       mutate({
         storyId: storyId,
         orderToRemove: orderNumber,
-        level: level 
-        
+        level: level,
     })
     } catch (error: unknown) {
       console.error(error)
       toast.error(error as string)
-  }
+    }
   
   }
   return (

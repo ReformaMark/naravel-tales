@@ -45,15 +45,13 @@ export default function SequenceCard({
       mutate({
         storyId: storyId,
         orderToRemove: orderNumber,
-        level: level 
-        
+        level: level,
     })
     } catch (error: unknown) {
       console.error(error)
       toast.error(error as string)
-  }
+  }}
   
-  }
   return (
 
     <Card>

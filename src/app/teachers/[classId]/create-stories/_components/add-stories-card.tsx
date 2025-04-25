@@ -66,6 +66,7 @@ interface Story {
     culturalNotes: string;
     isActive: boolean;
     createdAt?: number;
+    language: Id<'storyLanguages'> | undefined;
 }
 
 const storiesInitialData: Story = {
@@ -85,12 +86,14 @@ const storiesInitialData: Story = {
     quizQuestions: [],
     culturalNotes: "",
     isActive: false,
+    language: undefined,
   };
 
 
 export default function AddStoriesCard() {
     const [storiesData, setStoriesData] = useState<Story>(storiesInitialData)
     const categories = useQuery(api.storyCategories.getCategories)
+    const languages = useQuery(api.storyLanguages.getstoryLanguages)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const { mutate: generateUploadUrl } = useGenerateUploadUrl()
@@ -200,7 +203,8 @@ export default function AddStoriesCard() {
                 tags: storiesData.tags,
                 quizQuestions: storiesData.quizQuestions,
                 culturalNotes: storiesData.culturalNotes,
-                isActive: false,
+                isActive: true,
+                language: storiesData.language,
                 
             })
         } catch (error: unknown) {
@@ -256,7 +260,7 @@ export default function AddStoriesCard() {
                     disabled={isPending}
                 />
             </div>
-            <div className="grid grid-cols-2 gap-x-5">
+            <div className="grid grid-cols-3 gap-x-5">
                 <div className="space-y-2">
                     <Label htmlFor="author" className="text-sm font-medium text-primary">Author</Label>
                     <div className="relative">
@@ -272,7 +276,8 @@ export default function AddStoriesCard() {
                             disabled={isPending}
                         />
                     </div>
-                </div> <div className="space-y-2">
+                </div> 
+                <div className="space-y-2">
                     <Label htmlFor="category" className="text-sm font-medium text-primary">Category</Label>
                     <div className="space-y-2">
                         <Select
@@ -291,6 +296,30 @@ export default function AddStoriesCard() {
                             <SelectContent>
                                 {categories?.map((category) =>(
                                      <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="language" className="text-sm font-medium text-primary">Language</Label>
+                    <div className="space-y-2">
+                        <Select
+                            onValueChange={(value) =>
+                                setStoriesData((prevData) => ({
+                                    ...prevData,
+                                    language: value as Id<'storyLanguages'>,
+                                }))
+                            }
+                            value={storiesData.language || ""}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
+                                <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languages?.map((language) =>(
+                                     <SelectItem key={language._id} value={language._id}>{language.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
