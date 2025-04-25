@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from 'convex/react';
-import { Search } from 'lucide-react'
+import { Edit, Search } from 'lucide-react'
 import React, { useState } from 'react'
 import { api } from '../../../../../convex/_generated/api';
 import Link from 'next/link';
@@ -132,12 +132,15 @@ function Page({
                                         whileHover={{scale:1.02}}
                                         transition={{ duration: 0.1 }}
                                     >
-                                        <Card onClick={() => handleOpenDialog(category._id, category.name, category.description, category.imageUrl)} className='relative p-0 rounded-xl '>
+                                        <Card  className='relative p-0 rounded-xl '>
                                         
                                             <div className='absolute z-30 inset-0 size-full bg-black/35 flex items-center justify-center rounded-xl'>
                                                 <Link href={`/teachers/${classId}/list/category?selected=${category.name}`}>
-                                                    <h1 className='text-3xl text-primary text-center font-extrabold uppercase tracking-wider bg-primary-foreground/90 w-full'>{category.name}</h1>
+                                                    <h1 className='text-3xl text-primary w-full text-center font-extrabold uppercase tracking-wider bg-primary-foreground/90 w-full'>{category.name}</h1>
                                                 </Link>
+                                            </div>
+                                            <div className='absolute z-30 top-0 h-10 w-full pt-2 pr-2 flex items-center justify-end rounded-xl'>
+                                                <Button variant={'secondary'} onClick={() => handleOpenDialog(category._id, category.name, category.description, category.imageUrl)} size={'icon'}><Edit/></Button>
                                             </div>
                                                 
                                             <div className="s size-72">
