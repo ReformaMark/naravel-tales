@@ -105,7 +105,7 @@ export default function UsersPercentage() {
                     className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
                   />
                   <p>
-                    {user.userRole} - {user.percentage}%
+                    {user.userRole} - {user.percentage.toFixed(2)}%
                   </p>
                 </div>
               ) : user.userRole === "Parent" ? (
@@ -114,7 +114,7 @@ export default function UsersPercentage() {
                     className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
                   />
                   <p>
-                    {user.userRole} - {user.percentage}%
+                    {user.userRole} - {user.percentage.toFixed(2)}%
                   </p>
                 </div>
               ) : user.userRole === "Teacher" ? (
@@ -123,7 +123,7 @@ export default function UsersPercentage() {
                     className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
                   />
                   <p>
-                    {user.userRole} - {user.percentage}%
+                    {user.userRole} - {user.percentage.toFixed(2)}%
                   </p>
                 </div>
               ) : (
