@@ -10,6 +10,7 @@ import { PieChart, Pie, Label } from "recharts";
 import { useNumberOfRoles } from "@/features/auth/api/use-all-user-count";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoaderComponent } from "@/components/loader";
+import { cn } from "@/lib/utils";
 
 export type UserRole = "Admin" | "Teacher" | "Parent";
 
@@ -99,36 +100,15 @@ export default function UsersPercentage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-center justify-center w-full">
           {users.data?.map((user: UserChartData, idx) => (
             <div className="flex items-center justify-center" key={idx}>
-              {user.userRole === "Admin" ? (
-                <div className="flex flex-row items-center gap-2">
-                  <div
-                    className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
-                  />
-                  <p>
-                    {user.userRole} - {user.percentage.toFixed(2)}%
-                  </p>
-                </div>
-              ) : user.userRole === "Parent" ? (
-                <div className="flex flex-row items-center gap-2">
-                  <div
-                    className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
-                  />
-                  <p>
-                    {user.userRole} - {user.percentage.toFixed(2)}%
-                  </p>
-                </div>
-              ) : user.userRole === "Teacher" ? (
-                <div className="flex flex-row items-center gap-2">
-                  <div
-                    className={`bg-[${user.fill.toLowerCase()}] w-2 h-2 rounded-full`}
-                  />
-                  <p>
-                    {user.userRole} - {user.percentage.toFixed(2)}%
-                  </p>
-                </div>
-              ) : (
-                "Cant find role."
-              )}
+              <div className="flex flex-row items-center gap-2">
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: user.fill }}
+                />
+                <p>
+                  {user.userRole} - {user.percentage.toFixed(2)}%
+                </p>
+              </div>
             </div>
           ))}
         </div>
