@@ -133,6 +133,7 @@ export const editStory = mutation({
     title: v.string(),
     author: v.string(),
     categoryId: v.optional(v.id('storyCategories')),
+    languageId:  v.optional(v.id('storyLanguages')),
     content: v.string(),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
@@ -152,12 +153,14 @@ export const editStory = mutation({
   handler: async (ctx, args) => {
     const story = await ctx.db.get(args.storyId)
     if(!story) return
+    console.log(args.languageId)
     return await ctx.db.patch(args.storyId, {
       title: args.title,
       content: args.content,
       difficulty: args.difficulty,
       author: args.author,
       categoryId: args.categoryId,
+      language: args.languageId,
       ageGroup: args.ageGroup,
       minAge: args.minAge,
       maxAge: args.maxAge,

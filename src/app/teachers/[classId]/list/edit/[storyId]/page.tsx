@@ -96,7 +96,7 @@ export default function Story({
     const { mutate, isPending } = useMutationQ({
         mutationFn: useConvexMutation(api.stories.editStory),
         onSuccess: () => {
-            setEditedValues(editedValues)
+            setEditedValues(initialData)
             setPreviewUrl(null)
             toast.success('Story edited successfully!')
             setIsEditing(false)
@@ -186,11 +186,12 @@ export default function Story({
             }
 
             
-        
+            console.log( editedValues.language)
                 mutate({
                     storyId: params.storyId,
                     title: editedValues.title,
                     categoryId: editedValues.categoryId,
+                    languageId: editedValues.language,
                     author: editedValues.author,
                     content: editedValues.content,
                     difficulty: editedValues.difficulty,
@@ -207,7 +208,6 @@ export default function Story({
                 })
            
 
-            console.log(storageId)
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)
@@ -264,6 +264,7 @@ export default function Story({
             language: value as Id<'storyLanguages'>,
         }))
     }
+
     const handleDifficultyChange = (value: "easy" | "medium" | "hard") => {
         setEditedValues((prevData) => ({
             ...prevData,
@@ -342,7 +343,10 @@ export default function Story({
                     <div className=" flex items-center gap-3">
                         Category:
                         <Select 
-                            onValueChange={handleCategoryChange}
+                            onValueChange={(value) =>{ 
+                                handleCategoryChange(value)
+                                console.log(value)
+                            }}
                             value={editedValues?.categoryId}
                             disabled={isPending}
                         >
@@ -364,7 +368,9 @@ export default function Story({
                     <div className=" flex items-center gap-3">
                         Language:
                         <Select 
-                            onValueChange={handleLanguageChange}
+                            onValueChange={(value) =>{ 
+                                handleLanguageChange(value)
+                            }}
                             value={editedValues?.language}
                             disabled={isPending}
                         >
