@@ -50,7 +50,7 @@ interface QuizQuestion {
 interface Story {
     title: string;
     content: string;
-    category: "Fables" | "Legends";
+    categoryId: Id<'storyCategories'> | undefined;
     author: string;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
@@ -71,7 +71,7 @@ const storiesInitialData: Story = {
     title: "",
     content: "",
     author: "",
-    category: "Fables",
+    categoryId: undefined,
     difficulty: "easy",
     ageGroup: "3-4",
     image: null,
@@ -193,7 +193,7 @@ export default function AddStoriesCard() {
                 title: storiesData.title,
                 content: storiesData.content,
                 author: storiesData.author,
-                category: storiesData.category,
+                categoryId: storiesData.categoryId,
 
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
@@ -250,10 +250,10 @@ export default function AddStoriesCard() {
                 <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium text-primary">Category</Label>
                     <Select
-                        onValueChange={(value: "Fables" | "Legends") =>
-                            setStoriesData((prevData) => ({ ...prevData, category: value }))
+                        onValueChange={(value) =>
+                            setStoriesData((prevData) => ({ ...prevData, categoryId: value as Id<'storyCategories'> }))
                         }
-                        value={storiesData.category}
+                        value={storiesData.categoryId}
                         disabled={isPending}
                     >
                         <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">

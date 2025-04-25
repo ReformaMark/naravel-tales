@@ -31,6 +31,7 @@ import { UploadPlaceholder } from './UploadPlaceHolder'
 import { ImagePreview } from './ImagePreview'
 import { api } from '../../../../../../convex/_generated/api'
 import { Id } from '../../../../../../convex/_generated/dataModel'
+import { useQuery } from 'convex/react'
 
 interface SequenceCard {
     id: string;
@@ -51,7 +52,7 @@ interface Story {
     title: string;
     content: string;
     author: string;
-    category: "Fables" | "Legends";
+    categoryId: Id<'storyCategories'> | undefined;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image: File | null;
@@ -65,12 +66,13 @@ interface Story {
     culturalNotes: string;
     isActive: boolean;
     createdAt?: number;
+    language: Id<'storyLanguages'> | undefined;
 }
 
 const storiesInitialData: Story = {
     title: "",
     content: "",
-    category: "Fables",
+    categoryId: undefined,
     author: "",
     difficulty: "easy",
     ageGroup: "3-4",
@@ -84,11 +86,14 @@ const storiesInitialData: Story = {
     quizQuestions: [],
     culturalNotes: "",
     isActive: false,
+    language: undefined,
   };
 
 
 export default function AddStoriesCard() {
     const [storiesData, setStoriesData] = useState<Story>(storiesInitialData)
+    const categories = useQuery(api.storyCategories.getCategories)
+    const languages = useQuery(api.storyLanguages.getstoryLanguages)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const { mutate: generateUploadUrl } = useGenerateUploadUrl()
@@ -186,7 +191,7 @@ export default function AddStoriesCard() {
                 title: storiesData.title,
                 content: storiesData.content,
                 author: storiesData.author,
-                category: storiesData.category,
+                categoryId: storiesData.categoryId,
                 difficulty: storiesData.difficulty,
                 ageGroup: storiesData.ageGroup,
                 imageId: storageId!,
@@ -198,7 +203,8 @@ export default function AddStoriesCard() {
                 tags: storiesData.tags,
                 quizQuestions: storiesData.quizQuestions,
                 culturalNotes: storiesData.culturalNotes,
-                isActive: false,
+                isActive: true,
+                language: storiesData.language,
                 
             })
         } catch (error: unknown) {
@@ -254,7 +260,7 @@ export default function AddStoriesCard() {
                     disabled={isPending}
                 />
             </div>
-            <div className="grid grid-cols-2 gap-x-5">
+            <div className="grid grid-cols-3 gap-x-5">
                 <div className="space-y-2">
                     <Label htmlFor="author" className="text-sm font-medium text-primary">Author</Label>
                     <div className="relative">
@@ -270,25 +276,51 @@ export default function AddStoriesCard() {
                             disabled={isPending}
                         />
                     </div>
-                </div> <div className="space-y-2">
+                </div> 
+                <div className="space-y-2">
                     <Label htmlFor="category" className="text-sm font-medium text-primary">Category</Label>
                     <div className="space-y-2">
                         <Select
                             onValueChange={(value) =>
                                 setStoriesData((prevData) => ({
                                     ...prevData,
-                                    category: value as "Fables" | "Legends",
+                                    categoryId: value as Id<'storyCategories'>,
                                 }))
                             }
-                            value={storiesData.category || ""}
+                            value={storiesData.categoryId || ""}
                             disabled={isPending}
                         >
                             <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Fables">Fables</SelectItem>
-                                <SelectItem value="Legends">Legends</SelectItem>
+                                {categories?.map((category) =>(
+                                     <SelectItem key={category._id} value={category._id}>{category.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="language" className="text-sm font-medium text-primary">Language</Label>
+                    <div className="space-y-2">
+                        <Select
+                            onValueChange={(value) =>
+                                setStoriesData((prevData) => ({
+                                    ...prevData,
+                                    language: value as Id<'storyLanguages'>,
+                                }))
+                            }
+                            value={storiesData.language || ""}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary">
+                                <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languages?.map((language) =>(
+                                     <SelectItem key={language._id} value={language._id}>{language.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>

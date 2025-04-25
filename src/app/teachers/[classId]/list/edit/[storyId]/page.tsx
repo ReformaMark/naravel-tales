@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, {  useRef, useState } from 'react'
 import { useeStory } from '@/features/story/api/use-story'
 import Image from 'next/image'
 import { Separator } from "@/components/ui/separator"
@@ -7,7 +7,7 @@ import { ArrowLeft, Clock, Edit, Feather, Shuffle, Star, Tag, Trash2, Trophy, Us
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { useMutation as useMutationQ } from "@tanstack/react-query"
 import { toast } from 'sonner'
 import { useConvexMutation } from '@convex-dev/react-query'
@@ -28,7 +28,8 @@ interface Story {
     title: string;
     content: string;
     author: string;
-    category: "Fables" | "Legends";
+    categoryId: Id<'storyCategories'> | undefined;
+    language: Id<'storyLanguages'> | undefined;
     difficulty: "easy" | "medium" | "hard";
     ageGroup: "3-4" | "4-5" | "5-6";
     image:  File | string | null;
@@ -55,11 +56,14 @@ export default function Story({
 }) {
     const {data: story, isLoading} = useeStory({storyId: params.storyId})
     const archivedStory =  useMutation(api.stories.archiveStories);
+    const categories = useQuery(api.storyCategories.getCategories)
+    const languages = useQuery(api.storyLanguages.getstoryLanguages)
     const initialData : Story = {
         title: story?.title || "",
         content: story?.content || "",
-        author: story?.content || "",
-        category: story?.content as "Fables" | "Legends" || "Fables",
+        author: story?.author || "",
+        categoryId: story?.categoryDoc?._id,
+        language: story?.language,
         difficulty: story?.difficulty || "easy",
         ageGroup: story?.ageGroup || "3-4",
         image: story?.url || null,
@@ -92,7 +96,7 @@ export default function Story({
     const { mutate, isPending } = useMutationQ({
         mutationFn: useConvexMutation(api.stories.editStory),
         onSuccess: () => {
-            setEditedValues(editedValues)
+            setEditedValues(initialData)
             setPreviewUrl(null)
             toast.success('Story edited successfully!')
             setIsEditing(false)
@@ -129,7 +133,8 @@ export default function Story({
                 title: story?.title || "",
                 content: story?.content || "",
                 author: story?.author || "",
-                category: story?.category || "Fables",
+                categoryId: story?.categoryDoc?._id,
+                language: story?.language,
                 difficulty: story?.difficulty || "easy",
                 ageGroup: story?.ageGroup || "3-4",
                 image: story?.url || null,
@@ -181,11 +186,12 @@ export default function Story({
             }
 
             
-        
+            console.log( editedValues.language)
                 mutate({
                     storyId: params.storyId,
                     title: editedValues.title,
-                    category: editedValues.category,
+                    categoryId: editedValues.categoryId,
+                    languageId: editedValues.language,
                     author: editedValues.author,
                     content: editedValues.content,
                     difficulty: editedValues.difficulty,
@@ -202,7 +208,6 @@ export default function Story({
                 })
            
 
-            console.log(storageId)
         } catch (error: unknown) {
             console.error(error)
             toast.error(error as string)
@@ -247,12 +252,19 @@ export default function Story({
             ageGroup: value,
         }))
     }
-    const handleCategoryChange = (value: "Fables"| "Legends") => {
+    const handleCategoryChange = (value: string) => {
         setEditedValues((prevData) => ({
             ...prevData,
-            category: value,
+            categoryId: value as Id<'storyCategories'>,
         }))
     }
+    const handleLanguageChange = (value: string) => {
+        setEditedValues((prevData) => ({
+            ...prevData,
+            language: value as Id<'storyLanguages'>,
+        }))
+    }
+
     const handleDifficultyChange = (value: "easy" | "medium" | "hard") => {
         setEditedValues((prevData) => ({
             ...prevData,
@@ -281,7 +293,7 @@ export default function Story({
                 <div className="col-span-12 lg:col-span-8 flex items-center gap-x-4 ">
                     <Button
                         size="icon"
-                        onClick={() => router.push('/teachers/'+params.classId+'/list')}
+                        onClick={() => router.back()}
                         >
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
@@ -308,7 +320,7 @@ export default function Story({
                 </div>
                 )}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gapx-x-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gapx-x-10">
                 {isEditing ? (
                     <div className=" flex items-center gap-3 ">
                         Author:
@@ -324,28 +336,56 @@ export default function Story({
                         />
                     </div>
                     ):(
-                        <h2 className="text-lg font-semibold tracking-tight">Author: {story?.author ?? "-"}</h2>
+                        <h2 className="text-lg font-semibold tracking-tight">Author: <Badge > {story?.author ?? "-"}</Badge></h2>
 
                 )}
                 {isEditing ? (
                     <div className=" flex items-center gap-3">
                         Category:
                         <Select 
-                            onValueChange={handleCategoryChange}
-                            value={editedValues?.category}
+                            onValueChange={(value) =>{ 
+                                handleCategoryChange(value)
+                                console.log(value)
+                            }}
+                            value={editedValues?.categoryId}
                             disabled={isPending}
                         >
                             <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary md:w-1/2">
                                 <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
                             <SelectContent>
-                            <SelectItem value="Fables">Fables</SelectItem>
-                            <SelectItem value="Legends">Legends</SelectItem>
+                                {categories?.map((category) =>(
+                                    <SelectItem key={category._id} value={category._id} className='capitalize'>{category.name}</SelectItem>
+                                ))}
                         </SelectContent>
                         </Select>
                     </div>
                     ):(
-                        <h2 className="text-lg font-semibold tracking-tight">Category: <Badge >{story?.category ?? "-"}</Badge></h2>
+                        <h2 className="text-lg font-semibold tracking-tight">Category: <Badge >{story?.categoryDoc?.name ?? "-"}</Badge></h2>
+
+                )}
+                {isEditing ? (
+                    <div className=" flex items-center gap-3">
+                        Language:
+                        <Select 
+                            onValueChange={(value) =>{ 
+                                handleLanguageChange(value)
+                            }}
+                            value={editedValues?.language}
+                            disabled={isPending}
+                        >
+                            <SelectTrigger className="border-primary bg-primary/50 focus:ring-primary md:w-1/2">
+                                <SelectValue placeholder="Select Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languages?.map((language) =>(
+                                    <SelectItem key={language._id} value={language._id} className='capitalize'>{language.name}</SelectItem>
+                                ))}
+                        </SelectContent>
+                        </Select>
+                    </div>
+                    ):(
+                        <h2 className="text-lg font-semibold tracking-tight capitalize">Language: <Badge >{story?.languageDoc?.name ?? "-"}</Badge></h2>
 
                 )}
             </div>

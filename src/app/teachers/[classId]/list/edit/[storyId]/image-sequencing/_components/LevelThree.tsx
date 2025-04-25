@@ -3,8 +3,8 @@ import React from 'react'
 import SequencCardForm from './SequencCardForm'
 import SequenceCard from './SequenceCard'
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { Id } from '../../../../../../../../../convex/_generated/dataModel';
+import { useRouter } from 'next/navigation';
 
 interface CardType {
     url: string | null;
@@ -22,7 +22,8 @@ interface LevelTypStepsProps {
     classId: Id<'classes'>
 
 }
-export default function LevelThree({storyId ,levelThree, onSelect, classId }:LevelTypStepsProps) {
+export default function LevelThree({storyId ,levelThree, onSelect }:LevelTypStepsProps) {
+    const router= useRouter()
   return (
     <div className='space-y-10 w-full'>
        <div className="grid grid-cols-3 justify-end items-center w-full">
@@ -37,9 +38,11 @@ export default function LevelThree({storyId ,levelThree, onSelect, classId }:Lev
                 <p className='text-sm'>{levelThree?.length} out of 5</p>
             </div>
             <div className="flex justify-end text-center">
-                <Link href={'/teachers/'+classId+'/list/edit/'+storyId} className="w-fit bg-primary px-2 py-2 text-white rounded-md ">
+                <Button 
+                // href={'/teachers/'+classId+'/list/edit/'+storyId} 
+                onClick={()=> router.back()} className="w-fit bg-primary px-2 py-2 text-white rounded-md ">
                     Back to Story
-                </Link>
+                </Button>
             </div>
         </div>
         

@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { StudentSelectDialog } from "./student-select-dialog";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
 export interface StoryReaderProps {
   story: {
@@ -23,6 +25,7 @@ export function StoryReader({
   story,
   classId,
 }: StoryReaderProps & { classId: Id<"classes"> }) {
+  const isCompleted = useQuery(api.stories.isComplete, {storyId: story._id})
   // const [showModeSelect, setShowModeSelect] = useState(false);
   const [showStudentSelect, setShowStudentSelect] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<{
@@ -82,13 +85,30 @@ export function StoryReader({
             </ScrollArea>
 
             <div className="pt-6 border-t mt-6">
-              <Button
-                onClick={() => setShowStudentSelect(true)}
-                className="w-full text-lg py-6 font-semibold"
-                size="lg"
-              >
-                Start Reading Journey
-              </Button>
+                {!isCompleted ? (
+                <>
+                <p className="text-red-500 text-center mb-4">
+                  You cannot proceed to the reading journey because the story image sequencing cards are not completed.
+                </p>
+                <Button
+                  onClick={() => router.push('/teachers/'+classId+'/list/edit/'+story._id+'/image-sequencing')}
+                  className="w-full text-lg py-4 font-semibold mt-4"
+                  variant="outline"
+                >
+                  Complete Image Sequencing Cards
+                </Button>
+                </>
+                ) : (
+                  <Button
+                  onClick={() => setShowStudentSelect(true)}
+                  className="w-full text-lg py-6 font-semibold"
+                  size="lg"
+                  disabled={!isCompleted}
+                  >
+                  Start Reading Journey
+                  </Button>
+                )}
+             
             </div>
           </div>
         </div>

@@ -71,14 +71,21 @@ const schema = defineSchema({
         respondedAt: v.optional(v.number()),
     }).index("by_teacher", ["teacherId"]).index("by_student", ["studentId"]),
 
+    storyCategories: defineTable({
+        name: v.string(),
+        description: v.optional(v.string()),
+        imageId: v.optional(v.string()),
+    }),
+
+    storyLanguages: defineTable({
+        name: v.string(),
+    }),
+
     stories: defineTable({
         title: v.string(),
         content: v.string(),
         author: v.optional(v.string()),
-        category: v.optional(v.union(
-            v.literal("Fables"),
-            v.literal("Legends"),
-        )),
+        categoryId: v.optional(v.id("storyCategories")),
         difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
         ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
         imageId: v.optional(v.string()),
@@ -103,10 +110,11 @@ const schema = defineSchema({
         culturalNotes: v.string(),
         isActive: v.boolean(),
         createdAt: v.number(),
+        language: v.optional(v.id("storyLanguages")), // Language of the story
     }).searchIndex("search_title", {
         searchField: "title",
         filterFields: ["isActive"]
-    }),
+    }).index('by_languageId', ['language']),
 
     progress: defineTable({
         studentId: v.optional(v.id("students")),

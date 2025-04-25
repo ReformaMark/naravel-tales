@@ -48,17 +48,17 @@ function StoryContent({
   }
 
   return (
-    <div className="space-y-6 text-primary">
-      <div className="flex items-start justify-start gap-4 max-w-4xl mx-auto">
+    <div className="space-y-2 text-primary">
+      <div className="flex items-start justify-start gap-4 max-w-4xl md:max-w-7xl mx-auto ">
         <Button size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="w-full">
 
           <h2 className="text-3xl font-bold tracking-tight">{story.title}</h2>
-          <div className="max-w-4xl mx-auto  text-muted-foreground w-full">
+          <div className="flex justify-between flex-col md:flex-row max-w-4xl md:max-w-7xl mx-auto  text-muted-foreground w-full">
             <h3 className="text-sm">Author: {story.author?? "-"}</h3>
-            <h3 className="text-sm">Category: <Badge>{story.category ?? "-"}</Badge></h3>
+            <h3 className="text-sm">Category: <Badge>{story.categoryDoc?.name ?? "-"}</Badge></h3>
           </div>
         </div>
         <SoundToggle />

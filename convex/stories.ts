@@ -24,16 +24,13 @@ export const list = query({
       const storiesWithUrl = await Promise.all(
         byTitle.map(async (story) => ({
           ...story,
-          imageUrl: story.imageId
-            ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
-            : null,
+          categoryDoc: story.categoryId ? await ctx.db.get(story.categoryId) : null,
+          languageDoc: story.language ? await ctx.db.get(story.language) : null,
+          imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
         }))
       );
-      const startIndex = (args.page - 1) * args.limit;
-      const paginatedResults = storiesWithUrl.slice(
-        startIndex,
-        startIndex + args.limit
-      );
+      const startIndex = (args.page - 1) * args.limit
+      const paginatedResults = storiesWithUrl.slice(startIndex, startIndex + args.limit)
 
       return {
         stories: paginatedResults,
@@ -47,9 +44,9 @@ export const list = query({
     const storiesWithUrl = await Promise.all(
       (allStories || []).map(async (story) => ({
         ...story,
-        imageUrl: story.imageId
-          ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
-          : null,
+        categoryDoc: story.categoryId ? await ctx.db.get(story.categoryId) : null,
+        languageDoc: story.language ? await ctx.db.get(story.language) : null,
+        imageUrl: story.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
       }))
     );
     const startIndex = (args.page - 1) * args.limit;
@@ -79,12 +76,15 @@ export const getById = query({
           : null,
       }))
     );
+    const category = story && story.categoryId ? await ctx.db.get(story.categoryId) : null
+    const language = story && story.language ? await ctx.db.get(story.language) : null
+
 
     return {
       ...story,
-      url: story?.imageId
-        ? await ctx.storage.getUrl(story.imageId as Id<"_storage">)
-        : null,
+      url: story?.imageId ? await ctx.storage.getUrl(story.imageId as Id<'_storage'>) : null,
+      categoryDoc: category,
+      languageDoc: language,
       sequenceCards: sequenceCardsWithUrls,
     };
   },
@@ -95,12 +95,8 @@ export const createStory = mutation({
     title: v.string(),
     content: v.string(),
     author: v.string(),
-    category: v.union(v.literal("Fables"), v.literal("Legends")),
-    difficulty: v.union(
-      v.literal("easy"),
-      v.literal("medium"),
-      v.literal("hard")
-    ),
+    categoryId: v.optional(v.id('storyCategories')),
+    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
     ageGroup: v.union(v.literal("3-4"), v.literal("4-5"), v.literal("5-6")),
     imageId: v.optional(v.string()),
     sequenceCards: v.array(
@@ -127,11 +123,12 @@ export const createStory = mutation({
     ),
     culturalNotes: v.string(),
     isActive: v.boolean(),
+    language: v.optional(v.id('storyLanguages')), // Language of the story
+
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("stories", {
       ...args,
-      isActive: true,
       createdAt: Date.now(),
       imageId: args.imageId,
     });
@@ -142,7 +139,8 @@ export const editStory = mutation({
     storyId: v.id("stories"),
     title: v.string(),
     author: v.string(),
-    category: v.union(v.literal("Fables"), v.literal("Legends")),
+    categoryId: v.optional(v.id('storyCategories')),
+    languageId: v.optional(v.id('storyLanguages')),
     content: v.string(),
     difficulty: v.union(
       v.literal("easy"),
@@ -162,14 +160,16 @@ export const editStory = mutation({
     isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const story = await ctx.db.get(args.storyId);
-    if (!story) return;
+    const story = await ctx.db.get(args.storyId)
+    if (!story) return
+    console.log(args.languageId)
     return await ctx.db.patch(args.storyId, {
       title: args.title,
       content: args.content,
       difficulty: args.difficulty,
       author: args.author,
-      category: args.category,
+      categoryId: args.categoryId,
+      language: args.languageId,
       ageGroup: args.ageGroup,
       minAge: args.minAge,
       maxAge: args.maxAge,
@@ -190,7 +190,6 @@ export const addSequenceCards = mutation({
     description: v.string(),
     imageId: v.string(),
     level: v.number(),
-    isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
     // Fetch the existing story document to get current sequence cards
@@ -216,7 +215,6 @@ export const addSequenceCards = mutation({
     // Update the story with the new sequence card appended to the array
     await ctx.db.patch(args.storyId, {
       sequenceCards: [...sequenceCards, newCard],
-      isActive: args.isActive,
     });
   },
 });
@@ -348,3 +346,19 @@ export const countStories = query({
     return count.length;
   },
 });
+
+export const isComplete = query({
+  args: {
+    storyId: v.id('stories')
+  },
+  handler: async (ctx, args) => {
+    const story = await ctx.db.get(args.storyId)
+    const levelCardRequirements = { 1: 3, 2: 4, 3: 5 }; // Define the required number of cards for each level
+    const complete = Object.entries(levelCardRequirements).every(([level, requiredCards]) =>
+      story?.sequenceCards?.filter(card => card.level === Number(level)).length === requiredCards
+    );
+    if (!story) return false
+
+    return complete
+  }
+})

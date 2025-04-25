@@ -12,6 +12,7 @@ import { ResetIcon } from '@radix-ui/react-icons'
 import { Id } from '../../../../../../convex/_generated/dataModel'
 import { api } from '../../../../../../convex/_generated/api'
 import Header from '@/app/admin/_components/header'
+
 export default function Story() {
     const params = useParams<{ 
         storyId: Id<'stories'>
@@ -111,7 +112,6 @@ export default function Story() {
             <div className="space-y-4">
                 <h2 className="text-lg font-bold text-primary">Interactive Options</h2>
                 <div className="space-y-3">
-                    
                     <Button
                         variant={'default'}
                         disabled={isRestoring}
