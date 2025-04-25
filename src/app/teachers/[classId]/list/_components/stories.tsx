@@ -55,7 +55,7 @@ export default function StoriesListPage({
 
     const filterStoriesByCategory = (category: string) => {
         if (!stories) return [];
-        return stories.filter((story) => story.category === category);
+        return stories.filter((story) => story.categoryDoc?.name.toLowerCase() === category.toLowerCase());
     };
 
     const fables = filterStoriesByCategory("Fables")

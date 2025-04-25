@@ -119,9 +119,12 @@ function handleDelete() {
 
           )}
           <Button variant={'secondary'} onClick={()=>handleOnOpenChange(false)} className=''>Cancel</Button>
-          <Button onClick={() =>{
-            language ? handleSubmit('edit') : handleSubmit("add")
-          }} className=''>Save</Button>
+          {language ? ( 
+            <Button onClick={() =>{handleSubmit('edit')}} className=''>Save</Button>
+          ) : (
+            <Button onClick={() =>{handleSubmit("add")}} className=''>Save</Button>
+          )}
+       
         </DialogFooter>
       </DialogContent>
     </Dialog>
