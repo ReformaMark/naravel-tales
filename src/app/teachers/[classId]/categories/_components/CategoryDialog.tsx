@@ -113,7 +113,7 @@ function CategoryDialog({ categoryDialog, setCategoryDialog, categoryId}: Catego
         e.preventDefault()
         let storageId: Id<"_storage"> | undefined;
         try {
-            if (categoriesData.imageUrl) {
+            if (categoriesData.imageUrl instanceof File) {
                 const url = await generateUploadUrl({}, {
                     throwError: true
                 })
