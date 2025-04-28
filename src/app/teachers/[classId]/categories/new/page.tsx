@@ -113,7 +113,7 @@ function Page() {
                 }
     
                 await mutate({
-                    name: categoriesData.name,
+                    name: categoriesData.name.trim(),
                     description: categoriesData.description,
                     imageId: storageId,
                 })

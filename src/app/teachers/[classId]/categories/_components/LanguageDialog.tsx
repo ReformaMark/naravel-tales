@@ -52,7 +52,7 @@ function handleOnOpenChange(value: boolean) {
 function handleSubmit(type: 'edit' | "add") {
   if(type === "add" && data) {
     toast.promise(saveLanguage({
-      name: data?.name
+      name: data?.name.trim()
     }),{
       loading: 'Saving Language...',
       success: 'Language saved successfully.',
@@ -68,7 +68,7 @@ function handleSubmit(type: 'edit' | "add") {
   if(type === "edit" && languageId && data) {
     toast.promise(editLanguage({
       languageId: languageId,
-      name: data?.name
+      name: data?.name.trim()
     }),{
       loading: 'Updating Language...',
       success: 'Language updated successfully.',

@@ -38,7 +38,7 @@ function CategoryDialog({ categoryDialog, setCategoryDialog, categoryId}: Catego
         
         setCategoriesData({
             categoryId: category._id,
-            name: category.name,
+            name: category.name.trim(),
             description: category.description || "",
             imageUrl: category.imageUrl || null,
         });
